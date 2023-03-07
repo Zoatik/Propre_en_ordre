@@ -1,0 +1,11 @@
+#include "Robot_S."
+
+Robot_S::Robot_S()
+{
+    //ctor
+}
+
+Robot_S::~Robot_S()
+{
+    //dtor
+}

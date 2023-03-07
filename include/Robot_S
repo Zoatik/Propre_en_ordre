@@ -1,0 +1,18 @@
+#ifndef ROBOT_S_
+#define ROBOT_S_
+
+#include <Robot.h>
+
+
+class Robot_S : public Robot
+{
+    public:
+        Robot_S();
+        virtual ~Robot_S();
+
+    protected:
+
+    private:
+};
+
+#endif // ROBOT_S_
