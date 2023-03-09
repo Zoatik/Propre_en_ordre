@@ -17,7 +17,7 @@ constexpr double epsil_alignement(0.01); // rd env. 0.6°
 
 constexpr double desintegration_rate(0.0002);
 constexpr double risk_factor(3.);
-constexpr double d_particule_min(8*shape::epsil_zero);
+constexpr double d_particule_min(8*epsil_zero);
 
 constexpr unsigned max_update(600);
 constexpr unsigned modulo_update(100);
