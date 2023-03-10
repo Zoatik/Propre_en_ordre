@@ -1,4 +1,4 @@
 @echo off
-del *.o
+del obj\*.o
 del PEO.exe
 PAUSE
