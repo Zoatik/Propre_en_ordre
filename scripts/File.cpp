@@ -54,7 +54,7 @@ bool File::read_file(std::string file_path)
                 current_line >> tmp_x >> tmp_y >> tmp_d;
                 //std::cout<<tmp_x<<"/"<<tmp_y<<"/"<<tmp_d<<"\n";
                 s_particle_infos part(s_2d(tmp_x, tmp_y), tmp_d);
-                this->m_particle_vect.push_back(part);
+                m_particle_vect.push_back(part);
                 i++;
             }
             line_type = 1;// on passe au type suivant
@@ -70,19 +70,19 @@ bool File::read_file(std::string file_path)
                                tmp_nbUpdate, tmp_nbNr,
                                tmp_nbNs, tmp_nbNd,
                                tmp_nbRr, tmp_nbRs);
-            this->m_robotS = rSi;
+            m_robotS = rSi;
             line_type = 2;
         }
         else if(line_type == 2)
         {
             unsigned int j(i);
-            while(i<j+this->m_robotS.m_nbRs)
+            while(i<j+m_robotS.m_nbRs)
             {
                 current_line = std::istringstream(lines[i]);
                 double tmp_x, tmp_y;
                 current_line >> tmp_x >> tmp_y;
                 s_robotR_infos rRi(s_2d(tmp_x, tmp_y));
-                this->m_robotR_vect.push_back(rRi);
+                m_robotR_vect.push_back(rRi);
                 i++;
             }
             line_type = 3;
@@ -90,7 +90,7 @@ bool File::read_file(std::string file_path)
         else if(line_type == 3)
         {
             unsigned int j(i);
-            while(i<j+this->m_robotS.m_nbNs)
+            while(i<j+m_robotS.m_nbNs)
             {
                 current_line = std::istringstream(lines[i]);
                 double tmp_x, tmp_y, tmp_a;
@@ -102,7 +102,7 @@ bool File::read_file(std::string file_path)
                                 tmp_str_panne >> tmp_k_update_panne;
                 bool tmp_panne(bool(tmp_str_panne=="true"));
                 s_robotN_infos rNi(s_2d(tmp_x, tmp_y), tmp_a, tmp_c_n, tmp_panne, tmp_k_update_panne);
-                this->m_robotN_vect.push_back(rNi);
+                m_robotN_vect.push_back(rNi);
                 i++;
             }
         }
@@ -110,7 +110,7 @@ bool File::read_file(std::string file_path)
         //std::cout<<i<<std::endl;
     }
     //std::cout<<"on sort"<<std::endl;
-    this->show_infos();
+    show_infos();
     return true;
 }
 
@@ -118,39 +118,39 @@ bool File::read_file(std::string file_path)
 void File::show_infos()
 {
     std::cout<<"PARTICULES :\n";
-    for(int i = 0; i<this->m_particle_vect.size(); i++)
+    for(int i = 0; i<m_particle_vect.size(); i++)
     {
         std::cout<<i+1<<")\n";
-        std::cout<<"- x : "<<this->m_particle_vect[i].m_pos.m_x<<std::endl;
-        std::cout<<"- y : "<<this->m_particle_vect[i].m_pos.m_y<<std::endl;
-        std::cout<<"- d : "<<this->m_particle_vect[i].m_d<<std::endl;
+        std::cout<<"- x : "<<m_particle_vect[i].m_pos.m_x<<std::endl;
+        std::cout<<"- y : "<<m_particle_vect[i].m_pos.m_y<<std::endl;
+        std::cout<<"- d : "<<m_particle_vect[i].m_d<<std::endl;
     }
-    std::cout<<"\nROBOT SPATIAL :\n"<<"- x : " << this->m_robotS.m_pos.m_x
-                             <<"\n- y : " << this->m_robotS.m_pos.m_y
-                             <<"\n- nb update : " << this->m_robotS.m_nb_update
-                             <<"\n- nbNr : " << this->m_robotS.m_nbNr
-                             <<"\n- nbNs : " << this->m_robotS.m_nbNs
-                             <<"\n- nbNd : " << this->m_robotS.m_nbNd
-                             <<"\n- nbRr : " << this->m_robotS.m_nbRr
-                             <<"\n- nbRs : " << this->m_robotS.m_nbRs<<std::endl;
+    std::cout<<"\nROBOT SPATIAL :\n"<<"- x : " << m_robotS.m_pos.m_x
+                             <<"\n- y : " << m_robotS.m_pos.m_y
+                             <<"\n- nb update : " << m_robotS.m_nb_update
+                             <<"\n- nbNr : " << m_robotS.m_nbNr
+                             <<"\n- nbNs : " << m_robotS.m_nbNs
+                             <<"\n- nbNd : " << m_robotS.m_nbNd
+                             <<"\n- nbRr : " << m_robotS.m_nbRr
+                             <<"\n- nbRs : " << m_robotS.m_nbRs<<std::endl;
     std::cout<<"\nROBOT REPARATEUR : \n";
-    for(int i = 0; i<this->m_robotR_vect.size(); i++)
+    for(int i = 0; i<m_robotR_vect.size(); i++)
     {
         std::cout<<i+1<<")\n";
-        std::cout<<"- x : "<<this->m_robotR_vect[i].m_pos.m_x<<std::endl;
-        std::cout<<"- y : "<<this->m_robotR_vect[i].m_pos.m_y<<std::endl;
+        std::cout<<"- x : "<<m_robotR_vect[i].m_pos.m_x<<std::endl;
+        std::cout<<"- y : "<<m_robotR_vect[i].m_pos.m_y<<std::endl;
     }
 
     std::cout<<"\nROBOT NEUTRALISEUR : \n";
-    for(int i = 0; i<this->m_robotN_vect.size(); i++)
+    for(int i = 0; i<m_robotN_vect.size(); i++)
     {
         std::cout<<i+1<<")\n";
-        std::cout<<"- x : "<<this->m_robotN_vect[i].m_pos.m_x<<std::endl;
-        std::cout<<"- y : "<<this->m_robotN_vect[i].m_pos.m_y<<std::endl;
-        std::cout<<"- angle : "<<this->m_robotN_vect[i].m_a<<std::endl;
-        std::cout<<"- coord type : "<<this->m_robotN_vect[i].m_c_n<<std::endl;
-        std::cout<<"- panne : "<<this->m_robotN_vect[i].m_panne<<std::endl;
-        std::cout<<"- k_update_panne : "<<this->m_robotN_vect[i].m_k_update_panne<<std::endl;
+        std::cout<<"- x : "<<m_robotN_vect[i].m_pos.m_x<<std::endl;
+        std::cout<<"- y : "<<m_robotN_vect[i].m_pos.m_y<<std::endl;
+        std::cout<<"- angle : "<<m_robotN_vect[i].m_a<<std::endl;
+        std::cout<<"- coord type : "<<m_robotN_vect[i].m_c_n<<std::endl;
+        std::cout<<"- panne : "<<m_robotN_vect[i].m_panne<<std::endl;
+        std::cout<<"- k_update_panne : "<<m_robotN_vect[i].m_k_update_panne<<std::endl;
     }
 
 }
