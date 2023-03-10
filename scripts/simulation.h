@@ -2,7 +2,6 @@
 #define SIMULATION_H
 #include "simulation.h"
 #include "Robot.h"
-#include "shape.h"
 
 class Simulation
 {
