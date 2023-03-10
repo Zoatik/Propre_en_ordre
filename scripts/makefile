@@ -1,8 +1,11 @@
 PEP: main.o Robot.o File.o message.o
 	g++ main.o Robot.o File.o message.o -o PEP
 
-main.o: main.cpp Robot.h
+main.o: main.cpp simulation.h Robot.h 
 	g++ -c main.cpp
+
+simulation.o: simulation.cpp Robot.h shape.h
+	g++ -c simulation.cpp
 
 Robot.o: Robot.cpp Robot.h File.h 
 	g++ -c Robot.cpp 
