@@ -1,0 +1,4 @@
+@ECHO OFF
+make
+RUN
+PAUSE
