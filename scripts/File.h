@@ -61,15 +61,23 @@ class File
     public:
         File();
         virtual ~File();
-        bool read_file(std::string file_path);
+        bool read_file(std::string file_path);//lit un fichier "test".txt
 
     protected:
 
     private:
+        int m_nbP;
         s_robotS_infos m_robotS;
         std::vector<s_robotN_infos> m_robotN_vect;
         std::vector<s_robotR_infos> m_robotR_vect;
         std::vector<s_particle_infos> m_particle_vect;
+
+        /*lecture et assignation des propriétes des particules/robots*/
+        void sep_file_infos(std::vector<std::string> lines);
+        void read_particles_prop(std::string spec, std::vector<std::string> lines, unsigned int& i);
+        void read_robotS_prop(std::vector<std::string> lines, unsigned int& i);
+        void read_robotR_prop(std::vector<std::string> lines, unsigned int& i);
+        void read_robotN_prop(std::vector<std::string> lines, unsigned int& i);
         ///DEBUG
         void show_infos();
 

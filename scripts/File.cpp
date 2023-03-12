@@ -12,106 +12,128 @@ File::~File()
     //dtor
 }
 //méthodes
-
+/*PUBLIC*/
 bool File::read_file(std::string file_path)
 {
-    s_sim_infos sim_infos;
     std::string line;
     std::vector<std::string> lines;
     std::ifstream file(file_path);
-    if(file.is_open())
+    if (file.is_open())
     {
-        while(file)
+        while (file)
         {
-            std::getline(file,line);
+            std::getline(file, line);
             lines.push_back(line);
         }
     }
     else
     {
-        std::cout<<"Could not open file\n";
+        std::cout << "Could not open file : " << file_path << std::endl;
         return false;
     }
     file.close();
+    sep_file_infos(lines);
 
-    int line_type(0);//0: infos particules, 1: ' robot spatial, 2: '' réparateur, 3: neutraliseur
-    for(unsigned int i(0); i<lines.size(); i++)
+    return true;
+}
+
+/*PRIVATE*/
+void File::sep_file_infos(std::vector<std::string> lines)
+{
+    int line_type(0);//0: infos particules, 1: ' robot spatial, 
+                     //2: '' réparateur, 3: neutraliseur
+    for (unsigned int i(0); i < lines.size(); i++)
     {
         std::istringstream current_line(lines[i]);
         std::string spec;
         current_line >> spec;
-        if(spec == "#" || lines[i].size()==0)//on saute la ligne si # ou si vide
-                continue;
-        if(line_type == 0)
+        if (spec == "#" || lines[i].size() == 0)
+            //on saute la ligne si # ou si vide
+            continue;
+        switch (line_type)
         {
-            sim_infos.m_nbP = std::stoi(spec);
-            unsigned int j(i);
-            i++;
-            while(i<=j+sim_infos.m_nbP)//on boucle sur le nb de particules
-            {
-                current_line = std::istringstream(lines[i]);
-                double tmp_x, tmp_y, tmp_d;
-                current_line >> tmp_x >> tmp_y >> tmp_d;
-                //std::cout<<tmp_x<<"/"<<tmp_y<<"/"<<tmp_d<<"\n";
-                s_particle_infos part(s_2d(tmp_x, tmp_y), tmp_d);
-                m_particle_vect.push_back(part);
-                i++;
-            }
-            line_type = 1;// on passe au type suivant
+        case 0 : //particules
+            read_particles_prop(spec, lines, i);
+            break;
+        case 1 : //robot Spatial
+            read_robotS_prop(lines, i);
+            break;
+        case 2 : //robot Réparateur
+            read_robotR_prop(lines, i);
+            break;
+        case 3 : //robot Neutralisateur
+            read_robotN_prop(lines, i);
+            break;
+        default :
+            break;
         }
-        else if(line_type == 1)
-        {
-            current_line = std::istringstream(lines[i]);
-            double tmp_x, tmp_y;
-            int tmp_nbUpdate, tmp_nbNr, tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs;
-            current_line >> tmp_x >> tmp_y >> tmp_nbUpdate >> tmp_nbNr >> tmp_nbNs >>
-                            tmp_nbNd >> tmp_nbRr >> tmp_nbRs;
-            s_robotS_infos rSi(s_2d(tmp_x, tmp_y),
-                               tmp_nbUpdate, tmp_nbNr,
-                               tmp_nbNs, tmp_nbNd,
-                               tmp_nbRr, tmp_nbRs);
-            m_robotS = rSi;
-            line_type = 2;
-        }
-        else if(line_type == 2)
-        {
-            unsigned int j(i);
-            while(i<j+m_robotS.m_nbRs)
-            {
-                current_line = std::istringstream(lines[i]);
-                double tmp_x, tmp_y;
-                current_line >> tmp_x >> tmp_y;
-                s_robotR_infos rRi(s_2d(tmp_x, tmp_y));
-                m_robotR_vect.push_back(rRi);
-                i++;
-            }
-            line_type = 3;
-        }
-        else if(line_type == 3)
-        {
-            unsigned int j(i);
-            while(i<j+m_robotS.m_nbNs)
-            {
-                current_line = std::istringstream(lines[i]);
-                double tmp_x, tmp_y, tmp_a;
-                int tmp_c_n, tmp_k_update_panne;
-                std::string tmp_str_panne;
-                if (lines[i].size() == 0)
-                    std::cout<<"emptyyy"<<std::endl;
-                current_line >> tmp_x >> tmp_y >> tmp_a >> tmp_c_n >>
-                                tmp_str_panne >> tmp_k_update_panne;
-                bool tmp_panne(bool(tmp_str_panne=="true"));
-                s_robotN_infos rNi(s_2d(tmp_x, tmp_y), tmp_a, tmp_c_n, tmp_panne, tmp_k_update_panne);
-                m_robotN_vect.push_back(rNi);
-                i++;
-            }
-        }
-
-        //std::cout<<i<<std::endl;
+        line_type++; //on passe au type suivant
     }
-    //std::cout<<"on sort"<<std::endl;
     show_infos();
-    return true;
+}
+
+void File::read_particles_prop(std::string spec, std::vector<std::string> lines, unsigned int &i)
+{
+        
+    m_nbP = std::stoi(spec);
+    unsigned int j(i);
+    i++;
+    while (i <= j + m_nbP)//on boucle sur le nb de particules
+    {
+        std::istringstream current_line(lines[i]);
+        double tmp_x, tmp_y, tmp_d;
+        current_line >> tmp_x >> tmp_y >> tmp_d;
+        //std::cout<<tmp_x<<"/"<<tmp_y<<"/"<<tmp_d<<"\n";
+        s_particle_infos part(s_2d(tmp_x, tmp_y), tmp_d);
+        m_particle_vect.push_back(part);
+        i++;
+    }
+}
+
+void File::read_robotS_prop(std::vector<std::string> lines, unsigned int& i)
+{
+    std::istringstream current_line(lines[i]);
+    double tmp_x, tmp_y;
+    int tmp_nbUpdate, tmp_nbNr, tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs;
+    current_line >> tmp_x >> tmp_y >> tmp_nbUpdate >> tmp_nbNr >> tmp_nbNs >>
+                    tmp_nbNd >> tmp_nbRr >> tmp_nbRs;
+    m_robotS = s_robotS_infos(s_2d(tmp_x, tmp_y),
+                       tmp_nbUpdate, tmp_nbNr,
+                       tmp_nbNs, tmp_nbNd,
+                       tmp_nbRr, tmp_nbRs);
+}
+
+void File::read_robotR_prop(std::vector<std::string> lines, unsigned int& i)
+{
+    unsigned int j(i);
+    while (i < j + m_robotS.m_nbRs)
+    {
+        std::istringstream current_line(lines[i]);
+        double tmp_x, tmp_y;
+        current_line >> tmp_x >> tmp_y;
+        s_robotR_infos rRi(s_2d(tmp_x, tmp_y));
+        m_robotR_vect.push_back(rRi);
+        i++;
+    }
+}
+
+void File::read_robotN_prop(std::vector<std::string> lines, unsigned int& i)
+{
+    unsigned int j(i);
+    while (i < j + m_robotS.m_nbNs)
+    {
+        std::istringstream current_line(lines[i]);
+        double tmp_x, tmp_y, tmp_a;
+        int tmp_c_n, tmp_k_update_panne;
+        std::string tmp_str_panne;
+        current_line >> tmp_x >> tmp_y >> tmp_a >> tmp_c_n >>
+                        tmp_str_panne >> tmp_k_update_panne;
+        bool tmp_panne(bool(tmp_str_panne == "true"));
+        s_robotN_infos rNi(s_2d(tmp_x, tmp_y), tmp_a, tmp_c_n,
+                           tmp_panne, tmp_k_update_panne);
+        m_robotN_vect.push_back(rNi);
+        i++;
+    }
 }
 
 ///DEBUG
