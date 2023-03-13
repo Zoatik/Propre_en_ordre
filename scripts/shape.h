@@ -1,5 +1,6 @@
 #ifndef SHAPE_H_INCLUDED
 #define SHAPE_H_INCLUDED
+#include <math.h>
 
 constexpr double epsil_zero(0.125);
 struct s_2d
@@ -32,22 +33,10 @@ struct square
 
 };
 
-class Shape
-{
-    public:
-        Shape();
-        ~Shape();
-
-        bool collision(circle c1, square s1);
-        bool collision(circle c1, circle c2);
-        bool collision(square s1, square s2);
-        double distance(s_2d point_1, s_2d point_2);
-        double norm(s_2d point);
-    protected:
-    private:
-
-};
-
-
+double difference(s_2d point_1, s_2d point_2);
+double norm(s_2d point);
+bool collision(circle c1, square s1);
+bool collision(circle c1, circle c2);
+bool collision(square s1, square s2);
 
 #endif // SHAPE_H_INCLUDED
