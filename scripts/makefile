@@ -15,6 +15,9 @@ File.o: File.cpp File.h
 
 message.o: message.cc message.h
 	g++ -c message.cc -o obj/message.o
+
+shape.o: shape.cc shape.h
+	g++ -c shape.cc -o obj/shape.o
 clean:
 	rm obj/*.o PEO
 
