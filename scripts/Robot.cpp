@@ -16,10 +16,15 @@ Robot::~Robot()
     //dtor
 }
 
-//méthodes
+//mï¿½thodes
 void Robot::set_pos(s_2d pos)
 {
 
+}
+
+void Robot::create(s_robotS_infos infos)
+{
+    
 }
 
 /**REPARATEURS**/

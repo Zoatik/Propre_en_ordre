@@ -12,6 +12,11 @@ double norm(s_2d point)
     return pow(pow(point.m_x,2)+pow(point.m_y,2), 0.5);
 }
 
+bool check_position()
+{
+    return 0;
+}
+
 /**TESTS DE COLLISIONS**/
 bool collision(circle c1, square s1)
 {  

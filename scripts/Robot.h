@@ -12,7 +12,7 @@ class Robot
         virtual ~Robot();
 
         void set_pos(s_2d pos);
-
+        void create(s_robotS_infos infos);
     protected:
         s_2d m_pos;
     private:

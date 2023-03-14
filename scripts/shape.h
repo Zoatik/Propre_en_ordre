@@ -35,6 +35,7 @@ struct square
 
 double difference(s_2d point_1, s_2d point_2);
 double norm(s_2d point);
+bool check_position();
 bool collision(circle c1, square s1);
 bool collision(circle c1, circle c2);
 bool collision(square s1, square s2);

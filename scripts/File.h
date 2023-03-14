@@ -55,13 +55,18 @@ struct s_sim_infos
 
 };
 
-/**FILE's CLASS**/
+
 class File
 {
     public:
         File();
         virtual ~File();
         bool read_file(std::string file_path);//lit un fichier "test".txt
+        int get_nbP();
+        s_robotS_infos get_robotS_infos();
+        std::vector<s_robotN_infos> get_robotN_infos();
+        std::vector<s_robotR_infos> get_robotR_infos();
+        std::vector<s_particle_infos> get_particles_infos();
 
     protected:
 
@@ -72,7 +77,7 @@ class File
         std::vector<s_robotR_infos> m_robotR_vect;
         std::vector<s_particle_infos> m_particle_vect;
 
-        /*lecture et assignation des propriétes des particules/robots*/
+        /*lecture et assignation des propriï¿½tes des particules/robots*/
         void sep_file_infos(std::vector<std::string> lines);
         void read_particles_prop(std::string spec, std::vector<std::string> lines, unsigned int& i);
         void read_robotS_prop(std::vector<std::string> lines, unsigned int& i);

@@ -1,6 +1,5 @@
 #include "File.h"
 
-
 //constructeurs
 File::File()
 {
@@ -11,7 +10,7 @@ File::~File()
 {
     //dtor
 }
-//méthodes
+//mï¿½thodes
 /*PUBLIC*/
 bool File::read_file(std::string file_path)
 {
@@ -41,7 +40,7 @@ bool File::read_file(std::string file_path)
 void File::sep_file_infos(std::vector<std::string> lines)
 {
     int line_type(0);//0: infos particules, 1: ' robot spatial, 
-                     //2: '' réparateur, 3: neutraliseur
+                     //2: '' rï¿½parateur, 3: neutraliseur
     for (unsigned int i(0); i < lines.size(); i++)
     {
         std::istringstream current_line(lines[i]);
@@ -58,7 +57,7 @@ void File::sep_file_infos(std::vector<std::string> lines)
         case 1 : //robot Spatial
             read_robotS_prop(lines, i);
             break;
-        case 2 : //robot Réparateur
+        case 2 : //robot Rï¿½parateur
             read_robotR_prop(lines, i);
             break;
         case 3 : //robot Neutralisateur
@@ -176,3 +175,25 @@ void File::show_infos()
     }
 
 }
+
+int File::get_nbP()
+{
+    return m_nbP;
+}
+s_robotS_infos File::get_robotS_infos()
+{
+    return m_robotS;
+}
+std::vector<s_robotN_infos> File::get_robotN_infos()
+{
+    return m_robotN_vect;
+}
+std::vector<s_robotR_infos> File::get_robotR_infos()
+{
+    return m_robotR_vect;
+}
+std::vector<s_particle_infos> File::get_particles_infos()
+{
+    return m_particle_vect;
+}
+
