@@ -22,9 +22,24 @@ void Robot::set_pos(s_2d pos)
 
 }
 
-void Robot::create(s_robotS_infos infos)
+/**ROBOT SPATIAL**/
+Robot_S::Robot_S(s_robotS_infos infos): 
+    m_nbUpdate(infos.m_nb_update), 
+    m_nbNr(infos.m_nbNr), 
+    m_nbNs(infos.m_nbNs),
+    m_nbNd(infos.m_nbNd),
+    m_nbRr(infos.m_nbRr), 
+    m_nbRs(infos.m_nbRs)
 {
-    
+    set_pos(infos.m_pos);
+    m_circle.m_center = m_pos;
+    m_circle.m_radius = r_spatial;
+     //ctor
+}
+
+Robot_S::~Robot_S()
+{
+    //dtor
 }
 
 /**REPARATEURS**/

@@ -22,6 +22,9 @@ message.o: message.cc message.h
 shape.o: shape.cc shape.h
 	g++ -c shape.cc -o obj/shape.o
 
+Particle.o: Particle.cpp Particle.h
+	g++ -c Particle.cpp -o obj/Particle.o
+
 clean:
 	rm obj/*.o PEO
 

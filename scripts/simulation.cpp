@@ -12,11 +12,12 @@ void Simulation::generate(int nbP, s_robotS_infos robotS_infos,
                                 std::vector<s_particle_infos> particles_infos_vect)
 {
     
-    /*m_nbP = nbP;
-    m_robotS.create()
-    for(int i; i<robotN_vect.size(),i++)
+    m_nbP = nbP;
+    Robot_S m_robot_S(robotS_infos);
+    if(check_position(m_robot_S.m_circle))
     {
-
-    }*/
+        std::cout<< "Dans la carte";
+    }
+       
 }
 

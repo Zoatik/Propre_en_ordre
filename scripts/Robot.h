@@ -12,12 +12,32 @@ class Robot
         virtual ~Robot();
 
         void set_pos(s_2d pos);
-        void create(s_robotS_infos infos);
+        circle m_circle;
     protected:
         s_2d m_pos;
+        
     private:
 
 
+};
+
+/** ROBOT SPATIAL**/
+class Robot_S : public Robot
+{
+    public:
+        Robot_S(s_robotS_infos);
+        virtual ~Robot_S();
+
+    protected:
+
+    private:
+        int m_nbUpdate;
+        int m_nbNr;
+        int m_nbNs;
+        int m_nbNd;
+        int m_nbRr;
+        int m_nbRs;
+        
 };
 
 /**REPARATEURS**/
