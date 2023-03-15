@@ -10,11 +10,9 @@ int main(int argc, char *argv[])
     File infos_file;
     infos_file.read_file(file_path);
     Simulation world;
-    std::cout << "generating";
+    //std::cout << "generating"<<std::endl;//debug
     world.generate(infos_file);
-    std::cout<<"generated";
-    //Robot_N r;
-    //r.set_pos(1.,2.);
+    //std::cout<<"generated"<<std::endl;//debug
 
     return 0;
 }
