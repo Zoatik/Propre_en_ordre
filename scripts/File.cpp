@@ -39,7 +39,7 @@ bool File::read_file(std::string file_path)
 /*PRIVATE*/
 void File::sep_file_infos(std::vector<std::string> lines)
 {
-    int line_type(0);//0: infos particules, 1: ' robot spatial, 
+    int line_type(0);//0: infos particules, 1: ' robot spatial,
                      //2: '' r�parateur, 3: neutraliseur
     for (unsigned int i(0); i < lines.size(); i++)
     {
@@ -68,12 +68,12 @@ void File::sep_file_infos(std::vector<std::string> lines)
         }
         line_type++; //on passe au type suivant
     }
-    show_infos();
+    //show_infos(); debug
 }
 
 void File::read_particles_prop(std::string spec, std::vector<std::string> lines, unsigned int &i)
 {
-        
+
     m_nbP = std::stoi(spec);
     unsigned int j(i);
     i++;

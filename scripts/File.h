@@ -67,6 +67,8 @@ class File
         std::vector<s_robotN_infos> get_robotN_infos();
         std::vector<s_robotR_infos> get_robotR_infos();
         std::vector<s_particle_infos> get_particles_infos();
+        ///DEBUG
+        void show_infos();
 
     protected:
 
@@ -83,8 +85,8 @@ class File
         void read_robotS_prop(std::vector<std::string> lines, unsigned int& i);
         void read_robotR_prop(std::vector<std::string> lines, unsigned int& i);
         void read_robotN_prop(std::vector<std::string> lines, unsigned int& i);
-        ///DEBUG
-        void show_infos();
+
+
 
 
 
