@@ -14,7 +14,7 @@ struct s_2d
 };
 
 struct circle
-{       
+{
     circle(){}
     circle(s_2d center, double radius): m_center(center), m_radius(radius){}
 
