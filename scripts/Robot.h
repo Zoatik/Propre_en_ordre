@@ -8,14 +8,13 @@ class Robot
 {
     public:
         Robot();
-        Robot(s_2d pos);
         virtual ~Robot();
 
         void set_pos(s_2d pos);
-        circle m_circle;
+        circle get_shape();
+
     protected:
-        s_2d m_pos;
-        
+        circle m_circle;
     private:
 
 
@@ -37,7 +36,7 @@ class Robot_S : public Robot
         int m_nbNd;
         int m_nbRr;
         int m_nbRs;
-        
+
 };
 
 /**REPARATEURS**/
@@ -45,6 +44,7 @@ class Robot_R : public Robot
 {
     public:
         Robot_R();
+        Robot_R(s_robotR_infos infos);
         virtual ~Robot_R();
 
     protected:
@@ -59,7 +59,7 @@ class Robot_N : public Robot
 {
     public:
         Robot_N();
-        //Robot_N(s_robotN_infos robot_infos);
+        Robot_N(s_robotN_infos infos);
         virtual ~Robot_N();
 
     protected:
