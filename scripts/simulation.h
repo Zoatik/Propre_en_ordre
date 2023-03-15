@@ -6,11 +6,9 @@
 class Simulation
 {
     public:
+        Simulation();
         void update();
-        void generate(int nbP, s_robotS_infos robotS_infos, 
-                                std::vector<s_robotN_infos> robotN_infos_vect, 
-                                std::vector<s_robotR_infos> robotR_infos_vect, 
-                                std::vector<s_particle_infos> particles_infos_vect);
+        void generate(File file_infos);
     protected:
     private:
         int m_nbP;

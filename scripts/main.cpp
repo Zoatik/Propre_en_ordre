@@ -11,11 +11,7 @@ int main(int argc, char *argv[])
     infos_file.read_file(file_path);
     Simulation world;
     std::cout << "generating";
-    world.generate( infos_file.get_nbP(),
-                    infos_file.get_robotS_infos(),
-                    infos_file.get_robotN_infos(),
-                    infos_file.get_robotR_infos(),
-                    infos_file.get_particles_infos());
+    world.generate(infos_file);
     std::cout<<"generated";
     //Robot_N r;
     //r.set_pos(1.,2.);
