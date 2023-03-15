@@ -11,7 +11,7 @@ Robot.o: Robot.cpp Robot.h
 	g++ -c Robot.cpp -o obj/Robot.o
 
 Particle.o: Particle.cpp Particle.h
-	g++ .c Particle.cpp -o obj/Particle.o
+	g++ -c Particle.cpp -o obj/Particle.o
 
 File.o: File.cpp File.h
 	g++ -c File.cpp -o obj/File.o
@@ -21,9 +21,6 @@ message.o: message.cc message.h
 
 shape.o: shape.cc shape.h
 	g++ -c shape.cc -o obj/shape.o
-
-Particle.o: Particle.cpp Particle.h
-	g++ -c Particle.cpp -o obj/Particle.o
 
 clean:
 	rm obj/*.o PEO
