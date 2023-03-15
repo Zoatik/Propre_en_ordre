@@ -2,15 +2,19 @@
 #define SIMULATION_H
 #include "Robot.h"
 #include "Particle.h"
+#include "message.h"
 
 class Simulation
 {
     public:
         Simulation();
         void update();
-        void generate(File file_infos);
-    protected:
+        bool generate(File file_infos);
     private:
+        bool generate_particles(File file_infos);
+        bool generate_robotS(File file_infos);
+        bool generate_robotR(File file_infos);
+        bool generate_robotN(File file_infos);
         int m_nbP;
         Robot m_robotS;
         std::vector<Robot_N> m_robotN_vect;
