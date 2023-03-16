@@ -1,6 +1,7 @@
 #ifndef SHAPE_H_INCLUDED
 #define SHAPE_H_INCLUDED
 #include <math.h>
+#include <iostream> ///debug
 
 constexpr double epsil_zero(0.125);
 struct s_2d
@@ -12,6 +13,8 @@ struct s_2d
     double m_x = 0.;
     double m_y = 0.;
 };
+s_2d operator+(s_2d vect1, s_2d vect2);
+s_2d operator-(s_2d vect1, s_2d vect2);
 
 struct circle
 {
@@ -37,8 +40,8 @@ double difference(s_2d point_1, s_2d point_2);
 double norm(s_2d point);
 bool check_position(circle c1);
 bool check_position(square s1);
-bool collision(circle c1, square s1);
-bool collision(circle c1, circle c2);
-bool collision(square s1, square s2);
+bool collision(circle c1, square s1, bool init);//init = true : phase d'initialisation
+bool collision(circle c1, circle c2, bool init);
+bool collision(square s1, square s2, bool init);
 
 #endif // SHAPE_H_INCLUDED

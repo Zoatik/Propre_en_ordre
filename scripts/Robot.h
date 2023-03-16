@@ -24,8 +24,10 @@ class Robot
 class Robot_S : public Robot
 {
     public:
+        Robot_S();
         Robot_S(s_robotS_infos);
         virtual ~Robot_S();
+        int get_nb_update();
 
     protected:
 
@@ -60,6 +62,7 @@ class Robot_N : public Robot
     public:
         Robot_N();
         Robot_N(s_robotN_infos infos);
+        int get_k_update_panne();
         virtual ~Robot_N();
 
     protected:

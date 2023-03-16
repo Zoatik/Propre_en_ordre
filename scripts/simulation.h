@@ -16,7 +16,7 @@ class Simulation
         bool generate_robotR(File file_infos);
         bool generate_robotN(File file_infos);
         int m_nbP;
-        Robot m_robotS;
+        Robot_S m_robotS;
         std::vector<Robot_N> m_robotN_vect;
         std::vector<Robot_R> m_robotR_vect;
         std::vector<Particle> m_particles_vect;

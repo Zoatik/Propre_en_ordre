@@ -24,6 +24,10 @@ circle Robot::get_shape()
 }
 
 /**ROBOT SPATIAL**/
+Robot_S::Robot_S()
+{
+    //default ctor
+}
 Robot_S::Robot_S(s_robotS_infos infos): m_nbUpdate(infos.m_nb_update),
                                         m_nbNr(infos.m_nbNr),
                                         m_nbNs(infos.m_nbNs),
@@ -39,6 +43,10 @@ Robot_S::Robot_S(s_robotS_infos infos): m_nbUpdate(infos.m_nb_update),
 Robot_S::~Robot_S()
 {
     //dtor
+}
+int Robot_S::get_nb_update()
+{
+    return m_nbUpdate;
 }
 
 /**REPARATEURS**/
@@ -75,4 +83,8 @@ Robot_N::Robot_N(s_robotN_infos infos): m_angle(infos.m_a),
 Robot_N::~Robot_N()
 {
     //dtor
+}
+int Robot_N::get_k_update_panne()
+{
+    return m_k_update_panne;
 }
