@@ -8,12 +8,9 @@ int main(int argc, char *argv[])
     /**Vérification**/
     string file_path = argv[1];
     File infos_file;
-    infos_file.read_file(file_path);
+    infos_file.read_file(file_path);//récupération des infos
     Simulation world;
-    //std::cout << "generating"<<std::endl;//debug
-    world.generate(infos_file);
-    //std::cout<<"generated"<<std::endl;//debug
-
+    world.generate(infos_file);//vérifications des infos et création du monde
     return 0;
 }
 
