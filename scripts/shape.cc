@@ -43,7 +43,8 @@ bool check_position(square s1)
 }
 
 /**TESTS DE COLLISIONS**/
-bool collision(circle c1, square s1, bool init)//init = true : phase d'initialisation
+bool collision(circle c1, square s1, bool init = false)
+// si init = true : phase d'initialisation
 {
     s_2d vect_2d(fabs(c1.m_center.m_x-s1.m_center.m_x)-s1.m_size/2,
                  fabs(c1.m_center.m_y-s1.m_center.m_y)-s1.m_size/2);
@@ -61,13 +62,13 @@ bool collision(circle c1, square s1, bool init)//init = true : phase d'initialis
     return false;
 }
 
-bool collision(circle c1, circle c2, bool init)
+bool collision(circle c1, circle c2, bool init = false)
 {
     return (distance(c1.m_center, c2.m_center) <
            (c1.m_radius + c2.m_radius) + int(!init)*epsil_zero);
 }
 
-bool collision(square s1, square s2, bool init)
+bool collision(square s1, square s2, bool init = false)
 {
     return (fabs(s1.m_center.m_x-s2.m_center.m_x) <
             s1.m_size/2 + s2.m_size/2 + int(!init)*epsil_zero and
