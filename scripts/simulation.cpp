@@ -2,20 +2,28 @@
 #include <iostream>
 using namespace std;
 
+//ctor-dtor
 Simulation::Simulation()
 {
     //ctor
 }
 
+Simulation::~Simulation()
+{
+    //dtor
+}
+
+///méthodes publiques
 void Simulation::update()
 {
 
 }
 
+///méthodes privées de génération
 bool Simulation::generate(File file_infos)
 {
     m_nbP = file_infos.get_nbP();
-    //file_infos.show_infos();
+
     /**checks et instanciation dans l'ordre de lecture**/
     if(!generate_particles(file_infos))//génération et checks particules
         return false;
@@ -26,7 +34,6 @@ bool Simulation::generate(File file_infos)
     if(!generate_robotN(file_infos))//génération et check robots neutraliseurs
         return false;
 
-    //checks robots réparateurs
     cout<<message::success();
     return true;
 }
@@ -54,10 +61,11 @@ bool Simulation::generate_particles(File file_infos)
         {
             if(collision(part.get_shape(),m_particles_vect[j].get_shape(), true))
             {
-                cout<<message::particle_superposition(part.get_shape().m_center.m_x,
-                                                part.get_shape().m_center.m_y,
-                                                m_particles_vect[j].get_shape().m_center.m_x,
-                                                m_particles_vect[j].get_shape().m_center.m_y);
+                cout<<message::particle_superposition(
+                                        part.get_shape().m_center.m_x,
+                                        part.get_shape().m_center.m_y,
+                                        m_particles_vect[j].get_shape().m_center.m_x,
+                                        m_particles_vect[j].get_shape().m_center.m_y);
                 return false;
             }
         }
@@ -80,12 +88,13 @@ bool Simulation::generate_robotS(File file_infos)
         {
             if(collision(m_robotS.get_shape(),m_particles_vect[j].get_shape(), true))
             {
-                cout<<message::particle_robot_superposition(m_particles_vect[j].get_shape().m_center.m_x,
-                                                m_particles_vect[j].get_shape().m_center.m_y,
-                                                m_particles_vect[j].get_shape().m_size,
-                                                m_robotS.get_shape().m_center.m_x,
-                                                m_robotS.get_shape().m_center.m_y,
-                                                m_robotS.get_shape().m_radius);
+                cout<<message::particle_robot_superposition(
+                                        m_particles_vect[j].get_shape().m_center.m_x,
+                                        m_particles_vect[j].get_shape().m_center.m_y,
+                                        m_particles_vect[j].get_shape().m_size,
+                                        m_robotS.get_shape().m_center.m_x,
+                                        m_robotS.get_shape().m_center.m_y,
+                                        m_robotS.get_shape().m_radius);
                 return false;
             }
 
@@ -102,23 +111,25 @@ bool Simulation::generate_robotR(File file_infos)
         {
             if(collision(curr_robotR.get_shape(),m_robotR_vect[j].get_shape(), true))
             {
-                cout<<message::repairers_superposition(curr_robotR.get_shape().m_center.m_x,
-                                                curr_robotR.get_shape().m_center.m_y,
-                                                m_robotR_vect[j].get_shape().m_center.m_x,
-                                                m_robotR_vect[j].get_shape().m_center.m_y);
+                cout<<message::repairers_superposition(
+                                            curr_robotR.get_shape().m_center.m_x,
+                                            curr_robotR.get_shape().m_center.m_y,
+                                            m_robotR_vect[j].get_shape().m_center.m_x,
+                                            m_robotR_vect[j].get_shape().m_center.m_y);
                 return false;
             }
         }
         for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition R-P
         {
-            if(collision(curr_robotR.get_shape(),m_particles_vect[j].get_shape(), true))
+            if(collision(curr_robotR.get_shape(),m_particles_vect[j].get_shape(),true))
             {
-                cout<<message::particle_robot_superposition(m_particles_vect[j].get_shape().m_center.m_x,
-                                                m_particles_vect[j].get_shape().m_center.m_y,
-                                                m_particles_vect[j].get_shape().m_size,
-                                                curr_robotR.get_shape().m_center.m_x,
-                                                curr_robotR.get_shape().m_center.m_y,
-                                                curr_robotR.get_shape().m_radius);
+                cout<<message::particle_robot_superposition(
+                                        m_particles_vect[j].get_shape().m_center.m_x,
+                                        m_particles_vect[j].get_shape().m_center.m_y,
+                                        m_particles_vect[j].get_shape().m_size,
+                                        curr_robotR.get_shape().m_center.m_x,
+                                        curr_robotR.get_shape().m_center.m_y,
+                                        curr_robotR.get_shape().m_radius);
                 return false;
             }
         }
@@ -137,7 +148,7 @@ bool Simulation::generate_robotN(File file_infos)
             show_invalid_k_update(curr_robotN);
             return false;
         }
-        for(unsigned int j(0); j<m_robotN_vect.size(); j++)//check superposition
+        for(unsigned int j(0); j<m_robotN_vect.size(); j++)//check superposition N-N
         {
             if(collision(curr_robotN.get_shape(),m_robotN_vect[j].get_shape(), true))
             {
@@ -166,6 +177,8 @@ bool Simulation::generate_robotN(File file_infos)
     return true;
 }
 
+///méthodes privées d'affichage de messages d'erreurs
+///(permet d'alléger "generate_RobotN")
 void Simulation::show_invalid_k_update(Robot_N curr_robotN)
 {
     cout<<message::invalid_k_update(
