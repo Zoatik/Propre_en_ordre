@@ -1,17 +1,17 @@
 #include "File.h"
 
-//constructeurs
+//ctor-dtor
 File::File()
 {
-    //ctor
+    //default ctor
 }
-//destructeur
+
 File::~File()
 {
     //dtor
 }
-//m�thodes
-/*PUBLIC*/
+
+//méthodes
 bool File::read_file(std::string file_path)
 {
     std::string line;
@@ -71,7 +71,8 @@ void File::sep_file_infos(std::vector<std::string> lines)
     //show_infos(); debug
 }
 
-void File::read_particles_prop(std::string spec, std::vector<std::string> lines, unsigned int &i)
+void File::read_particles_prop(std::string spec, std::vector<std::string> lines,
+                               unsigned int &i)
 {
 
     m_nbP = std::stoi(spec);
@@ -135,7 +136,29 @@ void File::read_robotN_prop(std::vector<std::string> lines, unsigned int& i)
     }
 }
 
-///DEBUG
+//méthodes privates
+int File::get_nbP()
+{
+    return m_nbP;
+}
+s_robotS_infos File::get_robotS_infos()
+{
+    return m_robotS;
+}
+std::vector<s_robotN_infos> File::get_robotN_infos()
+{
+    return m_robotN_vect;
+}
+std::vector<s_robotR_infos> File::get_robotR_infos()
+{
+    return m_robotR_vect;
+}
+std::vector<s_particle_infos> File::get_particles_infos()
+{
+    return m_particle_vect;
+}
+
+/**********************DEBUG**********************/
 void File::show_infos()
 {
     std::cout<<"PARTICULES :\n";
@@ -173,27 +196,5 @@ void File::show_infos()
         std::cout<<"- panne : "<<m_robotN_vect[i].m_panne<<std::endl;
         std::cout<<"- k_update_panne : "<<m_robotN_vect[i].m_k_update_panne<<std::endl;
     }
-
-}
-
-int File::get_nbP()
-{
-    return m_nbP;
-}
-s_robotS_infos File::get_robotS_infos()
-{
-    return m_robotS;
-}
-std::vector<s_robotN_infos> File::get_robotN_infos()
-{
-    return m_robotN_vect;
-}
-std::vector<s_robotR_infos> File::get_robotR_infos()
-{
-    return m_robotR_vect;
-}
-std::vector<s_particle_infos> File::get_particles_infos()
-{
-    return m_particle_vect;
 }
 

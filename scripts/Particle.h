@@ -6,9 +6,14 @@
 class Particle
 {
     public:
+        //ctor-dtor
         Particle();
         Particle(s_particle_infos infos);
+        virtual ~Particle();
+
+        //méthodes
         square get_shape();
+
     private:
         square m_square;
 };

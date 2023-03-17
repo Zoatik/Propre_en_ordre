@@ -7,29 +7,29 @@
 class Robot
 {
     public:
+        //ctor-dtor
         Robot();
         virtual ~Robot();
 
+        //méthodes
         void set_pos(s_2d pos);
-        circle get_shape();
+        circle get_shape();//retourne le struct circle du robot
 
     protected:
         circle m_circle;
-    private:
-
-
 };
 
 /** ROBOT SPATIAL**/
 class Robot_S : public Robot
 {
     public:
+        //ctor-dtor
         Robot_S();
         Robot_S(s_robotS_infos);
         virtual ~Robot_S();
-        int get_nb_update();
 
-    protected:
+        //méthodes
+        int get_nb_update();
 
     private:
         int m_nbUpdate;
@@ -38,40 +38,34 @@ class Robot_S : public Robot
         int m_nbNd;
         int m_nbRr;
         int m_nbRs;
-
 };
 
 /**REPARATEURS**/
 class Robot_R : public Robot
 {
     public:
+        //ctor-dtor
         Robot_R();
         Robot_R(s_robotR_infos infos);
         virtual ~Robot_R();
-
-    protected:
-
-    private:
 };
-
-
 
 /**NEUTRALISEUR**/
 class Robot_N : public Robot
 {
     public:
+        //ctor-dtor
         Robot_N();
         Robot_N(s_robotN_infos infos);
-        int get_k_update_panne();
         virtual ~Robot_N();
 
-    protected:
+        //méthodes
+        int get_k_update_panne();
 
     private:
         double m_angle;
         int m_coord_type;
         int m_k_update_panne;
-
 };
 
 

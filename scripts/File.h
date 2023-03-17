@@ -26,7 +26,8 @@ struct s_robotS_infos
 struct s_robotN_infos
 {
     s_robotN_infos(s_2d pos, double a, int c_n, bool panne, int k_update_panne):
-                    m_pos(pos), m_a(a), m_c_n(c_n), m_panne(panne), m_k_update_panne(k_update_panne){}
+                   m_pos(pos), m_a(a), m_c_n(c_n), m_panne(panne),
+                   m_k_update_panne(k_update_panne){}
     s_2d m_pos;
     double m_a;
     int m_c_n;
@@ -36,7 +37,6 @@ struct s_robotN_infos
 
 struct s_robotR_infos
 {
-    //s_robotR_infos(){}
     s_robotR_infos(s_2d pos):m_pos(pos){}
     s_2d m_pos;
 };
@@ -59,8 +59,11 @@ struct s_sim_infos
 class File
 {
     public:
+        //ctor-dtor
         File();
         virtual ~File();
+
+        //méthodes
         bool read_file(std::string file_path);//lit un fichier "test".txt
         int get_nbP();
         s_robotS_infos get_robotS_infos();
@@ -68,9 +71,7 @@ class File
         std::vector<s_robotR_infos> get_robotR_infos();
         std::vector<s_particle_infos> get_particles_infos();
         ///DEBUG
-        void show_infos();
-
-    protected:
+        void show_infos();//affiche toutes les données lues et stockées
 
     private:
         int m_nbP;
@@ -79,17 +80,13 @@ class File
         std::vector<s_robotR_infos> m_robotR_vect;
         std::vector<s_particle_infos> m_particle_vect;
 
-        /*lecture et assignation des propri�tes des particules/robots*/
-        void sep_file_infos(std::vector<std::string> lines);
-        void read_particles_prop(std::string spec, std::vector<std::string> lines, unsigned int& i);
+        /*lecture et assignation des propriétes des particules/robots*/
+        void sep_file_infos(std::vector<std::string> lines);//sépare les infos
+        void read_particles_prop(std::string spec, std::vector<std::string> lines,
+                                 unsigned int& i);
         void read_robotS_prop(std::vector<std::string> lines, unsigned int& i);
         void read_robotR_prop(std::vector<std::string> lines, unsigned int& i);
         void read_robotN_prop(std::vector<std::string> lines, unsigned int& i);
-
-
-
-
-
 };
 
 

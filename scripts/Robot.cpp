@@ -13,11 +13,12 @@ Robot::~Robot()
     //dtor
 }
 
-//m�thodes
+//méthodes
 void Robot::set_pos(s_2d pos)
 {
 
 }
+
 circle Robot::get_shape()
 {
     return m_circle;
@@ -28,6 +29,7 @@ Robot_S::Robot_S()
 {
     //default ctor
 }
+
 Robot_S::Robot_S(s_robotS_infos infos): m_nbUpdate(infos.m_nb_update),
                                         m_nbNr(infos.m_nbNr),
                                         m_nbNs(infos.m_nbNs),
@@ -37,13 +39,14 @@ Robot_S::Robot_S(s_robotS_infos infos): m_nbUpdate(infos.m_nb_update),
 {
     m_circle.m_center = infos.m_pos;
     m_circle.m_radius = r_spatial;
-     //ctor
 }
 
 Robot_S::~Robot_S()
 {
     //dtor
 }
+
+//méthodes
 int Robot_S::get_nb_update()
 {
     return m_nbUpdate;
@@ -55,6 +58,7 @@ Robot_R::Robot_R()
 {
     //ctor
 }
+
 Robot_R::Robot_R(s_robotR_infos infos)
 {
     m_circle.m_center = infos.m_pos;
@@ -66,10 +70,10 @@ Robot_R::~Robot_R()
     //dtor
 }
 
-/**NEUTRALISEUR**/
+/**NEUTRALISEURS**/
 Robot_N::Robot_N()
 {
-    //ctor
+    //default ctor
 }
 
 Robot_N::Robot_N(s_robotN_infos infos): m_angle(infos.m_a),
@@ -84,6 +88,8 @@ Robot_N::~Robot_N()
 {
     //dtor
 }
+
+//méthodes
 int Robot_N::get_k_update_panne()
 {
     return m_k_update_panne;
