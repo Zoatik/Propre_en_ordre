@@ -59,8 +59,8 @@ double distance(s_2d point_1, s_2d point_2);
 double norm(s_2d point);
 
 /*Vérifications positions/collisions*/
-bool check_position(circle c1);//return false si outside
-bool check_position(square s1);
+bool check_position(circle c1, double dmax);//return false si outside
+bool check_position(square s1, double dmax);
 bool collision(circle c1, square s1, bool init);//init = true : phase d'initialisation
 bool collision(circle c1, circle c2, bool init);
 bool collision(square s1, square s2, bool init);

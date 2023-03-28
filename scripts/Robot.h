@@ -16,6 +16,7 @@ class Robot
     public:
         //ctor-dtor
         Robot();
+        Robot(circle cercle);
         virtual ~Robot();
 
         //méthodes

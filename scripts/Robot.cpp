@@ -27,7 +27,7 @@ Robot::~Robot()
 //méthodes
 void Robot::set_pos(s_2d pos)
 {
-	m_pos = pos;
+	m_circle.m_center = pos;
 }
 
 circle Robot::get_shape()

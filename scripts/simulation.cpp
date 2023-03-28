@@ -60,7 +60,7 @@ bool Simulation::generate_particles(File file_infos)
             exit(EXIT_FAILURE);
             //return false;
         }
-        if (!check_position(part.get_shape()))//check position valide
+        if (!check_position(part.get_shape(), dmax))//check position valide
         {
             cout<<message::particle_outside(part.get_shape().m_center.m_x,
                                       part.get_shape().m_center.m_y,
@@ -90,7 +90,7 @@ bool Simulation::generate_robotS(File file_infos)
 {
     m_robotS = Robot_S(file_infos.get_robotS_infos());
 
-    if(!check_position(m_robotS.get_shape()))//check position
+    if(!check_position(m_robotS.get_shape(), dmax))//check position
     {
         cout<<message::spatial_robot_outside(m_robotS.get_shape().m_center.m_x,
                                                   m_robotS.get_shape().m_center.m_y);

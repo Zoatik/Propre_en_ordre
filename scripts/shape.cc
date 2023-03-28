@@ -31,7 +31,7 @@ s_2d operator-(s_2d vect1, s_2d vect2)
 }
 
 /**TESTS DE POSITION**/
-bool check_position(circle c1)
+bool check_position(circle c1, double dmax)
 {
     return (c1.m_center.m_x+c1.m_radius)<dmax and
            (c1.m_center.m_y+c1.m_radius)<dmax and
@@ -39,7 +39,7 @@ bool check_position(circle c1)
            (c1.m_center.m_y-c1.m_radius)> -dmax;
 }
 
-bool check_position(square s1)
+bool check_position(square s1, double dmax)
 {
     return (s1.m_center.m_x+s1.m_size/2)<dmax and
            (s1.m_center.m_y+s1.m_size/2)<dmax and
