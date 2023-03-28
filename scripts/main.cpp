@@ -1,5 +1,13 @@
+/***************************************
+/nom du fichier : main.cpp
+/auteurs        : - Axel Hall - 346228
+/				  - Lucas Michel - 363073
+/version        : 1.1
+****************************************/
+
 #include <iostream>
-#include "simulation.h"
+#include "Simulation.h"
+
 
 using namespace std;
 

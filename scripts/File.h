@@ -1,10 +1,19 @@
 #ifndef FILE_H
 #define FILE_H
+/***************************************
+/nom du fichier : File.h
+/auteurs        : - Axel Hall - 346228
+/			  	  - Lucas Michel - 363073
+/version        : 1.1
+****************************************/
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include "constantes.h"
+
+
 
 struct s_robotS_infos
 {

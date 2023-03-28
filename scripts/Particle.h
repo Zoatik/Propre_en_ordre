@@ -1,5 +1,11 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
+/***************************************
+/nom du fichier : Particle.h
+/auteurs        : - Axel Hall - 346228
+/				  - Lucas Michel - 363073
+/version        : 1.1
+****************************************/
 
 #include "File.h"
 

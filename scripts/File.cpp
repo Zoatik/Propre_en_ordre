@@ -1,4 +1,13 @@
+/***************************************
+/nom du fichier : File.cpp
+/auteurs        : - Axel Hall - 346228
+/				  - Lucas Michel - 363073
+/version        : 1.1
+****************************************/
+
 #include "File.h"
+
+
 
 //ctor-dtor
 File::File()

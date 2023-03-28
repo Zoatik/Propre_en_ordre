@@ -1,5 +1,10 @@
+/***************************************
+/nom du fichier : shape.h
+/auteurs        : - Axel Hall - 346228
+/				  - Lucas Michel - 363073
+/version        : 1.1
+****************************************/
 #include "shape.h"
-#include "constantes.h"
 
 
 /**METHODES SUR LES POINTS-VECTEURS**/

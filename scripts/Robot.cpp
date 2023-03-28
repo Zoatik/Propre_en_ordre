@@ -1,10 +1,21 @@
+/***************************************
+/nom du fichier : Robot.cpp
+/auteurs        : - Axel Hall - 346228
+/				  - Lucas Michel - 363073
+/version        : 1.1
+****************************************/
+
 #include "Robot.h"
-#include "shape.h"
+
 
 //constructeurs
 Robot::Robot()
 {
-    //ctor
+    //default ctor
+}
+Robot::Robot(circle cercle): m_circle(cercle)
+{
+	//ctor
 }
 
 //destructeur
@@ -16,7 +27,7 @@ Robot::~Robot()
 //méthodes
 void Robot::set_pos(s_2d pos)
 {
-
+	m_pos = pos;
 }
 
 circle Robot::get_shape()
@@ -30,15 +41,15 @@ Robot_S::Robot_S()
     //default ctor
 }
 
-Robot_S::Robot_S(s_robotS_infos infos): m_nbUpdate(infos.m_nb_update),
+Robot_S::Robot_S(s_robotS_infos infos): Robot(circle(infos.m_pos, r_spatial)),
+										m_nbUpdate(infos.m_nb_update),
                                         m_nbNr(infos.m_nbNr),
                                         m_nbNs(infos.m_nbNs),
                                         m_nbNd(infos.m_nbNd),
                                         m_nbRr(infos.m_nbRr),
                                         m_nbRs(infos.m_nbRs)
 {
-    m_circle.m_center = infos.m_pos;
-    m_circle.m_radius = r_spatial;
+   //ctor
 }
 
 Robot_S::~Robot_S()
@@ -53,16 +64,14 @@ int Robot_S::get_nb_update()
 }
 
 /**REPARATEURS**/
-
 Robot_R::Robot_R()
 {
-    //ctor
+    //default ctor
 }
 
-Robot_R::Robot_R(s_robotR_infos infos)
+Robot_R::Robot_R(s_robotR_infos infos):Robot(circle(infos.m_pos, r_reparateur))
 {
-    m_circle.m_center = infos.m_pos;
-    m_circle.m_radius = r_reparateur;
+    //ctor
 }
 
 Robot_R::~Robot_R()
@@ -76,12 +85,12 @@ Robot_N::Robot_N()
     //default ctor
 }
 
-Robot_N::Robot_N(s_robotN_infos infos): m_angle(infos.m_a),
+Robot_N::Robot_N(s_robotN_infos infos): Robot(circle(infos.m_pos, r_neutraliseur)),
+										m_angle(infos.m_a),
                                         m_coord_type(infos.m_c_n),
                                         m_k_update_panne(infos.m_k_update_panne)
 {
-    m_circle.m_center = infos.m_pos;
-    m_circle.m_radius = r_neutraliseur;
+    //ctor
 }
 
 Robot_N::~Robot_N()

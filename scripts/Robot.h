@@ -1,7 +1,14 @@
 #ifndef ROBOT_H
 #define ROBOT_H
+/***************************************
+/nom du fichier : Robot.h
+/auteurs        : - Axel Hall - 346228
+/				  - Lucas Michel - 363073
+/version        : 1.1
+****************************************/
 
 #include "File.h"
+
 
 
 class Robot

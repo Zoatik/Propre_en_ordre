@@ -1,5 +1,13 @@
-#include "simulation.h"
+/***************************************
+/nom du fichier : Simulation.cpp
+/auteurs        : - Axel Hall - 346228
+/				  - Lucas Michel - 363073
+/version        : 1.1
+****************************************/
+#include "Simulation.h"
 #include <iostream>
+
+
 using namespace std;
 
 //ctor-dtor

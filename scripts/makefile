@@ -1,11 +1,11 @@
-PEO: main.o Robot.o File.o message.o simulation.o shape.o Particle.o
-	g++ obj/main.o obj/Robot.o obj/File.o obj/message.o obj/simulation.o obj/shape.o obj/Particle.o -o PEO
+projet: main.o Robot.o File.o message.o Simulation.o shape.o Particle.o
+	g++ obj/main.o obj/Robot.o obj/File.o obj/message.o obj/Simulation.o obj/shape.o obj/Particle.o -o projet
 
-main.o: main.cpp simulation.h 
+main.o: main.cpp Simulation.h 
 	g++ -c main.cpp -o obj/main.o
 
-simulation.o: simulation.cpp simulation.h
-	g++ -c simulation.cpp -o obj/simulation.o
+Simulation.o: Simulation.cpp Simulation.h
+	g++ -c Simulation.cpp -o obj/Simulation.o
 
 Robot.o: Robot.cpp Robot.h
 	g++ -c Robot.cpp -o obj/Robot.o
@@ -23,7 +23,7 @@ shape.o: shape.cc shape.h
 	g++ -c shape.cc -o obj/shape.o
 
 clean:
-	rm obj/*.o PEO
+	rm obj/*.o projet
 
 
         

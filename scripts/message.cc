@@ -3,7 +3,16 @@
 // Version 1.1: 9 fonctions de messages d'erreurs à utiliser pour le projet
 //
 
+/***************************************
+/nom du fichier : message.cc
+/auteurs        : - Axel Hall - 346228
+/				  - Lucas Michel - 363073
+/version        : 1.1
+****************************************/
+
 #include "message.h"
+
+
 
 using namespace std;
 
