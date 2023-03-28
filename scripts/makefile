@@ -1,8 +1,8 @@
-projet: main.o Robot.o File.o message.o Simulation.o shape.o Particle.o
-	g++ obj/main.o obj/Robot.o obj/File.o obj/message.o obj/Simulation.o obj/shape.o obj/Particle.o -o projet
+projet: projet.o Robot.o File.o message.o Simulation.o shape.o Particle.o
+	g++ obj/projet.o obj/Robot.o obj/File.o obj/message.o obj/Simulation.o obj/shape.o obj/Particle.o -o projet
 
-main.o: main.cpp Simulation.h 
-	g++ -c main.cpp -o obj/main.o
+projet.o: projet.cpp Simulation.h 
+	g++ -c projet.cpp -o obj/projet.o
 
 Simulation.o: Simulation.cpp Simulation.h
 	g++ -c Simulation.cpp -o obj/Simulation.o
