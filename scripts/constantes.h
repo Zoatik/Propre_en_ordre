@@ -7,7 +7,7 @@
 /version        : 1.1
 ****************************************/
 
-#include "shape.h " // nécessaire pour utiliser epsil_zero et disposer des symbols de graphic.h
+#include "shape.h" // nécessaire pour utiliser epsil_zero et disposer des symbols de graphic.h
 
 
 
