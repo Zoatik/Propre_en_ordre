@@ -1,29 +1,38 @@
-projet: projet.o Robot.o File.o message.o Simulation.o shape.o Particle.o
-	g++ projet.o Robot.o File.o message.o Simulation.o shape.o Particle.o -o projet
 
-projet.o: projet.cc Simulation.h 
-	g++ -c projet.cc -o projet.o
+OUT = projet
+CXX = g++
+CXXFLAGS = -Wall -std=c++17 
+LINKING = `pkg-config --cflags gtkmm-4.0`
+LDLIBS = `pkg-config --libs gtkmm-4.0`
+OFILES = projet.o Robot.o File.o message.o Simulation.o shape.o Particle.o gui.o
 
+all: $(OUT)
+
+projet.o: projet.cc
+	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
 Simulation.o: Simulation.cc Simulation.h
-	g++ -c Simulation.cc -o Simulation.o
-
+	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
+gui.o: gui.cc gui.h
+	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
 Robot.o: Robot.cc Robot.h
-	g++ -c Robot.cc -o Robot.o
-
+	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
 Particle.o: Particle.cc Particle.h
-	g++ -c Particle.cc -o Particle.o
-
+	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
 File.o: File.cc File.h
-	g++ -c File.cc -o File.o
-
+	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
 message.o: message.cc message.h
-	g++ -c message.cc -o message.o
-
+	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
 shape.o: shape.cc shape.h
-	g++ -c shape.cc -o shape.o
+	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
+graphic.o: graphic.cc graphic.h
+	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
+
+$(OUT): $(OFILES)
+	$(CXX) $(CXXFLAGS) $(LINKING) $(OFILES) -o $@ $(LDLIBS)
 
 clean:
-	rm *.o projet
+	@echo "Cleaning compilation files"
+	@rm *.o $(OUT) *.cc~ *.h~
 
 
         

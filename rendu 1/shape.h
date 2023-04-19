@@ -8,7 +8,7 @@
 ****************************************/
 
 #include <math.h>
-
+#include "graphic.h"
 
 
 constexpr double epsil_zero(0.125);
