@@ -1,3 +1,5 @@
+/format : tabs = 4\
+
 Projet  : Propre En Ordre
 Auteurs : Axel Hall - Lucas Michel
 
