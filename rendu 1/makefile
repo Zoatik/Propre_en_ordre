@@ -4,7 +4,7 @@ CXX = g++
 CXXFLAGS = -Wall -std=c++17 
 LINKING = `pkg-config --cflags gtkmm-4.0`
 LDLIBS = `pkg-config --libs gtkmm-4.0`
-OFILES = projet.o Robot.o File.o message.o Simulation.o shape.o Particle.o gui.o
+OFILES = projet.o Robot.o File.o message.o Simulation.o shape.o Particle.o gui.o graphic.o
 
 all: $(OUT)
 
