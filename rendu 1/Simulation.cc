@@ -43,8 +43,8 @@ bool Simulation::generate(File file_infos)
         return false;
 
     cout<<message::success();
-    exit(0);
-    //return true;
+    //exit(0);
+    return true;
 }
 
 bool Simulation::generate_particles(File file_infos)
@@ -57,16 +57,16 @@ bool Simulation::generate_particles(File file_infos)
             cout<<message::particle_too_small(part.get_shape().m_center.m_x,
                                                    part.get_shape().m_center.m_y,
                                                    part.get_shape().m_size);
-            exit(EXIT_FAILURE);
-            //return false;
+            //exit(EXIT_FAILURE);
+            return false;
         }
         if (!check_position(part.get_shape(), dmax))//check position valide
         {
             cout<<message::particle_outside(part.get_shape().m_center.m_x,
                                       part.get_shape().m_center.m_y,
                                       part.get_shape().m_size);
-            exit(EXIT_FAILURE);
-            //return false;
+            //exit(EXIT_FAILURE);
+            return false;
         }
         for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition
         {
@@ -77,8 +77,8 @@ bool Simulation::generate_particles(File file_infos)
                                         part.get_shape().m_center.m_y,
                                         m_particles_vect[j].get_shape().m_center.m_x,
                                         m_particles_vect[j].get_shape().m_center.m_y);
-                exit(EXIT_FAILURE);
-                //return false;
+                //exit(EXIT_FAILURE);
+                return false;
             }
         }
         m_particles_vect.push_back(part);
@@ -94,8 +94,8 @@ bool Simulation::generate_robotS(File file_infos)
     {
         cout<<message::spatial_robot_outside(m_robotS.get_shape().m_center.m_x,
                                                   m_robotS.get_shape().m_center.m_y);
-        exit(EXIT_FAILURE);
-        //return false;
+        //exit(EXIT_FAILURE);
+        return false;
     }
     for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition S-P
         {
@@ -108,8 +108,8 @@ bool Simulation::generate_robotS(File file_infos)
                                         m_robotS.get_shape().m_center.m_x,
                                         m_robotS.get_shape().m_center.m_y,
                                         m_robotS.get_shape().m_radius);
-                exit(EXIT_FAILURE);
-                //return false;
+                //exit(EXIT_FAILURE);
+                return false;
             }
 
         }
@@ -130,8 +130,8 @@ bool Simulation::generate_robotR(File file_infos)
                                             curr_robotR.get_shape().m_center.m_y,
                                             m_robotR_vect[j].get_shape().m_center.m_x,
                                             m_robotR_vect[j].get_shape().m_center.m_y);
-                exit(EXIT_FAILURE);
-                //return false;
+                //exit(EXIT_FAILURE);
+                return false;
             }
         }
         for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition R-P
@@ -145,8 +145,8 @@ bool Simulation::generate_robotR(File file_infos)
                                         curr_robotR.get_shape().m_center.m_x,
                                         curr_robotR.get_shape().m_center.m_y,
                                         curr_robotR.get_shape().m_radius);
-                exit(EXIT_FAILURE);
-                //return false;
+                //exit(EXIT_FAILURE);
+                return false;
             }
         }
         m_robotR_vect.push_back(curr_robotR);
@@ -162,16 +162,16 @@ bool Simulation::generate_robotN(File file_infos)
         if(curr_robotN.get_k_update_panne()>m_robotS.get_nb_update())
         {
             show_invalid_k_update(curr_robotN);
-            exit(EXIT_FAILURE);
-            //return false;
+            //exit(EXIT_FAILURE);
+            return false;
         }
         for(unsigned int j(0); j<m_robotN_vect.size(); j++)//check superposition N-N
         {
             if(collision(curr_robotN.get_shape(),m_robotN_vect[j].get_shape(), true))
             {
                 show_neutralizers_superposition(curr_robotN, j);
-                exit(EXIT_FAILURE);
-                //return false;
+                //exit(EXIT_FAILURE);
+                return false;
             }
         }
         for(unsigned int j(0); j<m_robotR_vect.size(); j++)//check superposition R-N
@@ -179,8 +179,8 @@ bool Simulation::generate_robotN(File file_infos)
             if(collision(curr_robotN.get_shape(),m_robotR_vect[j].get_shape(), true))
             {
                 show_repairer_neutralizer_superposition(curr_robotN, j);
-                exit(EXIT_FAILURE);
-                //return false;
+                //exit(EXIT_FAILURE);
+                return false;
             }
         }
         for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition N-P
@@ -188,8 +188,8 @@ bool Simulation::generate_robotN(File file_infos)
             if(collision(curr_robotN.get_shape(),m_particles_vect[j].get_shape(),true))
             {
                 show_particle_robot_superposition(curr_robotN, j);
-                exit(EXIT_FAILURE);
-                //return false;
+                //exit(EXIT_FAILURE);
+                return false;
             }
         }
         m_robotN_vect.push_back(curr_robotN);

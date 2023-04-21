@@ -8,15 +8,15 @@
 /version        : 1.1
 ****************************************/
 
-#include <gtkmm/window.h>
+//#include <gtkmm/window.h>
 
-class Window : public Gtk::Window
+/*class Window : public Gtk::Window
 {
 public:
   Window();
 
 protected:
   
-};
+};*/
 
 #endif //GRAPHIC_H

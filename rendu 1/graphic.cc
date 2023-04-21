@@ -7,8 +7,8 @@
 /version        : 1.1
 ****************************************/
 
-Window:: Window()
+/*Window:: Window()
 {
     set_title("Window");
     set_default_size(500, 500);
-}
+}*/
