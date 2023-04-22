@@ -46,7 +46,7 @@ bool Simulation::generate(File file_infos)
     //exit(0);
     return true;
 }
-
+ 
 bool Simulation::generate_particles(File file_infos)
 {
     for(unsigned int i(0); i < file_infos.get_particles_infos().size(); i++)
@@ -233,4 +233,5 @@ void Simulation::show_particle_robot_superposition(Robot_N curr_robotN, int j)
                 curr_robotN.get_shape().m_center.m_y,
                 curr_robotN.get_shape().m_radius);
 }
+
 

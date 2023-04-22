@@ -8,15 +8,15 @@
 /version        : 1.1
 ****************************************/
 
-//#include <gtkmm/window.h>
+#include <cairomm/context.h>
 
-/*class Window : public Gtk::Window
-{
-public:
-  Window();
-
-protected:
-  
-};*/
+void draw_robotS(const Cairo::RefPtr<Cairo::Context>& cr,
+                int x, int y, double radius);
+void draw_robotN(const Cairo::RefPtr<Cairo::Context>& cr,
+                int x, int y, double radius, double angle);
+void draw_robotR(const Cairo::RefPtr<Cairo::Context>& cr,
+                int x, int y, double radius);
+void draw_particle(const Cairo::RefPtr<Cairo::Context>& cr,
+                int x, int y, double size);
 
 #endif //GRAPHIC_H

@@ -24,7 +24,8 @@ int main(int argc, char *argv[])
     world.generate(infos_file);//vérifications des infos et création du monde
     auto app = Gtk::Application::create();
     
-    return app->make_window_and_run<GuiWindow>(1, argv);
+    return app->make_window_and_run<GuiWindow>(1, argv, world);
+    
     
 }
 

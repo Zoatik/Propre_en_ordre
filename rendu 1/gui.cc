@@ -11,7 +11,7 @@
 /version        : 1.1
 ****************************************/
 
-GuiWindow::GuiWindow() : 
+GuiWindow::GuiWindow(Simulation world) : 
 	m_button_exit("Exit"), m_button_open("Open"),
 	m_button_save("Save"), m_button_start("Start"), m_button_step("Step"),
 	m_buttons_frame("General"),
@@ -22,7 +22,7 @@ GuiWindow::GuiWindow() :
 	m_area_aFrame(Gtk::Align::CENTER, /* center x */Gtk::Align::CENTER, /* center y */
     				1, /* xsize/ysize = 2 */true /* ignore child's aspect */)
 {
-
+	m_world = world;
 	set_title("Drawing test");
 	//set_resizable(false);
 	set_child(m_main_box);
@@ -140,6 +140,10 @@ void DrawArea::clear()
 
 void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
+	/*for(auto i : m_world)
+	{
+
+	}*/
     if (not m_empty)
     {
         // center of the window
@@ -153,6 +157,8 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
         cr->move_to(xc, yc);
         cr->line_to(width, yc);
         cr->stroke();
+		cr->arc(xc, yc, 20, 0.0, 2.0 * M_PI);
+		cr->stroke();
     }
     else 
     {

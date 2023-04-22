@@ -23,6 +23,7 @@ class Simulation
         //méthodes
         void update();
         bool generate(File file_infos);
+        
 
     private:
         //checks et générations des objets

@@ -81,3 +81,7 @@ bool collision(square s1, square s2, bool init = false)
             s1.m_size/2 + s2.m_size/2 + int(!init)*epsil_zero);
 }
 
+void draw_info_robotS(circle circle);
+    draw_robotS(circle.m_center.m_x, 
+                circle.m_center.m_y, 
+                circle.m_radius);

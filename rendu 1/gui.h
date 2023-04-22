@@ -29,13 +29,14 @@ protected:
 
 private:
     bool m_empty;
+	Simulation m_world;
 
 };
 
 class GuiWindow: public Gtk::Window
 {
 public:
-    GuiWindow();
+    GuiWindow(Simulation world);
     ~GuiWindow() override;
 protected:
     void on_button_clicked_exit();
@@ -44,7 +45,9 @@ protected:
 	void on_button_clicked_start();
 	void on_button_clicked_step();
 
+	Simulation m_world;
 	DrawArea m_area;
+	
 
 	Gtk::Frame m_area_frame;
 	Gtk::AspectFrame m_area_aFrame;

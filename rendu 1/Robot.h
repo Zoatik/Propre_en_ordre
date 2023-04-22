@@ -22,6 +22,7 @@ class Robot
         //méthodes
         void set_pos(s_2d pos);
         circle get_shape();//retourne le struct circle du robot
+        int test = 0;
 
     protected:
         circle m_circle;
