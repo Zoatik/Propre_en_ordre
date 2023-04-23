@@ -23,6 +23,10 @@ class Simulation
         //méthodes
         void update();
         bool generate(File file_infos);
+        Robot_S get_robotS();
+        std::vector<Robot_N> get_robotN_vect();
+        std::vector<Robot_R> get_robotR_vect();
+        std::vector<Particle> get_particles_vect();
         
 
     private:

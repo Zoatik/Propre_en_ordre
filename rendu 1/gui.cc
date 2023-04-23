@@ -11,7 +11,7 @@
 /version        : 1.1
 ****************************************/
 
-GuiWindow::GuiWindow(Simulation world) : 
+GuiWindow::GuiWindow(Simulation *world) : 
 	m_button_exit("Exit"), m_button_open("Open"),
 	m_button_save("Save"), m_button_start("Start"), m_button_step("Step"),
 	m_buttons_frame("General"),
@@ -22,7 +22,9 @@ GuiWindow::GuiWindow(Simulation world) :
 	m_area_aFrame(Gtk::Align::CENTER, /* center x */Gtk::Align::CENTER, /* center y */
     				1, /* xsize/ysize = 2 */true /* ignore child's aspect */)
 {
-	m_world = world;
+	std::cout<<world<<std::endl;
+	ptr_world = world;
+	m_area.set_world_ptr(world);
 	set_title("Drawing test");
 	//set_resizable(false);
 	set_child(m_main_box);
@@ -126,6 +128,11 @@ DrawArea::~DrawArea()
 
 }
 
+void DrawArea::set_world_ptr(Simulation *ptr)
+{
+	ptr_world = ptr;
+}
+
 void DrawArea::draw()
 {
     m_empty = false;
@@ -145,20 +152,27 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
 
 	}*/
     if (not m_empty)
-    {
+    {	
+
+		draw_info_robotS(cr, ptr_world->get_robotS().get_shape());
+		for(int i=0;i<int(ptr_world->get_robotN_vect().size());i++)
+		{
+			Robot_N robot= ptr_world->get_robotN_vect()[i];
+			draw_info_robotN(cr, robot.get_shape(), robot.get_angle());
+		};
+		for(int i=0;i<int(ptr_world->get_robotR_vect().size());i++)
+		{
+			Robot_R robot= ptr_world->get_robotR_vect()[i];
+			draw_info_robotR(cr, robot.get_shape());
+		};
+		for(int i=0;i<int(ptr_world->get_particles_vect().size());i++)
+		{
+			Particle particle= ptr_world->get_particles_vect()[i];
+			draw_info_particle(cr, particle.get_shape());
+		};
         // center of the window
         int xc(width/2), yc(height/2);
-        cr->set_line_width(10.0);
-        // draw red lines out from the center of the window
-        cr->set_source_rgb(0.8, 0.0, 0.0);
-        cr->move_to(0, 0);
-        cr->line_to(xc, yc);
-        cr->line_to(0, height);
-        cr->move_to(xc, yc);
-        cr->line_to(width, yc);
-        cr->stroke();
-		cr->arc(xc, yc, 20, 0.0, 2.0 * M_PI);
-		cr->stroke();
+	
     }
     else 
     {

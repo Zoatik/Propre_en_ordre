@@ -24,19 +24,20 @@ public:
 
     void draw();
     void clear();
+	void set_world_ptr(Simulation *ptr);
 protected:
     void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
 
 private:
     bool m_empty;
-	Simulation m_world;
+	Simulation *ptr_world = NULL;
 
 };
 
 class GuiWindow: public Gtk::Window
 {
 public:
-    GuiWindow(Simulation world);
+    GuiWindow(Simulation *world);
     ~GuiWindow() override;
 protected:
     void on_button_clicked_exit();
@@ -45,7 +46,7 @@ protected:
 	void on_button_clicked_start();
 	void on_button_clicked_step();
 
-	Simulation m_world;
+	Simulation *ptr_world = NULL;
 	DrawArea m_area;
 	
 

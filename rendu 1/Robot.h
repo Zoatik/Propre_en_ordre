@@ -23,7 +23,7 @@ class Robot
         void set_pos(s_2d pos);
         circle get_shape();//retourne le struct circle du robot
         int test = 0;
-
+        
     protected:
         circle m_circle;
 };
@@ -70,6 +70,7 @@ class Robot_N : public Robot
 
         //méthodes
         int get_k_update_panne();
+        int get_angle();
 
     private:
         double m_angle;

@@ -81,7 +81,32 @@ bool collision(square s1, square s2, bool init = false)
             s1.m_size/2 + s2.m_size/2 + int(!init)*epsil_zero);
 }
 
-void draw_info_robotS(circle circle);
-    draw_robotS(circle.m_center.m_x, 
+void draw_info_robotS(const Cairo::RefPtr<Cairo::Context>& cr, circle circle)
+{
+    draw_robotS(cr,
+                circle.m_center.m_x, 
                 circle.m_center.m_y, 
                 circle.m_radius);
+}
+void draw_info_robotN(const Cairo::RefPtr<Cairo::Context>& cr, circle circle, double angle)
+{
+    draw_robotN(cr,
+                circle.m_center.m_x, 
+                circle.m_center.m_y, 
+                circle.m_radius,
+                angle);
+}
+void draw_info_robotR(const Cairo::RefPtr<Cairo::Context>& cr, circle circle)
+{
+    draw_robotR(cr,
+                circle.m_center.m_x, 
+                circle.m_center.m_y, 
+                circle.m_radius);
+}
+void draw_info_particle(const Cairo::RefPtr<Cairo::Context>& cr, square square)
+{
+    draw_particle(cr,
+                square.m_center.m_x, 
+                square.m_center.m_y, 
+                square.m_size);
+}

@@ -234,4 +234,20 @@ void Simulation::show_particle_robot_superposition(Robot_N curr_robotN, int j)
                 curr_robotN.get_shape().m_radius);
 }
 
+Robot_S Simulation::get_robotS()
+{
+    return m_robotS;
+}
+vector<Robot_N> Simulation::get_robotN_vect()
+{
+    return m_robotN_vect;
+}
+vector<Robot_R> Simulation::get_robotR_vect()
+{
+    return m_robotR_vect;
+}
+vector<Particle> Simulation::get_particles_vect()
+{
+    return m_particles_vect;
+}
 

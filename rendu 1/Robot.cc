@@ -103,3 +103,8 @@ int Robot_N::get_k_update_panne()
 {
     return m_k_update_panne;
 }
+
+int Robot_N::get_angle()
+{
+    return m_angle;
+}
