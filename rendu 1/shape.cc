@@ -4,7 +4,9 @@
 /				  - Lucas Michel - 363073
 /version        : 1.1
 ****************************************/
+#include <iostream>
 #include "shape.h"
+
 
 
 /**METHODES SUR LES POINTS-VECTEURS**/
@@ -81,32 +83,37 @@ bool collision(square s1, square s2, bool init = false)
             s1.m_size/2 + s2.m_size/2 + int(!init)*epsil_zero);
 }
 
-void draw_info_robotS(const Cairo::RefPtr<Cairo::Context>& cr, circle circle)
+void draw_info_robotS(const Cairo::RefPtr<Cairo::Context>& cr, 
+                    int xc, int yc, double ratio, circle circle)
 {
-    draw_robotS(cr,
-                circle.m_center.m_x, 
-                circle.m_center.m_y, 
-                circle.m_radius);
+    draw_robotS(cr, 
+                xc + circle.m_center.m_x*ratio, 
+                yc - circle.m_center.m_y*ratio, 
+                circle.m_radius*ratio);
 }
-void draw_info_robotN(const Cairo::RefPtr<Cairo::Context>& cr, circle circle, double angle)
+void draw_info_robotN(const Cairo::RefPtr<Cairo::Context>& cr, 
+                    int xc, int yc, double ratio, circle circle, double angle)
 {
     draw_robotN(cr,
-                circle.m_center.m_x, 
-                circle.m_center.m_y, 
-                circle.m_radius,
+                xc + circle.m_center.m_x*ratio, 
+                yc - circle.m_center.m_y*ratio, 
+                circle.m_radius*ratio,
                 angle);
+    std::cout<<angle<<std::endl;
 }
-void draw_info_robotR(const Cairo::RefPtr<Cairo::Context>& cr, circle circle)
+void draw_info_robotR(const Cairo::RefPtr<Cairo::Context>& cr, 
+                    int xc, int yc, double ratio, circle circle)
 {
     draw_robotR(cr,
-                circle.m_center.m_x, 
-                circle.m_center.m_y, 
-                circle.m_radius);
+                xc + circle.m_center.m_x*ratio, 
+                yc - circle.m_center.m_y*ratio, 
+                circle.m_radius*ratio);
 }
-void draw_info_particle(const Cairo::RefPtr<Cairo::Context>& cr, square square)
+void draw_info_particle(const Cairo::RefPtr<Cairo::Context>& cr, 
+                    int xc, int yc, double ratio, square square)
 {
     draw_particle(cr,
-                square.m_center.m_x, 
-                square.m_center.m_y, 
-                square.m_size);
+                xc + square.m_center.m_x*ratio, 
+                yc - square.m_center.m_y*ratio, 
+                square.m_size*ratio);
 }

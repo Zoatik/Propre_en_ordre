@@ -70,7 +70,7 @@ class Robot_N : public Robot
 
         //méthodes
         int get_k_update_panne();
-        int get_angle();
+        double get_angle();
 
     private:
         double m_angle;

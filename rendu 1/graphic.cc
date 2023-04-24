@@ -11,22 +11,23 @@
 void draw_robotN(const Cairo::RefPtr<Cairo::Context>& cr,
                 int x, int y, double radius, double angle)
 {
-    cr->save();
     cr->set_source_rgb(0.1, 0.1, 0.1);
 
 	cr->arc(x, y, 
             radius, 
             0.0, 2.0 * M_PI);
-	cr->stroke();
+    cr->stroke();
 	cr->move_to(x,y);
 	cr->arc(x, y, 
             0.5, 
             0.0, 2.0 * M_PI);
-	cr->fill_preserve();
+    cr->fill_preserve();
     cr->stroke();
-	cr->set_source_rgb(0.0, 0.8, 0.0);
+
+	cr->set_source_rgb(0.0, 0.7, 0.0);
+    cr->save();
 	cr->move_to(x, y);
-    cr->line_to(x+cos(angle)*radius, y+sin(angle)*radius);
+    cr->line_to(x+cos(angle)*radius, y-sin(angle)*radius);
     cr->restore();
 	cr->stroke();
 }

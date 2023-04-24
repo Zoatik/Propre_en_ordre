@@ -114,7 +114,7 @@ void GuiWindow::on_button_clicked_step()
 
 ///DRAWAREA
 
-constexpr int area_side(200);
+constexpr int area_side(400);
 
 DrawArea::DrawArea(): m_empty(false)
 {
@@ -147,31 +147,31 @@ void DrawArea::clear()
 
 void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
-	/*for(auto i : m_world)
-	{
-
-	}*/
     if (not m_empty)
     {	
+		 // center of the window
+        int xc(width/2), yc(height/2);
+ 		 // window enlargment ratio
+		double ratio(width/200.0);
+ 		std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
+		cr->set_line_width(1.0*ratio);
 
-		draw_info_robotS(cr, ptr_world->get_robotS().get_shape());
+		draw_info_robotS(cr, xc, yc, ratio, ptr_world->get_robotS().get_shape());
 		for(int i=0;i<int(ptr_world->get_robotN_vect().size());i++)
 		{
 			Robot_N robot= ptr_world->get_robotN_vect()[i];
-			draw_info_robotN(cr, robot.get_shape(), robot.get_angle());
+			draw_info_robotN(cr, xc, yc, ratio, robot.get_shape(), robot.get_angle());
 		};
 		for(int i=0;i<int(ptr_world->get_robotR_vect().size());i++)
 		{
 			Robot_R robot= ptr_world->get_robotR_vect()[i];
-			draw_info_robotR(cr, robot.get_shape());
+			draw_info_robotR(cr, xc, yc, ratio, robot.get_shape());
 		};
 		for(int i=0;i<int(ptr_world->get_particles_vect().size());i++)
 		{
 			Particle particle= ptr_world->get_particles_vect()[i];
-			draw_info_particle(cr, particle.get_shape());
+			draw_info_particle(cr, xc, yc, ratio, particle.get_shape());
 		};
-        // center of the window
-        int xc(width/2), yc(height/2);
 	
     }
     else 
