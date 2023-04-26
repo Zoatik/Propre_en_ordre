@@ -251,3 +251,7 @@ vector<Particle> Simulation::get_particles_vect()
     return m_particles_vect;
 }
 
+void Simulation::next_step()
+{
+    m_nbP += 1;
+}

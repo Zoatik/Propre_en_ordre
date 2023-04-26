@@ -99,7 +99,6 @@ void draw_info_robotN(const Cairo::RefPtr<Cairo::Context>& cr,
                 yc - circle.m_center.m_y*ratio, 
                 circle.m_radius*ratio,
                 angle);
-    std::cout<<angle<<std::endl;
 }
 void draw_info_robotR(const Cairo::RefPtr<Cairo::Context>& cr, 
                     int xc, int yc, double ratio, circle circle)

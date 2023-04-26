@@ -64,6 +64,7 @@ protected:
 	Gtk::Button m_button_save;
 	Gtk::Button m_button_start;
 	Gtk::Button m_button_step;
+
 };
 
 

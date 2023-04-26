@@ -12,55 +12,51 @@
 ****************************************/
 
 GuiWindow::GuiWindow(Simulation *world) : 
-	m_button_exit("Exit"), m_button_open("Open"),
-	m_button_save("Save"), m_button_start("Start"), m_button_step("Step"),
-	m_buttons_frame("General"),
 	m_main_box(Gtk::Orientation::HORIZONTAL, 0),
  	m_interface_box(Gtk::Orientation::VERTICAL, 0),
 	m_buttons_box(Gtk::Orientation::VERTICAL, 2),
 	m_infos_box(Gtk::Orientation::VERTICAL, 2),//contient du texte
 	m_area_aFrame(Gtk::Align::CENTER, /* center x */Gtk::Align::CENTER, /* center y */
-    				1, /* xsize/ysize = 2 */true /* ignore child's aspect */)
+    				1, /* xsize/ysize = 2 */true /* ignore child's aspect */),
+
+	m_button_exit("Exit"), m_button_open("Open"),
+	m_button_save("Save"), m_button_start("Start"), m_button_step("Step"),
+	m_buttons_frame("General")
+	
 {
-	std::cout<<world<<std::endl;
+	// ptr to the main simulation
 	ptr_world = world;
 	m_area.set_world_ptr(world);
+	
+	//window's name
 	set_title("Drawing test");
-	//set_resizable(false);
-	set_child(m_main_box);
-	m_area_frame.set_child(m_area_aFrame);
 
-	//m_main_frame.set_child(m_main_box);
-	//m_main_frame.set_halign(Gtk::Align::START);
-	//m_main_frame.set_expand();
-	m_main_box.set_expand();
-	m_area_frame.set_expand();
-	m_area_frame.set_margin(10);
-	
-	
-	//m_buttons_frame.set_label(Gtk::Label("General"));
+	//area frame
+	m_area_aFrame.set_child(m_area);
+	m_area_aFrame.set_expand();
+	m_area_aFrame.set_child(m_area_frame);
+	m_area_frame.set_child(m_area);
+
+
+	//interface box
 	m_buttons_frame.set_margin(10);
 	m_buttons_frame.set_child(m_buttons_box);
 	m_infos_frame.set_label("Info : nombre de ...");
+	m_infos_frame.set_vexpand();
 	m_infos_frame.set_margin(10);
 	m_infos_frame.set_child(m_infos_box);
+	m_infos_box.set_vexpand();
 
-	
+
 	m_interface_box.append(m_buttons_frame);
 	m_interface_box.append(m_infos_frame);
 
-	m_area_aFrame.set_child(m_area);
-	//m_area_frame.set_expand();
-	//m_main_box.set_expand();
-	/*m_area_frame.set_halign(Gtk::Align::CENTER);
-	m_interface_box.set_halign(Gtk::Align::START);
-	m_main_box.set_halign(Gtk::Align::CENTER);*/
-
+	//main box
+	set_child(m_main_box);
+	m_main_box.set_expand();
 	m_main_box.append(m_interface_box);
-	m_main_box.append(m_area_frame);
+	m_main_box.append(m_area_aFrame);
 	m_main_box.set_homogeneous(false);
-	m_main_box.set_vexpand();
-	
 	
 	
 	
@@ -110,6 +106,7 @@ void GuiWindow::on_button_clicked_start()
 void GuiWindow::on_button_clicked_step()
 {
 	std::cout<<"on step"<<std::endl;
+	ptr_world->next_step();
 }
 
 ///DRAWAREA
@@ -152,8 +149,10 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
 		 // center of the window
         int xc(width/2), yc(height/2);
  		 // window enlargment ratio
-		double ratio(width/200.0);
- 		std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
+		double ratio(width/250.0);
+
+ 		//std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
+
 		cr->set_line_width(1.0*ratio);
 
 		draw_info_robotS(cr, xc, yc, ratio, ptr_world->get_robotS().get_shape());
