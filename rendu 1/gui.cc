@@ -24,13 +24,12 @@ GuiWindow::GuiWindow(Simulation* world) :
 
 	m_button_exit("Exit"), m_button_open("Open"),
 	m_button_save("Save"), m_button_start("Start"), m_button_step("Step"),
-	m_buttons_frame("General")
+	m_buttons_frame("General"), m_area(world)
 	
 {
 	// ptr to the main simulation
-	m_ptr_world = std::unique_ptr<Simulation>(world);
-	//std::cout<<"ça passe"<<std::endl;
-	//m_area.set_world_ptr(world);
+	m_ptr_world = std::shared_ptr<Simulation>(world);
+	//m_area.set_world_ptr(m_ptr_world);//On partage le pointer avec DrawArea
 	
 	//window's name
 	set_title("Drawing test");
@@ -87,7 +86,6 @@ GuiWindow::GuiWindow(Simulation* world) :
 	//timer
 	sigc::slot<bool()> my_slot = sigc::bind(sigc::mem_fun(*this, &GuiWindow::on_timeout));
 	auto conn = Glib::signal_timeout().connect(my_slot,delta_t*1000);
-
 }
 GuiWindow::~GuiWindow()
 {
@@ -131,7 +129,7 @@ bool GuiWindow::on_timeout()
 
 constexpr int area_side(400);
 
-DrawArea::DrawArea(): m_empty(false)
+DrawArea::DrawArea(Simulation *ptr_world): m_empty(false), m_ptr_world(ptr_world)
 {
     set_content_width(area_side);
     set_content_height(area_side);
@@ -143,9 +141,9 @@ DrawArea::~DrawArea()
 
 }
 
-void DrawArea::set_world_ptr(std::unique_ptr<Simulation>& ptr_world)
+void DrawArea::set_world_ptr(std::shared_ptr<Simulation>& ptr_world)
 {
-	m_ptr_world = std::move(ptr_world);
+	m_ptr_world = ptr_world;
 }
 
 void DrawArea::draw()
@@ -162,17 +160,19 @@ void DrawArea::clear()
 
 void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
+	
     if (not m_empty)
     {	
+		
 		 // center of the window
         int xc(width/2), yc(height/2);
  		 // window enlargment ratio
 		double ratio(width/250.0);
+		
 
  		//std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
+		std::cout<<m_ptr_world->get_robots_ptr_vect().size()<<std::endl;
 		m_ptr_world->draw(cr, xc, yc, ratio);
-
-		
 	
     }
     else 

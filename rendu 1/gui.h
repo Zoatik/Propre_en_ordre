@@ -22,18 +22,18 @@
 class DrawArea : public Gtk::DrawingArea // héritage
 {
 public:
-    DrawArea();
+    DrawArea(Simulation *ptr_world);
     virtual ~DrawArea();
 
     void draw();
     void clear();
-	void set_world_ptr(std::unique_ptr<Simulation>& ptr_world);
+	void set_world_ptr(std::shared_ptr<Simulation>& ptr_world);
 protected:
     void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
 
 private:
     bool m_empty;
-	std::unique_ptr<Simulation> m_ptr_world = NULL;
+	std::shared_ptr<Simulation> m_ptr_world = NULL;
 
 };
 
@@ -51,7 +51,7 @@ protected:
 
 	bool on_timeout();
 
-	std::unique_ptr<Simulation> m_ptr_world = NULL;
+	std::shared_ptr<Simulation> m_ptr_world = NULL;
 	DrawArea m_area;
 	
 

@@ -56,17 +56,19 @@ void Simulation::update()
             
         }
     }
-    cout<<"on sort"<<endl;
 }
 
 void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, double ratio)
 {
+    
     cr->set_line_width(0.1*ratio);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
+        
         if(m_robots[i]->get_type()=="S") 
         {
             draw_info_robotS(cr, xc, yc, ratio, get_robotS().get_shape());
+            
         }
         else if(m_robots[i]->get_type()=="N"){
             Robot_N robotN = dynamic_cast<Robot_N&>(*m_robots[i]);
