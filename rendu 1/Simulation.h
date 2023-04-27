@@ -1,12 +1,19 @@
+/************\HEADER/*************
+* AUTHORS: - Hall Axel           *
+*          - Michel Lucas        *
+* SCIPERS: - 346228              *
+*          - 363073              *
+* VERSION: 2.0                   *
+* FILE: Simulation.h             *
+*********************************/
+
 #ifndef SIMULATION_H
 #define SIMULATION_H
-/***************************************
-/nom du fichier : Simulation.h
-/auteurs        : - Axel Hall - 346228
-/		  		  - Lucas Michel - 363073
-/version        : 1.1
-****************************************/
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <random>
 #include "Robot.h"
 #include "Particle.h"
 #include "message.h"
@@ -22,32 +29,50 @@ class Simulation
 
         //méthodes
         void update();
-        bool generate(File file_infos);
+        void draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, double ratio);
         void next_step();
-        Robot_S get_robotS();
-        std::vector<Robot_N> get_robotN_vect();
-        std::vector<Robot_R> get_robotR_vect();
-        std::vector<Particle> get_particles_vect();
-        
+        void clear();
 
+        Robot_S get_robotS();
+        std::vector<Particle> get_particles_vect();
+        std::vector<Robot*> get_robots_ptr_vect();
+        int get_nbP();
+        int get_updates();
+        int get_nb_N();
+        int get_nb_R();
+
+
+        //lecture de fichiers
+        bool read_file(std::string file_path);//lit un fichier "test".txt
+        
     private:
+        //lecture des fichiers
+        bool sep_file_infos(std::vector<std::string> lines);//sépare les infos
+        bool read_particles_prop(std::string spec, std::vector<std::string> lines,
+                                 unsigned int& i);
+        bool read_robotS_prop(std::vector<std::string> lines, unsigned int& i);
+        bool read_robotR_prop(std::vector<std::string> lines, unsigned int& i);
+        bool read_robotN_prop(std::vector<std::string> lines, unsigned int& i);
         //checks et générations des objets
-        bool generate_particles(File file_infos);
-        bool generate_robotS(File file_infos);
-        bool generate_robotR(File file_infos);
-        bool generate_robotN(File file_infos);
+        bool check_robot(Robot *robot);
+        bool check_particles(Particle part);
+        bool check_robotS(Robot_S robotS);
+        bool check_robotR(Robot_R robotR);
+        bool check_robotN(Robot_N robotN);
         //affichage des messages d'erreurs
         void show_invalid_k_update(Robot_N curr_robotN);
         void show_neutralizers_superposition(Robot_N curr_robotN, int j);
         void show_repairer_neutralizer_superposition(Robot_N curr_robotN, int j);
-        void show_particle_robot_superposition(Robot_N curr_robotN, int j);
+        void show_particle_robot_superposition(Robot *robot, int j);
 
         //attributs
         int m_nbP;
+        std::vector<Robot*> m_robots;
         Robot_S m_robotS;
-        std::vector<Robot_N> m_robotN_vect;
-        std::vector<Robot_R> m_robotR_vect;
         std::vector<Particle> m_particles_vect;
+        
+        // attributs désintégration particules
+        std::bernoulli_distribution m_bernoulli;
 };
 
 #endif // SIMULATION_H

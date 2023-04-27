@@ -1,12 +1,15 @@
+/************\HEADER/*************
+* AUTHORS: - Hall Axel           *
+*          - Michel Lucas        *
+* SCIPERS: - 346228              *
+*          - 363073              *
+* VERSION: 2.0                   *
+* FILE: gui.h                    *
+*********************************/
+
 #ifndef GUI_H
 #define GUI_H
 
-/***************************************
-/nom du fichier : gui.h
-/auteurs        : - Axel Hall - 346228
-/				  - Lucas Michel - 363073
-/version        : 1.1
-****************************************/
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
 #include <gtkmm/box.h>
@@ -46,6 +49,8 @@ protected:
 	void on_button_clicked_start();
 	void on_button_clicked_step();
 
+	bool on_timeout();
+
 	Simulation *ptr_world = NULL;
 	DrawArea m_area;
 	
@@ -66,8 +71,6 @@ protected:
 	Gtk::Button m_button_step;
 
 };
-
-
 
 
 #endif //GUI_H

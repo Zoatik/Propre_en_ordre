@@ -1,15 +1,18 @@
+/************\HEADER/*************
+* AUTHORS: - Hall Axel           *
+*          - Michel Lucas        *
+* SCIPERS: - 346228              *
+*          - 363073              *
+* VERSION: 2.0                   *
+* FILE: gui.cc                   *
+*********************************/
+
 #include <iostream>
 #include <cairomm/context.h>
+#include <glibmm.h>
 #include "Simulation.h"
 #include "gui.h"
 
-
-/***************************************
-/nom du fichier : gui.cc
-/auteurs        : - Axel Hall - 346228
-/				  - Lucas Michel - 363073
-/version        : 1.1
-****************************************/
 
 GuiWindow::GuiWindow(Simulation *world) : 
 	m_main_box(Gtk::Orientation::HORIZONTAL, 0),
@@ -80,6 +83,10 @@ GuiWindow::GuiWindow(Simulation *world) :
 	m_button_start.signal_clicked().connect(sigc::mem_fun(*this, &GuiWindow::on_button_clicked_start));
 	m_button_step.signal_clicked().connect(sigc::mem_fun(*this, &GuiWindow::on_button_clicked_step));
 
+	//timer
+	sigc::slot<bool()> my_slot = sigc::bind(sigc::mem_fun(*this, &GuiWindow::on_timeout));
+	auto conn = Glib::signal_timeout().connect(my_slot,delta_t*1000);
+
 }
 GuiWindow::~GuiWindow()
 {
@@ -107,6 +114,16 @@ void GuiWindow::on_button_clicked_step()
 {
 	std::cout<<"on step"<<std::endl;
 	ptr_world->next_step();
+	m_area.draw();
+}
+
+bool GuiWindow::on_timeout()
+{
+	std::cout<<"update"<<std::endl;
+	std::cout<<ptr_world->get_updates()<<std::endl;
+	ptr_world->next_step();
+	m_area.draw();
+	return true;
 }
 
 ///DRAWAREA
@@ -152,25 +169,9 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
 		double ratio(width/250.0);
 
  		//std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
+		ptr_world->draw(cr, xc, yc, ratio);
 
-		cr->set_line_width(1.0*ratio);
-
-		draw_info_robotS(cr, xc, yc, ratio, ptr_world->get_robotS().get_shape());
-		for(int i=0;i<int(ptr_world->get_robotN_vect().size());i++)
-		{
-			Robot_N robot= ptr_world->get_robotN_vect()[i];
-			draw_info_robotN(cr, xc, yc, ratio, robot.get_shape(), robot.get_angle());
-		};
-		for(int i=0;i<int(ptr_world->get_robotR_vect().size());i++)
-		{
-			Robot_R robot= ptr_world->get_robotR_vect()[i];
-			draw_info_robotR(cr, xc, yc, ratio, robot.get_shape());
-		};
-		for(int i=0;i<int(ptr_world->get_particles_vect().size());i++)
-		{
-			Particle particle= ptr_world->get_particles_vect()[i];
-			draw_info_particle(cr, xc, yc, ratio, particle.get_shape());
-		};
+		
 	
     }
     else 

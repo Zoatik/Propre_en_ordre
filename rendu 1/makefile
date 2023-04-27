@@ -1,10 +1,9 @@
-
 OUT = projet
 CXX = g++
 CXXFLAGS = -Wall -std=c++17 
 LINKING = `pkg-config --cflags gtkmm-4.0`
 LDLIBS = `pkg-config --libs gtkmm-4.0`
-OFILES = projet.o Robot.o File.o message.o Simulation.o shape.o Particle.o gui.o graphic.o
+OFILES = projet.o Robot.o message.o Simulation.o shape.o Particle.o gui.o graphic.o
 
 all: $(OUT)
 
@@ -17,8 +16,6 @@ gui.o: gui.cc gui.h
 Robot.o: Robot.cc Robot.h
 	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
 Particle.o: Particle.cc Particle.h
-	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
-File.o: File.cc File.h
 	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)
 message.o: message.cc message.h
 	$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@ $(LINKING)

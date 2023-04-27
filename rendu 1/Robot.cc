@@ -1,9 +1,12 @@
-/***************************************
-/nom du fichier : Robot.cpp
-/auteurs        : - Axel Hall - 346228
-/				  - Lucas Michel - 363073
-/version        : 1.1
-****************************************/
+/************\HEADER/*************
+* AUTHORS: - Hall Axel           *
+*          - Michel Lucas        *
+* SCIPERS: - 346228              *
+*          - 363073              *
+* VERSION: 2.0                   *
+* FILE: Robot.cc                 *
+*********************************/
+
 
 #include "Robot.h"
 
@@ -41,13 +44,15 @@ Robot_S::Robot_S()
     //default ctor
 }
 
-Robot_S::Robot_S(s_robotS_infos infos): Robot(circle(infos.m_pos, r_spatial)),
-										m_nbUpdate(infos.m_nb_update),
-                                        m_nbNr(infos.m_nbNr),
-                                        m_nbNs(infos.m_nbNs),
-                                        m_nbNd(infos.m_nbNd),
-                                        m_nbRr(infos.m_nbRr),
-                                        m_nbRs(infos.m_nbRs)
+Robot_S::Robot_S(s_2d pos, int nbUpdate, int nbNr, int nbNs,
+                int nbNd, int nbRr, int nbRs): 
+                                        Robot(circle(pos, r_spatial)),
+										m_nbUpdate(nbUpdate),
+                                        m_nbNr(nbNr),
+                                        m_nbNs(nbNs),
+                                        m_nbNd(nbNd),
+                                        m_nbRr(nbRr),
+                                        m_nbRs(nbRs)
 {
    //ctor
 }
@@ -57,10 +62,57 @@ Robot_S::~Robot_S()
     //dtor
 }
 
+std::string Robot_S::get_type()
+{
+    return m_type;
+}
+
+void Robot_S::set(s_2d pos, int nbUpdate, int nbNr, int nbNs,
+                  int nbNd, int nbRr, int nbRs)
+{
+    m_circle.m_center = pos;
+    m_circle.m_radius = r_spatial;
+    m_nbUpdate = nbUpdate;
+    m_nbNr = nbNr;
+    m_nbNs = nbNs;
+    m_nbNd = nbNd;
+    m_nbRr = nbRr;
+    m_nbRs = nbRs;
+}
+
 //méthodes
 int Robot_S::get_nb_update()
 {
     return m_nbUpdate;
+}
+void Robot_S::update()
+{
+    m_nbUpdate += 1;
+}
+
+int Robot_S::get_nbNr()
+{
+    return m_nbNr;
+}
+
+int Robot_S::get_nbNs()
+{
+    return m_nbNs;
+}
+
+int Robot_S::get_nbNd()
+{
+    return m_nbNd;
+}
+
+int Robot_S::get_nbRr()
+{
+    return m_nbRr;
+}
+
+int Robot_S::get_nbRs()
+{
+    return m_nbRs;
 }
 
 /**REPARATEURS**/
@@ -69,7 +121,7 @@ Robot_R::Robot_R()
     //default ctor
 }
 
-Robot_R::Robot_R(s_robotR_infos infos):Robot(circle(infos.m_pos, r_reparateur))
+Robot_R::Robot_R(s_2d pos):Robot(circle(pos, r_reparateur))
 {
     //ctor
 }
@@ -79,16 +131,30 @@ Robot_R::~Robot_R()
     //dtor
 }
 
+std::string Robot_R::get_type()
+{
+    return m_type;
+}
+
+void Robot_R::set(s_2d pos)
+{
+    m_circle.m_center = pos;
+    m_circle.m_radius = r_reparateur;
+}
+
 /**NEUTRALISEURS**/
 Robot_N::Robot_N()
 {
     //default ctor
 }
 
-Robot_N::Robot_N(s_robotN_infos infos): Robot(circle(infos.m_pos, r_neutraliseur)),
-										m_angle(infos.m_a),
-                                        m_coord_type(infos.m_c_n),
-                                        m_k_update_panne(infos.m_k_update_panne)
+Robot_N::Robot_N(s_2d pos, double angle, int coord_type,
+                 bool panne, int k_update_panne):
+                                    Robot(circle(pos, r_neutraliseur)),
+									m_angle(angle),
+                                    m_coord_type(coord_type),
+                                    m_panne(panne),
+                                    m_k_update_panne(k_update_panne)
 {
     //ctor
 }
@@ -96,6 +162,21 @@ Robot_N::Robot_N(s_robotN_infos infos): Robot(circle(infos.m_pos, r_neutraliseur
 Robot_N::~Robot_N()
 {
     //dtor
+}
+
+std::string Robot_N::get_type()
+{
+    return m_type;
+}
+
+void Robot_N::set(s_2d pos, double angle, int coord_type, bool panne, int k_update_panne)
+{
+    m_circle.m_center = pos;
+    m_circle.m_radius = r_neutraliseur;
+    m_angle = angle;
+    m_coord_type = coord_type;
+    m_panne = panne;
+    m_k_update_panne = k_update_panne;
 }
 
 //méthodes

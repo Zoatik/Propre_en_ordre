@@ -1,14 +1,19 @@
-/***************************************
-/nom du fichier : Simulation.cpp
-/auteurs        : - Axel Hall - 346228
-/				  - Lucas Michel - 363073
-/version        : 1.1
-****************************************/
+/************\HEADER/*************
+* AUTHORS: - Hall Axel           *
+*          - Michel Lucas        *
+* SCIPERS: - 346228              *
+*          - 363073              *
+* VERSION: 2.0                   *
+* FILE: Simulation.cc            *
+*********************************/
+
 #include "Simulation.h"
 #include <iostream>
 
 
 using namespace std;
+
+static default_random_engine e;
 
 //ctor-dtor
 Simulation::Simulation()
@@ -22,182 +27,353 @@ Simulation::~Simulation()
 }
 
 ///méthodes publiques
+
+void Simulation::next_step()
+{
+    update();
+    m_robotS.update();
+}
+
 void Simulation::update()
 {
+    
+    /*for(int i(0);i<10000;++i)
+    {
+        std::cout<<m_bernoulli(e);
+    }
+    std::cout<<std::endl;*/
+    for(int i(0); i<m_nbP;i++)
+    {
+        if(m_bernoulli(e)==1)
+        {
+            if(m_particles_vect[i].separate(m_particles_vect))
+            {
+                m_particles_vect.erase(m_particles_vect.begin()+i);
+                bernoulli_distribution m_bernoulli(desintegration_rate/m_nbP);
+                
+            }
+            m_nbP += 3;
+        }
+    }
+}
+
+void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, double ratio)
+{
+    cr->set_line_width(0.1*ratio);
+    for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
+    {
+        vector<Robot*> vect = get_robots_ptr_vect();
+        if(vect[i]->get_type()=="S") 
+        {
+            draw_info_robotS(cr, xc, yc, ratio, m_robotS.get_shape());
+        }else if(vect[i]->get_type()=="N"){
+            draw_info_robotN(cr, xc, yc, ratio, 
+                        vect[i]->get_shape(), 
+                        vect[i]->get_angle());
+
+        }else{
+            draw_info_robotR(cr, xc, yc, ratio, vect[i]->get_shape());
+        }
+
+		
+
+		
+    }
+	for(int i=0;i<get_nb_N();i++)
+	{
+		draw_info_particle(cr, xc, yc, ratio, m_particles_vect[i].get_shape());
+	};
+}
+
+bool Simulation::read_file(string file_path)
+{
+    string line;
+    vector<string> lines;
+    ifstream file(file_path);
+    if (file.is_open())
+    {
+        while (file)
+        {
+            getline(file, line);
+            lines.push_back(line);
+        }
+    }
+    else
+    {
+        cout << "Could not open file : " << file_path << endl;
+        return false;
+    }
+    file.close();
+    return sep_file_infos(lines);
 
 }
+
+int Simulation::get_nbP()
+{
+    return m_nbP;
+}
+
+int Simulation::get_nb_N()
+{
+    return m_robotS.get_nbNr();
+}
+
+int Simulation::get_nb_R()
+{
+    return m_robotS.get_nbRr();
+}
+
+bool Simulation::sep_file_infos(vector<string> lines)
+{
+    int line_type(0);//0: infos particules, 1: ' robot spatial,
+                     //2: '' r�parateur, 3: neutraliseur
+    for (unsigned int i(0); i < lines.size(); i++)
+    {
+        istringstream current_line(lines[i]);
+        string spec;
+        current_line >> spec;
+        if (spec == "#" || lines[i].size() == 0)
+            //on saute la ligne si # ou si vide
+            continue;
+        switch (line_type)
+        {
+        case 0 : //particules
+            if (!read_particles_prop(spec, lines, i))
+                return false;
+            break;
+        case 1 : //robot Spatial
+            if(!read_robotS_prop(lines, i))
+                return false;
+            break;
+        case 2 : //robot R�parateur
+            if (!read_robotR_prop(lines, i))
+                return false;
+            break;
+        case 3 : //robot Neutralisateur
+            if (!read_robotN_prop(lines, i))
+                return false;
+            break;
+        default :
+            break;
+        }
+        line_type++; //on passe au type suivant
+    }
+    cout<<message::success();
+    return true;
+}
+
+bool Simulation::read_particles_prop(string spec, vector<string> lines,
+                               unsigned int &i)
+{
+    m_nbP = stoi(spec);
+    unsigned int j(i);
+    i++;
+    while (i <= j + m_nbP)//on boucle sur le nb de particules
+    {
+        istringstream current_line(lines[i]);
+        double tmp_x, tmp_y, tmp_d;
+        current_line >> tmp_x >> tmp_y >> tmp_d;
+        Particle part(square(s_2d(tmp_x, tmp_y), tmp_d));
+        if (!check_particles(part))
+            return false;
+        i++;
+    }
+    return true;
+}
+
+bool Simulation::read_robotS_prop(vector<string> lines, unsigned int& i)
+{
+    istringstream current_line(lines[i]);
+    double tmp_x, tmp_y;
+    int tmp_nbUpdate, tmp_nbNr, tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs;
+    current_line >> tmp_x >> tmp_y >> tmp_nbUpdate >> tmp_nbNr >> tmp_nbNs >>
+                    tmp_nbNd >> tmp_nbRr >> tmp_nbRs;
+
+    /*m_robots.push_back(new Robot_S(s_2d(tmp_x, tmp_y), tmp_nbUpdate, tmp_nbNr,
+					   tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs));*/
+
+    m_robotS.set(s_2d(tmp_x, tmp_y), tmp_nbUpdate, tmp_nbNr,
+                      tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs);
+    return check_robot(&m_robotS);
+}
+
+bool Simulation::read_robotR_prop(vector<string> lines, unsigned int& i)
+{
+    unsigned int j(i);
+    while (i < j + m_robotS.get_nbRs())
+    {
+        istringstream current_line(lines[i]);
+        double tmp_x, tmp_y;
+        current_line >> tmp_x >> tmp_y;
+        m_robots.push_back(new Robot_R(s_2d(tmp_x, tmp_y)));
+        if (!check_robot(m_robots[m_robots.size()-1]))
+            return false;
+        i++;
+    }
+    return true;
+}
+
+bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
+{
+    unsigned int j(i);
+    while (i < j + m_robotS.get_nbNs())
+    {
+        istringstream current_line(lines[i]);
+        double tmp_x, tmp_y, tmp_a;
+        int tmp_c_n, tmp_k_update_panne;
+        string tmp_str_panne;
+        current_line >> tmp_x >> tmp_y >> tmp_a >> tmp_c_n >>
+                        tmp_str_panne >> tmp_k_update_panne;
+        bool tmp_panne(bool(tmp_str_panne == "true"));
+        m_robots.push_back(new Robot_N(s_2d(tmp_x, tmp_y), tmp_a, tmp_c_n,
+                                       tmp_panne, tmp_k_update_panne));
+        if (!check_robot(m_robots[m_robots.size()-1]))
+            return false;
+        i++;
+    }
+    return true;
+}
+
+void Simulation::clear()
+{
+    for (auto p : m_robots)
+    {
+        delete p;
+    } 
+    m_robots.clear();
+    int m_nbP;
+        std::vector<Robot*> m_robots;
+        Robot_S m_robotS;
+        std::vector<Particle> m_particles_vect;
+}
+
 
 ///méthodes privées de génération
-bool Simulation::generate(File file_infos)
-{
-    m_nbP = file_infos.get_nbP();
-
-    /**checks et instanciation dans l'ordre de lecture**/
-    if(!generate_particles(file_infos))//génération et checks particules
-        return false;
-    if(!generate_robotS(file_infos))//génération et check robot spatial
-        return false;
-    if(!generate_robotR(file_infos))//génération et check robots réparateurs
-        return false;
-    if(!generate_robotN(file_infos))//génération et check robots neutraliseurs
-        return false;
-
-    cout<<message::success();
-    //exit(0);
-    return true;
-}
  
-bool Simulation::generate_particles(File file_infos)
+bool Simulation::check_particles(Particle part)
 {
-    for(unsigned int i(0); i < file_infos.get_particles_infos().size(); i++)
+    if(part.get_shape().m_size<d_particule_min)
     {
-        Particle part(file_infos.get_particles_infos()[i]);
-        if(part.get_shape().m_size<d_particule_min)
-        {
-            cout<<message::particle_too_small(part.get_shape().m_center.m_x,
-                                                   part.get_shape().m_center.m_y,
-                                                   part.get_shape().m_size);
-            //exit(EXIT_FAILURE);
-            return false;
-        }
-        if (!check_position(part.get_shape(), dmax))//check position valide
-        {
-            cout<<message::particle_outside(part.get_shape().m_center.m_x,
-                                      part.get_shape().m_center.m_y,
-                                      part.get_shape().m_size);
-            //exit(EXIT_FAILURE);
-            return false;
-        }
-        for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition
-        {
-            if(collision(part.get_shape(),m_particles_vect[j].get_shape(), true))
-            {
-                cout<<message::particle_superposition(
-                                        part.get_shape().m_center.m_x,
-                                        part.get_shape().m_center.m_y,
-                                        m_particles_vect[j].get_shape().m_center.m_x,
-                                        m_particles_vect[j].get_shape().m_center.m_y);
-                //exit(EXIT_FAILURE);
-                return false;
-            }
-        }
-        m_particles_vect.push_back(part);
-    }
-    return true;
-}
-
-bool Simulation::generate_robotS(File file_infos)
-{
-    m_robotS = Robot_S(file_infos.get_robotS_infos());
-
-    if(!check_position(m_robotS.get_shape(), dmax))//check position
-    {
-        cout<<message::spatial_robot_outside(m_robotS.get_shape().m_center.m_x,
-                                                  m_robotS.get_shape().m_center.m_y);
-        //exit(EXIT_FAILURE);
+        cout<<message::particle_too_small(part.get_shape().m_center.m_x,
+                                            part.get_shape().m_center.m_y,
+                                            part.get_shape().m_size);
         return false;
     }
-    for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition S-P
+    if (!check_position(part.get_shape(), dmax))//check position valide
+    {
+        cout<<message::particle_outside(part.get_shape().m_center.m_x,
+                                    part.get_shape().m_center.m_y,
+                                    part.get_shape().m_size);
+        return false;
+    }
+    for(unsigned int i(0); i < m_particles_vect.size(); i++)
+    {
+        if(collision(part.get_shape(),m_particles_vect[i].get_shape(), true))
         {
-            if(collision(m_robotS.get_shape(),m_particles_vect[j].get_shape(), true))
-            {
-                cout<<message::particle_robot_superposition(
-                                        m_particles_vect[j].get_shape().m_center.m_x,
-                                        m_particles_vect[j].get_shape().m_center.m_y,
-                                        m_particles_vect[j].get_shape().m_size,
-                                        m_robotS.get_shape().m_center.m_x,
-                                        m_robotS.get_shape().m_center.m_y,
-                                        m_robotS.get_shape().m_radius);
-                //exit(EXIT_FAILURE);
-                return false;
-            }
-
+            cout<<message::particle_superposition(
+                                    part.get_shape().m_center.m_x,
+                                    part.get_shape().m_center.m_y,
+                                    m_particles_vect[i].get_shape().m_center.m_x,
+                                    m_particles_vect[i].get_shape().m_center.m_y);
+            return false;
         }
+    }
+
+    m_particles_vect.push_back(part);
     return true;
 }
 
-bool Simulation::generate_robotR(File file_infos)
+
+bool Simulation::check_robot(Robot *robot)
 {
-    for(unsigned int i(0); i<file_infos.get_robotR_infos().size(); i++)
+    for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition N-P
     {
-        Robot_R curr_robotR(file_infos.get_robotR_infos()[i]);
-        for(unsigned int j(0); j<m_robotR_vect.size(); j++)//check superposition
+        if(collision(robot->get_shape(),m_particles_vect[j].get_shape(),true))
         {
-            if(collision(curr_robotR.get_shape(),m_robotR_vect[j].get_shape(), true))
+            show_particle_robot_superposition(robot, j);
+            return false;
+        }
+    }
+
+    if(robot->get_type() == "N")
+    {
+        Robot_N *robotN = dynamic_cast<Robot_N*>(robot);
+        return check_robotN(*robotN);    
+    }
+    if(robot->get_type() == "R")
+    {
+        Robot_R *robotR = dynamic_cast<Robot_R*>(robot);
+        return check_robotR(*robotR);    
+    }
+    if(robot->get_type() == "S")
+    {
+        Robot_S *robotS = dynamic_cast<Robot_S*>(robot);
+        return check_robotS(*robotS);    
+    }
+    
+    return true;
+}
+
+bool Simulation::check_robotS(Robot_S robotS)
+{
+    if(!check_position(robotS.get_shape(), dmax))//check position
+    {
+        cout<<message::spatial_robot_outside(robotS.get_shape().m_center.m_x,
+                                             robotS.get_shape().m_center.m_y);
+        return false;
+    }
+    return true;
+}
+
+bool Simulation::check_robotR(Robot_R robotR)
+{
+    for(unsigned int i(0); i<m_robots.size()-1; i++)//check superposition
+    {
+        if(collision(robotR.get_shape(),m_robots[i]->get_shape(), true))
+        {
+            if(m_robots[i]->get_type() == "R")
             {
                 cout<<message::repairers_superposition(
-                                            curr_robotR.get_shape().m_center.m_x,
-                                            curr_robotR.get_shape().m_center.m_y,
-                                            m_robotR_vect[j].get_shape().m_center.m_x,
-                                            m_robotR_vect[j].get_shape().m_center.m_y);
-                //exit(EXIT_FAILURE);
+                                            robotR.get_shape().m_center.m_x,
+                                            robotR.get_shape().m_center.m_y,
+                                            m_robots[i]->get_shape().m_center.m_x,
+                                            m_robots[i]->get_shape().m_center.m_y);
                 return false;
             }
         }
-        for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition R-P
-        {
-            if(collision(curr_robotR.get_shape(),m_particles_vect[j].get_shape(),true))
-            {
-                cout<<message::particle_robot_superposition(
-                                        m_particles_vect[j].get_shape().m_center.m_x,
-                                        m_particles_vect[j].get_shape().m_center.m_y,
-                                        m_particles_vect[j].get_shape().m_size,
-                                        curr_robotR.get_shape().m_center.m_x,
-                                        curr_robotR.get_shape().m_center.m_y,
-                                        curr_robotR.get_shape().m_radius);
-                //exit(EXIT_FAILURE);
-                return false;
-            }
-        }
-        m_robotR_vect.push_back(curr_robotR);
     }
     return true;
 }
 
-bool Simulation::generate_robotN(File file_infos)
+bool Simulation::check_robotN(Robot_N robotN)
 {
-    for(unsigned int i(0); i<file_infos.get_robotN_infos().size(); i++)
+    if(robotN.get_k_update_panne() > m_robotS.get_nb_update())
     {
-        Robot_N curr_robotN(file_infos.get_robotN_infos()[i]);
-        if(curr_robotN.get_k_update_panne()>m_robotS.get_nb_update())
+        show_invalid_k_update(robotN);
+        return false;
+    }
+
+    for(unsigned int i(0); i<m_robots.size()-1; i++)//check superposition
+    //size()-1 car on ne veut pas check avec lui-même
+    {
+        if(collision(robotN.get_shape(),m_robots[i]->get_shape(), true))
         {
-            show_invalid_k_update(curr_robotN);
-            //exit(EXIT_FAILURE);
-            return false;
-        }
-        for(unsigned int j(0); j<m_robotN_vect.size(); j++)//check superposition N-N
-        {
-            if(collision(curr_robotN.get_shape(),m_robotN_vect[j].get_shape(), true))
+            if(m_robots[i]->get_type() == "N")
             {
-                show_neutralizers_superposition(curr_robotN, j);
-                //exit(EXIT_FAILURE);
+                show_neutralizers_superposition(robotN, i);
+                return false;
+            }
+            else if(m_robots[i]->get_type() == "R")
+            {
+                show_repairer_neutralizer_superposition(robotN, i);
                 return false;
             }
         }
-        for(unsigned int j(0); j<m_robotR_vect.size(); j++)//check superposition R-N
-        {
-            if(collision(curr_robotN.get_shape(),m_robotR_vect[j].get_shape(), true))
-            {
-                show_repairer_neutralizer_superposition(curr_robotN, j);
-                //exit(EXIT_FAILURE);
-                return false;
-            }
-        }
-        for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition N-P
-        {
-            if(collision(curr_robotN.get_shape(),m_particles_vect[j].get_shape(),true))
-            {
-                show_particle_robot_superposition(curr_robotN, j);
-                //exit(EXIT_FAILURE);
-                return false;
-            }
-        }
-        m_robotN_vect.push_back(curr_robotN);
     }
     return true;
 }
 
-///méthodes privées d'affichage de messages d'erreurs
+/// méthodes privées d'affichage de messages d'erreurs
 ///(permet d'alléger "generate_RobotN")
 void Simulation::show_invalid_k_update(Robot_N curr_robotN)
 {
@@ -212,46 +388,46 @@ void Simulation::show_neutralizers_superposition(Robot_N curr_robotN, int j)
     cout<<message::neutralizers_superposition(
                 curr_robotN.get_shape().m_center.m_x,
                 curr_robotN.get_shape().m_center.m_y,
-                m_robotN_vect[j].get_shape().m_center.m_x,
-                m_robotN_vect[j].get_shape().m_center.m_y);
+                m_robots[j]->get_shape().m_center.m_x,
+                m_robots[j]->get_shape().m_center.m_y);
 }
 void Simulation::show_repairer_neutralizer_superposition(Robot_N curr_robotN, int j)
 {
     cout<<message::repairer_neutralizer_superposition(
-                m_robotR_vect[j].get_shape().m_center.m_x,
-                m_robotR_vect[j].get_shape().m_center.m_y,
+                m_robots[j]->get_shape().m_center.m_x,
+                m_robots[j]->get_shape().m_center.m_y,
                 curr_robotN.get_shape().m_center.m_x,
                 curr_robotN.get_shape().m_center.m_y);
 }
-void Simulation::show_particle_robot_superposition(Robot_N curr_robotN, int j)
+void Simulation::show_particle_robot_superposition(Robot *robot, int j)
 {
     cout<<message::particle_robot_superposition(
                 m_particles_vect[j].get_shape().m_center.m_x,
                 m_particles_vect[j].get_shape().m_center.m_y,
                 m_particles_vect[j].get_shape().m_size,
-                curr_robotN.get_shape().m_center.m_x,
-                curr_robotN.get_shape().m_center.m_y,
-                curr_robotN.get_shape().m_radius);
+                robot->get_shape().m_center.m_x,
+                robot->get_shape().m_center.m_y,
+                robot->get_shape().m_radius);
 }
 
 Robot_S Simulation::get_robotS()
 {
     return m_robotS;
 }
-vector<Robot_N> Simulation::get_robotN_vect()
-{
-    return m_robotN_vect;
-}
-vector<Robot_R> Simulation::get_robotR_vect()
-{
-    return m_robotR_vect;
-}
+
 vector<Particle> Simulation::get_particles_vect()
 {
     return m_particles_vect;
 }
 
-void Simulation::next_step()
+std::vector<Robot*> Simulation::get_robots_ptr_vect()
 {
-    m_nbP += 1;
+    return m_robots;
 }
+
+int Simulation::get_updates()
+{
+    return m_robotS.get_nb_update();
+}
+
+

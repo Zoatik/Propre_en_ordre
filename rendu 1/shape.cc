@@ -1,9 +1,12 @@
-/***************************************
-/nom du fichier : shape.h
-/auteurs        : - Axel Hall - 346228
-/				  - Lucas Michel - 363073
-/version        : 1.1
-****************************************/
+/************\HEADER/*************
+* AUTHORS: - Hall Axel           *
+*          - Michel Lucas        *
+* SCIPERS: - 346228              *
+*          - 363073              *
+* VERSION: 2.0                   *
+* FILE: shape.cc                 *
+*********************************/
+
 #include <iostream>
 #include "shape.h"
 

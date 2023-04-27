@@ -1,11 +1,14 @@
+/************\HEADER/*************
+* AUTHORS: - Hall Axel           *
+*          - Michel Lucas        *
+* SCIPERS: - 346228              *
+*          - 363073              *
+* VERSION: 2.0                   *
+* FILE: shape.h                  *
+*********************************/
+
 #ifndef SHAPE_H_INCLUDED
 #define SHAPE_H_INCLUDED
-/***************************************
-/nom du fichier : shape.h
-/auteurs        : - Axel Hall - 346228
-/				  - Lucas Michel - 363073
-/version        : 1.1
-****************************************/
 
 #include <math.h>
 #include "graphic.h"
