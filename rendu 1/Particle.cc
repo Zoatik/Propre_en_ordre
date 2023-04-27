@@ -25,8 +25,8 @@ Particle::Particle(double x, double y, double size)
 
 Particle::Particle(square s)
 {
-    m_square.m_center = infos.m_pos;
-    m_square.m_size = infos.m_d;
+    m_square.m_center = s.m_center;
+    m_square.m_size = s.m_size;
 }
 
 Particle::~Particle()

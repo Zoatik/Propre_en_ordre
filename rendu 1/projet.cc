@@ -21,12 +21,11 @@ int main(int argc, char *argv[])
 {
     /**Vérification**/
 
-    std::string file_path = argv[1];
+    string file_path = argv[1];
     Simulation world;
     bool read_success = world.read_file(file_path);//vérifications des infos et création du monde
     auto app = Gtk::Application::create();
     
-
     return app->make_window_and_run<GuiWindow>(1, argv, &world);
       
 }

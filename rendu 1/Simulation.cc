@@ -31,7 +31,7 @@ Simulation::~Simulation()
 void Simulation::next_step()
 {
     update();
-    m_robotS.update();
+    get_robotS().update();
 }
 
 void Simulation::update()
@@ -48,13 +48,15 @@ void Simulation::update()
         {
             if(m_particles_vect[i].separate(m_particles_vect))
             {
+                cout<<"separated"<<endl;
                 m_particles_vect.erase(m_particles_vect.begin()+i);
                 bernoulli_distribution m_bernoulli(desintegration_rate/m_nbP);
-                
+                m_nbP += 3;
             }
-            m_nbP += 3;
+            
         }
     }
+    cout<<"on sort"<<endl;
 }
 
 void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, double ratio)
@@ -62,22 +64,18 @@ void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, d
     cr->set_line_width(0.1*ratio);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
-        vector<Robot*> vect = get_robots_ptr_vect();
-        if(vect[i]->get_type()=="S") 
+        if(m_robots[i]->get_type()=="S") 
         {
-            draw_info_robotS(cr, xc, yc, ratio, m_robotS.get_shape());
-        }else if(vect[i]->get_type()=="N"){
-            draw_info_robotN(cr, xc, yc, ratio, 
-                        vect[i]->get_shape(), 
-                        vect[i]->get_angle());
-
-        }else{
-            draw_info_robotR(cr, xc, yc, ratio, vect[i]->get_shape());
+            draw_info_robotS(cr, xc, yc, ratio, get_robotS().get_shape());
         }
-
-		
-
-		
+        else if(m_robots[i]->get_type()=="N"){
+            Robot_N robotN = dynamic_cast<Robot_N&>(*m_robots[i]);
+            draw_info_robotN(cr, xc, yc, ratio, 
+                        robotN.get_shape(), 
+                        robotN.get_angle());
+        }
+        else
+            draw_info_robotR(cr, xc, yc, ratio, m_robots[i]->get_shape());
     }
 	for(int i=0;i<get_nb_N();i++)
 	{
@@ -115,12 +113,12 @@ int Simulation::get_nbP()
 
 int Simulation::get_nb_N()
 {
-    return m_robotS.get_nbNr();
+    return get_robotS().get_nbNr();
 }
 
 int Simulation::get_nb_R()
 {
-    return m_robotS.get_nbRr();
+    return get_robotS().get_nbRr();
 }
 
 bool Simulation::sep_file_infos(vector<string> lines)
@@ -189,23 +187,23 @@ bool Simulation::read_robotS_prop(vector<string> lines, unsigned int& i)
     current_line >> tmp_x >> tmp_y >> tmp_nbUpdate >> tmp_nbNr >> tmp_nbNs >>
                     tmp_nbNd >> tmp_nbRr >> tmp_nbRs;
 
-    /*m_robots.push_back(new Robot_S(s_2d(tmp_x, tmp_y), tmp_nbUpdate, tmp_nbNr,
-					   tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs));*/
+    m_robots.push_back(make_unique<Robot_S>(s_2d(tmp_x, tmp_y), tmp_nbUpdate, tmp_nbNr,
+					   tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs));
 
-    m_robotS.set(s_2d(tmp_x, tmp_y), tmp_nbUpdate, tmp_nbNr,
-                      tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs);
-    return check_robot(&m_robotS);
+    /*m_robotS.set(s_2d(tmp_x, tmp_y), tmp_nbUpdate, tmp_nbNr,
+                      tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs);*/
+    return check_robot(m_robots[0]);
 }
 
 bool Simulation::read_robotR_prop(vector<string> lines, unsigned int& i)
 {
     unsigned int j(i);
-    while (i < j + m_robotS.get_nbRs())
+    while (i < j + dynamic_cast<Robot_S&>(*m_robots[0]).get_nbRs())
     {
         istringstream current_line(lines[i]);
         double tmp_x, tmp_y;
         current_line >> tmp_x >> tmp_y;
-        m_robots.push_back(new Robot_R(s_2d(tmp_x, tmp_y)));
+        m_robots.push_back(make_unique<Robot_R>(s_2d(tmp_x, tmp_y)));
         if (!check_robot(m_robots[m_robots.size()-1]))
             return false;
         i++;
@@ -216,7 +214,7 @@ bool Simulation::read_robotR_prop(vector<string> lines, unsigned int& i)
 bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
 {
     unsigned int j(i);
-    while (i < j + m_robotS.get_nbNs())
+    while (i < j + dynamic_cast<Robot_S&>(*m_robots[0]).get_nbNs())
     {
         istringstream current_line(lines[i]);
         double tmp_x, tmp_y, tmp_a;
@@ -225,7 +223,7 @@ bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
         current_line >> tmp_x >> tmp_y >> tmp_a >> tmp_c_n >>
                         tmp_str_panne >> tmp_k_update_panne;
         bool tmp_panne(bool(tmp_str_panne == "true"));
-        m_robots.push_back(new Robot_N(s_2d(tmp_x, tmp_y), tmp_a, tmp_c_n,
+        m_robots.push_back(make_unique<Robot_N>(s_2d(tmp_x, tmp_y), tmp_a, tmp_c_n,
                                        tmp_panne, tmp_k_update_panne));
         if (!check_robot(m_robots[m_robots.size()-1]))
             return false;
@@ -236,15 +234,9 @@ bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
 
 void Simulation::clear()
 {
-    for (auto p : m_robots)
-    {
-        delete p;
-    } 
     m_robots.clear();
-    int m_nbP;
-        std::vector<Robot*> m_robots;
-        Robot_S m_robotS;
-        std::vector<Particle> m_particles_vect;
+    m_nbP = 0;
+    m_particles_vect.clear();
 }
 
 
@@ -284,7 +276,7 @@ bool Simulation::check_particles(Particle part)
 }
 
 
-bool Simulation::check_robot(Robot *robot)
+bool Simulation::check_robot(unique_ptr<Robot>& robot)
 {
     for(unsigned int j(0); j<m_particles_vect.size(); j++)//check superposition N-P
     {
@@ -297,18 +289,18 @@ bool Simulation::check_robot(Robot *robot)
 
     if(robot->get_type() == "N")
     {
-        Robot_N *robotN = dynamic_cast<Robot_N*>(robot);
-        return check_robotN(*robotN);    
+        Robot_N robotN = dynamic_cast<Robot_N&>(*robot);
+        return check_robotN(robotN);    
     }
     if(robot->get_type() == "R")
     {
-        Robot_R *robotR = dynamic_cast<Robot_R*>(robot);
-        return check_robotR(*robotR);    
+        Robot_R robotR = dynamic_cast<Robot_R&>(*robot);
+        return check_robotR(robotR);    
     }
     if(robot->get_type() == "S")
     {
-        Robot_S *robotS = dynamic_cast<Robot_S*>(robot);
-        return check_robotS(*robotS);    
+        Robot_S robotS = dynamic_cast<Robot_S&>(*robot);
+        return check_robotS(robotS);    
     }
     
     return true;
@@ -347,7 +339,7 @@ bool Simulation::check_robotR(Robot_R robotR)
 
 bool Simulation::check_robotN(Robot_N robotN)
 {
-    if(robotN.get_k_update_panne() > m_robotS.get_nb_update())
+    if(robotN.get_k_update_panne() > get_robotS().get_nb_update())
     {
         show_invalid_k_update(robotN);
         return false;
@@ -381,7 +373,7 @@ void Simulation::show_invalid_k_update(Robot_N curr_robotN)
                 curr_robotN.get_shape().m_center.m_x,
                 curr_robotN.get_shape().m_center.m_y,
                 curr_robotN.get_k_update_panne(),
-                m_robotS.get_nb_update());
+                get_robotS().get_nb_update());
 }
 void Simulation::show_neutralizers_superposition(Robot_N curr_robotN, int j)
 {
@@ -399,7 +391,7 @@ void Simulation::show_repairer_neutralizer_superposition(Robot_N curr_robotN, in
                 curr_robotN.get_shape().m_center.m_x,
                 curr_robotN.get_shape().m_center.m_y);
 }
-void Simulation::show_particle_robot_superposition(Robot *robot, int j)
+void Simulation::show_particle_robot_superposition(unique_ptr<Robot>& robot, int j)
 {
     cout<<message::particle_robot_superposition(
                 m_particles_vect[j].get_shape().m_center.m_x,
@@ -412,7 +404,7 @@ void Simulation::show_particle_robot_superposition(Robot *robot, int j)
 
 Robot_S Simulation::get_robotS()
 {
-    return m_robotS;
+    return dynamic_cast<Robot_S&>(*m_robots[0]);
 }
 
 vector<Particle> Simulation::get_particles_vect()
@@ -420,14 +412,14 @@ vector<Particle> Simulation::get_particles_vect()
     return m_particles_vect;
 }
 
-std::vector<Robot*> Simulation::get_robots_ptr_vect()
+std::vector<unique_ptr<Robot>>& Simulation::get_robots_ptr_vect()
 {
     return m_robots;
 }
 
 int Simulation::get_updates()
 {
-    return m_robotS.get_nb_update();
+    return get_robotS().get_nb_update();
 }
 
 

@@ -11,7 +11,7 @@
 #define PARTICLE_H
 
 #include <vector>
-#include "shape.h"
+#include "constantes.h"
 
 class Particle
 {

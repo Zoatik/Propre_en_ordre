@@ -119,11 +119,11 @@ void GuiWindow::on_button_clicked_step()
 
 bool GuiWindow::on_timeout()
 {
-	std::cout<<"update"<<std::endl;
+	/*std::cout<<"update"<<std::endl;
 	std::cout<<ptr_world->get_updates()<<std::endl;
 	ptr_world->next_step();
 	m_area.draw();
-	return true;
+	return true;*/
 }
 
 ///DRAWAREA

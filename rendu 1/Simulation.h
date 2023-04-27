@@ -35,7 +35,7 @@ class Simulation
 
         Robot_S get_robotS();
         std::vector<Particle> get_particles_vect();
-        std::vector<Robot*> get_robots_ptr_vect();
+        std::vector<std::unique_ptr<Robot>>& get_robots_ptr_vect();
         int get_nbP();
         int get_updates();
         int get_nb_N();
@@ -54,7 +54,7 @@ class Simulation
         bool read_robotR_prop(std::vector<std::string> lines, unsigned int& i);
         bool read_robotN_prop(std::vector<std::string> lines, unsigned int& i);
         //checks et générations des objets
-        bool check_robot(Robot *robot);
+        bool check_robot(std::unique_ptr<Robot>& robot);
         bool check_particles(Particle part);
         bool check_robotS(Robot_S robotS);
         bool check_robotR(Robot_R robotR);
@@ -63,12 +63,11 @@ class Simulation
         void show_invalid_k_update(Robot_N curr_robotN);
         void show_neutralizers_superposition(Robot_N curr_robotN, int j);
         void show_repairer_neutralizer_superposition(Robot_N curr_robotN, int j);
-        void show_particle_robot_superposition(Robot *robot, int j);
+        void show_particle_robot_superposition(std::unique_ptr<Robot>& robot, int j);
 
         //attributs
         int m_nbP;
-        std::vector<Robot*> m_robots;
-        Robot_S m_robotS;
+        std::vector<std::unique_ptr<Robot>> m_robots;
         std::vector<Particle> m_particles_vect;
         
         // attributs désintégration particules
