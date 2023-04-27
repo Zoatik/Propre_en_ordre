@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
     string file_path = argv[1];
     Simulation world;
     bool read_success = world.read_file(file_path);//vérifications des infos et création du monde
+    //unique_ptr<Simulation> ptr_world = make_unique<Simulation>(world);
     auto app = Gtk::Application::create();
     
     return app->make_window_and_run<GuiWindow>(1, argv, &world);

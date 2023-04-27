@@ -14,7 +14,7 @@
 #include "gui.h"
 
 
-GuiWindow::GuiWindow(Simulation *world) : 
+GuiWindow::GuiWindow(Simulation* world) : 
 	m_main_box(Gtk::Orientation::HORIZONTAL, 0),
  	m_interface_box(Gtk::Orientation::VERTICAL, 0),
 	m_buttons_box(Gtk::Orientation::VERTICAL, 2),
@@ -28,8 +28,9 @@ GuiWindow::GuiWindow(Simulation *world) :
 	
 {
 	// ptr to the main simulation
-	ptr_world = world;
-	m_area.set_world_ptr(world);
+	m_ptr_world = std::unique_ptr<Simulation>(world);
+	//std::cout<<"ça passe"<<std::endl;
+	//m_area.set_world_ptr(world);
 	
 	//window's name
 	set_title("Drawing test");
@@ -113,17 +114,17 @@ void GuiWindow::on_button_clicked_start()
 void GuiWindow::on_button_clicked_step()
 {
 	std::cout<<"on step"<<std::endl;
-	ptr_world->next_step();
+	m_ptr_world->next_step();
 	m_area.draw();
 }
 
 bool GuiWindow::on_timeout()
 {
-	/*std::cout<<"update"<<std::endl;
-	std::cout<<ptr_world->get_updates()<<std::endl;
-	ptr_world->next_step();
+	std::cout<<"update"<<std::endl;
+	std::cout<<m_ptr_world->get_updates()<<std::endl;
+	m_ptr_world->next_step();
 	m_area.draw();
-	return true;*/
+	return true;
 }
 
 ///DRAWAREA
@@ -142,9 +143,9 @@ DrawArea::~DrawArea()
 
 }
 
-void DrawArea::set_world_ptr(Simulation *ptr)
+void DrawArea::set_world_ptr(std::unique_ptr<Simulation>& ptr_world)
 {
-	ptr_world = ptr;
+	m_ptr_world = std::move(ptr_world);
 }
 
 void DrawArea::draw()
@@ -169,7 +170,7 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
 		double ratio(width/250.0);
 
  		//std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
-		ptr_world->draw(cr, xc, yc, ratio);
+		m_ptr_world->draw(cr, xc, yc, ratio);
 
 		
 	

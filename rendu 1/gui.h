@@ -27,20 +27,20 @@ public:
 
     void draw();
     void clear();
-	void set_world_ptr(Simulation *ptr);
+	void set_world_ptr(std::unique_ptr<Simulation>& ptr_world);
 protected:
     void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
 
 private:
     bool m_empty;
-	Simulation *ptr_world = NULL;
+	std::unique_ptr<Simulation> m_ptr_world = NULL;
 
 };
 
 class GuiWindow: public Gtk::Window
 {
 public:
-    GuiWindow(Simulation *world);
+    GuiWindow(Simulation* world);
     ~GuiWindow() override;
 protected:
     void on_button_clicked_exit();
@@ -51,7 +51,7 @@ protected:
 
 	bool on_timeout();
 
-	Simulation *ptr_world = NULL;
+	std::unique_ptr<Simulation> m_ptr_world = NULL;
 	DrawArea m_area;
 	
 

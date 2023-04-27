@@ -14,6 +14,7 @@
 #include <iostream>
 #include <sstream>
 #include <random>
+#include <memory>
 #include "Robot.h"
 #include "Particle.h"
 #include "message.h"
