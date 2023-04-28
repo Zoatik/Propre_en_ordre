@@ -20,7 +20,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     /**Vérification**/
-
+    
     string file_path = argv[1];
     Simulation world;
     bool read_success = world.read_file(file_path);//vérifications des infos et création du monde

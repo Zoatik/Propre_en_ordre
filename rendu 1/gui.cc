@@ -85,7 +85,7 @@ GuiWindow::GuiWindow(Simulation* world) :
 
 	//timer
 	sigc::slot<bool()> my_slot = sigc::bind(sigc::mem_fun(*this, &GuiWindow::on_timeout));
-	auto conn = Glib::signal_timeout().connect(my_slot,delta_t*1000);
+	auto conn = Glib::signal_timeout().connect(my_slot,1000);
 }
 GuiWindow::~GuiWindow()
 {
@@ -171,7 +171,7 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
 		
 
  		//std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
-		std::cout<<m_ptr_world->get_robots_ptr_vect().size()<<std::endl;
+		std::cout<<m_ptr_world->get_robots_ptr_vect().size()<<" robots"<<std::endl;
 		m_ptr_world->draw(cr, xc, yc, ratio);
 	
     }

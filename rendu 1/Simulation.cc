@@ -37,23 +37,22 @@ void Simulation::next_step()
 void Simulation::update()
 {
     
-    /*for(int i(0);i<10000;++i)
+    for(int i(0);i<100;++i)
     {
         std::cout<<m_bernoulli(e);
     }
-    std::cout<<std::endl;*/
     for(int i(0); i<m_nbP;i++)
     {
         if(m_bernoulli(e)==1)
         {
             if(m_particles_vect[i].separate(m_particles_vect))
             {
-                cout<<"separated"<<endl;
+                cout<<"separated "<<i<<endl;
                 m_particles_vect.erase(m_particles_vect.begin()+i);
-                bernoulli_distribution m_bernoulli(desintegration_rate/m_nbP);
+                std::bernoulli_distribution m_bernoulli(desintegration_rate/m_nbP);
+std::cout<<desintegration_rate/m_nbP<<std::endl;
                 m_nbP += 3;
             }
-            
         }
     }
 }
@@ -64,7 +63,6 @@ void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, d
     cr->set_line_width(0.1*ratio);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
-        
         if(m_robots[i]->get_type()=="S") 
         {
             draw_info_robotS(cr, xc, yc, ratio, get_robotS().get_shape());
@@ -79,7 +77,7 @@ void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, d
         else
             draw_info_robotR(cr, xc, yc, ratio, m_robots[i]->get_shape());
     }
-	for(int i=0;i<get_nb_N();i++)
+	for(int i=0;i<get_nbP();i++)
 	{
 		draw_info_particle(cr, xc, yc, ratio, m_particles_vect[i].get_shape());
 	};
@@ -87,6 +85,7 @@ void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, d
 
 bool Simulation::read_file(string file_path)
 {
+    e.seed(1);
     string line;
     vector<string> lines;
     ifstream file(file_path);
@@ -115,12 +114,12 @@ int Simulation::get_nbP()
 
 int Simulation::get_nb_N()
 {
-    return get_robotS().get_nbNr();
+    return get_robotS().get_nbNs();
 }
 
 int Simulation::get_nb_R()
 {
-    return get_robotS().get_nbRr();
+    return get_robotS().get_nbRs();
 }
 
 bool Simulation::sep_file_infos(vector<string> lines)
