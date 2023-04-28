@@ -1,4 +1,4 @@
-/************\HEADER/*************
+/************|HEADER|*************
 * AUTHORS: - Hall Axel           *
 *          - Michel Lucas        *
 * SCIPERS: - 346228              *

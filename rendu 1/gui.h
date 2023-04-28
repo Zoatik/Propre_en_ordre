@@ -1,4 +1,4 @@
-/************\HEADER/*************
+/************|HEADER|*************
 * AUTHORS: - Hall Axel           *
 *          - Michel Lucas        *
 * SCIPERS: - 346228              *
@@ -6,6 +6,7 @@
 * VERSION: 2.0                   *
 * FILE: gui.h                    *
 *********************************/
+
 
 #ifndef GUI_H
 #define GUI_H

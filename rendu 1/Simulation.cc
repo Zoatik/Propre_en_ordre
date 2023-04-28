@@ -1,4 +1,4 @@
-/************\HEADER/*************
+/************|HEADER|*************
 * AUTHORS: - Hall Axel           *
 *          - Michel Lucas        *
 * SCIPERS: - 346228              *
@@ -36,11 +36,7 @@ void Simulation::next_step()
 
 void Simulation::update()
 {
-    
-    /*for(int i(0);i<100;++i)
-    {
-        std::cout<<m_bernoulli(e);
-    }*/
+
     std::bernoulli_distribution m_bernoulli(desintegration_rate/m_nbP);
     for(int i(0); i<m_nbP;i++)
     {
@@ -187,9 +183,16 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
     i++;
     while (i <= j + m_nbP)//on boucle sur le nb de particules
     {
-        istringstream current_line(lines[i]);
+        stringstream current_line(lines[i]);
+        string stmp_x, stmp_y, stmp_d;
         double tmp_x, tmp_y, tmp_d;
-        current_line >> tmp_x >> tmp_y >> tmp_d;
+        cout<<lines[i]<<endl;
+        
+        current_line >> stmp_x >> stmp_y >> stmp_d;
+        tmp_x = stod(stmp_x);
+        tmp_y = stod(stmp_y);
+        tmp_d = stod(stmp_d);
+        
         Particle part(square(s_2d(tmp_x, tmp_y), tmp_d));
         if (!check_particles(part))
             return false;
@@ -200,11 +203,20 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
 
 bool Simulation::read_robotS_prop(vector<string> lines, unsigned int& i)
 {
-    istringstream current_line(lines[i]);
+    stringstream current_line(lines[i]);
+    string stmp_x, stmp_y, stmp_nbUpdate, stmp_nbNr, stmp_nbNs, stmp_nbNd, stmp_nbRr, stmp_nbRs;
     double tmp_x, tmp_y;
     int tmp_nbUpdate, tmp_nbNr, tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs;
-    current_line >> tmp_x >> tmp_y >> tmp_nbUpdate >> tmp_nbNr >> tmp_nbNs >>
-                    tmp_nbNd >> tmp_nbRr >> tmp_nbRs;
+    current_line >> stmp_x >> stmp_y >> stmp_nbUpdate >> stmp_nbNr >> stmp_nbNs >>
+                    stmp_nbNd >> stmp_nbRr >> stmp_nbRs;
+    tmp_x = stod(stmp_x);
+    tmp_y = stod(stmp_x);
+    tmp_nbUpdate = stoi(stmp_nbUpdate);
+    tmp_nbNr = stoi(stmp_nbNr);
+    tmp_nbNs = stoi(stmp_nbNs); 
+    tmp_nbNd = stoi(stmp_nbNd);
+    tmp_nbRr = stoi(stmp_nbRr);
+    tmp_nbRs = stoi(stmp_nbRs);
 
     m_robots.push_back(make_unique<Robot_S>(s_2d(tmp_x, tmp_y), tmp_nbUpdate, tmp_nbNr,
 					   tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs));
@@ -219,9 +231,12 @@ bool Simulation::read_robotR_prop(vector<string> lines, unsigned int& i)
     unsigned int j(i);
     while (i < j + dynamic_cast<Robot_S&>(*m_robots[0]).get_nbRs())
     {
-        istringstream current_line(lines[i]);
+        stringstream current_line(lines[i]);
+        string stmp_x, stmp_y;
         double tmp_x, tmp_y;
-        current_line >> tmp_x >> tmp_y;
+        current_line >> stmp_x >> stmp_y;
+        tmp_x = stod(stmp_x);
+        tmp_y = stod(stmp_y);
         m_robots.push_back(make_unique<Robot_R>(s_2d(tmp_x, tmp_y)));
         if (!check_robot(m_robots[m_robots.size()-1]))
             return false;
@@ -236,11 +251,16 @@ bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
     while (i < j + dynamic_cast<Robot_S&>(*m_robots[0]).get_nbNs())
     {
         istringstream current_line(lines[i]);
+        string stmp_x, stmp_y, stmp_a, stmp_c_n, stmp_k_update_panne;
         double tmp_x, tmp_y, tmp_a;
         int tmp_c_n, tmp_k_update_panne;
         string tmp_str_panne;
-        current_line >> tmp_x >> tmp_y >> tmp_a >> tmp_c_n >>
-                        tmp_str_panne >> tmp_k_update_panne;
+        current_line >> stmp_x >> stmp_y >> stmp_a >> stmp_c_n >>
+                        tmp_str_panne >> stmp_k_update_panne;
+        tmp_x = stod(stmp_x);
+        tmp_y = stod(stmp_y);
+        tmp_c_n = stoi(stmp_c_n);
+        tmp_k_update_panne = stoi(stmp_k_update_panne);
         bool tmp_panne(bool(tmp_str_panne == "true"));
         m_robots.push_back(make_unique<Robot_N>(s_2d(tmp_x, tmp_y), tmp_a, tmp_c_n,
                                        tmp_panne, tmp_k_update_panne));

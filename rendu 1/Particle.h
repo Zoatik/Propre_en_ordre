@@ -1,4 +1,4 @@
-/************\HEADER/*************
+/************|HEADER|*************
 * AUTHORS: - Hall Axel           *
 *          - Michel Lucas        *
 * SCIPERS: - 346228              *
@@ -6,6 +6,7 @@
 * VERSION: 2.0                   *
 * FILE: Particle.h               *
 *********************************/
+
 
 #ifndef PARTICLE_H
 #define PARTICLE_H
