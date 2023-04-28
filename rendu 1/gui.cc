@@ -18,14 +18,17 @@ GuiWindow::GuiWindow(Simulation* world) :
 	m_main_box(Gtk::Orientation::HORIZONTAL, 0),
  	m_interface_box(Gtk::Orientation::VERTICAL, 0),
 	m_buttons_box(Gtk::Orientation::VERTICAL, 2),
-	m_infos_box(Gtk::Orientation::VERTICAL, 2),//contient du texte
+	m_infos_box(Gtk::Orientation::HORIZONTAL, 2),//contient du texte
 	m_area_aFrame(Gtk::Align::CENTER, /* center x */Gtk::Align::CENTER, /* center y */
     				1, /* xsize/ysize = 2 */true /* ignore child's aspect */),
 
 	m_button_exit("Exit"), m_button_open("Open"),
 	m_button_save("Save"), m_button_start("Start"), m_button_step("Step"),
-	m_buttons_frame("General"), m_area(world), m_running(false)
-	
+	m_buttons_frame("General"), m_area(world), m_running(false),
+	m_texts_label("mises à jour :\nparticules:\nRobots réparateurs en service:\n"
+	"Robots réparateurs en réserve:\nrobots neutraliseurs en service:\n"
+	"robots neutraliseurs en panne:\nrobots neutraliseurs détruits:\n"
+	"robots neutraliseurs en réserve:")
 {
 	// ptr to the main simulation
 	m_ptr_world = std::shared_ptr<Simulation>(world);
@@ -45,10 +48,11 @@ GuiWindow::GuiWindow(Simulation* world) :
 	m_buttons_frame.set_margin(10);
 	m_buttons_frame.set_child(m_buttons_box);
 	m_infos_frame.set_label("Info : nombre de ...");
-	m_infos_frame.set_vexpand();
 	m_infos_frame.set_margin(10);
 	m_infos_frame.set_child(m_infos_box);
-	m_infos_box.set_vexpand();
+	refresh_label_values();
+	m_infos_box.append(m_texts_label);
+	m_infos_box.append(m_values_label);
 
 
 	m_interface_box.append(m_buttons_frame);
@@ -126,6 +130,7 @@ void GuiWindow::on_button_clicked_step()
 		std::cout<<"on step"<<std::endl;
 		m_ptr_world->next_step();
 		m_area.draw();
+		refresh_label_values();
 	}
 	
 }
@@ -138,9 +143,24 @@ bool GuiWindow::on_timeout()
 		std::cout<<m_ptr_world->get_updates()<<std::endl;
 		m_ptr_world->next_step();
 		m_area.draw();
+		refresh_label_values();
 	}
 	return true;
 
+}
+
+void GuiWindow::refresh_label_values()
+{
+	m_values_label.set_label(
+	std::to_string(m_ptr_world->get_updates())+"\n"+
+	std::to_string(m_ptr_world->get_nbP())+"\n"+
+	std::to_string(m_ptr_world->get_robotS().get_nbRs())+"\n"+
+	std::to_string(m_ptr_world->get_robotS().get_nbRr())+"\n"+
+	std::to_string(m_ptr_world->get_robotS().get_nbNs())+"\n"+
+	std::to_string(m_ptr_world->get_robotS().get_nbNp())+"\n"+
+	std::to_string(m_ptr_world->get_robotS().get_nbNd())+"\n"+
+	std::to_string(m_ptr_world->get_robotS().get_nbNr())
+	);
 }
 
 ///DRAWAREA

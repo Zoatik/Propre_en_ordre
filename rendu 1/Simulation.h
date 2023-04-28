@@ -60,6 +60,7 @@ class Simulation
         bool check_robotS(Robot_S robotS);
         bool check_robotR(Robot_R robotR);
         bool check_robotN(Robot_N robotN);
+        void set_nbNp();
         //affichage des messages d'erreurs
         void show_invalid_k_update(Robot_N curr_robotN);
         void show_neutralizers_superposition(Robot_N curr_robotN, int j);

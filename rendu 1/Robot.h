@@ -49,10 +49,12 @@ class Robot_S : public Robot
         //méthodes
         void set(s_2d pos, int nbUpdate, int nbNr, int nbNs,
                  int nbNd, int nbRr, int nbRs);
+        void set_nbNp(int count);
         int get_nb_update();
         int get_nbNr();
         int get_nbNs();
         int get_nbNd();
+        int get_nbNp();
         int get_nbRr();
         int get_nbRs();
         void update();
@@ -62,6 +64,7 @@ class Robot_S : public Robot
         int m_nbNr;
         int m_nbNs;
         int m_nbNd;
+        int m_nbNp;
         int m_nbRr;
         int m_nbRs;
         const std::string m_type = "S";
@@ -102,6 +105,7 @@ class Robot_N : public Robot
                  bool panne, int k_update_panne);
         int get_k_update_panne();
         double get_angle();
+        bool get_panne();
 
     private:
         double m_angle;

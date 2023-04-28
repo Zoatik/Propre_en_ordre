@@ -48,8 +48,9 @@ protected:
 	void on_button_clicked_save();
 	void on_button_clicked_start();
 	void on_button_clicked_step();
-
 	bool on_timeout();
+
+	void refresh_label_values();
 
 	std::shared_ptr<Simulation> m_ptr_world = NULL;
 	DrawArea m_area;
@@ -70,6 +71,8 @@ protected:
 	Gtk::Button m_button_save;
 	Gtk::Button m_button_start;
 	Gtk::Button m_button_step;
+	Gtk::Label m_texts_label;
+	Gtk::Label m_values_label;
 
 };
 

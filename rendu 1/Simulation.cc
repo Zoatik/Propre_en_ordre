@@ -59,7 +59,7 @@ void Simulation::update()
 void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, double ratio)
 {
     
-    cr->set_line_width(0.1*ratio);
+    cr->set_line_width(1.0*ratio);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
         if(m_robots[i]->get_type()=="S") 
@@ -229,6 +229,7 @@ bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
             return false;
         i++;
     }
+    set_nbNp();
     return true;
 }
 
@@ -274,7 +275,6 @@ bool Simulation::check_particles(Particle part)
     m_particles_vect.push_back(part);
     return true;
 }
-
 
 bool Simulation::check_robot(unique_ptr<Robot>& robot)
 {
@@ -422,4 +422,16 @@ int Simulation::get_updates()
     return get_robotS().get_nb_update();
 }
 
+void Simulation::set_nbNp()
+{
+    int count(0);
+    for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
+    {
+        if(m_robots[i]->get_type() == "N" and dynamic_cast<Robot_N&>(*m_robots[i]).get_panne() == true)
+        {
+            count+=1;
+        }
+    }
+    get_robotS().set_nbNp(count);
+}
 

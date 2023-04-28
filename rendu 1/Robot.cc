@@ -80,6 +80,11 @@ void Robot_S::set(s_2d pos, int nbUpdate, int nbNr, int nbNs,
     m_nbRs = nbRs;
 }
 
+void Robot_S::set_nbNp(int count)
+{
+    m_nbNp = count;
+}
+
 //méthodes
 int Robot_S::get_nb_update()
 {
@@ -103,6 +108,11 @@ int Robot_S::get_nbNs()
 int Robot_S::get_nbNd()
 {
     return m_nbNd;
+}
+
+int Robot_S::get_nbNp()
+{
+    return m_nbNp;
 }
 
 int Robot_S::get_nbRr()
@@ -162,6 +172,11 @@ Robot_N::Robot_N(s_2d pos, double angle, int coord_type,
 Robot_N::~Robot_N()
 {
     //dtor
+}
+
+bool Robot_N::get_panne()
+{
+    return m_panne;
 }
 
 std::string Robot_N::get_type()
