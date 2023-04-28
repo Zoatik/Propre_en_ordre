@@ -8,6 +8,17 @@
 /version        : 1.1
 ****************************************/
 
+void draw_border(const Cairo::RefPtr<Cairo::Context>& cr, int size)
+{
+    cr->set_source_rgb(0.1, 0.1, 0.1);
+    cr->move_to(0,0);
+    cr->line_to(0,size);
+    cr->line_to(size,size);
+    cr->line_to(size,0);
+    cr->line_to(0,0);
+    cr->stroke();
+}
+
 void draw_robotN(const Cairo::RefPtr<Cairo::Context>& cr,
                 int x, int y, double radius, double angle)
 {

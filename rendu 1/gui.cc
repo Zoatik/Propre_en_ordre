@@ -40,8 +40,7 @@ GuiWindow::GuiWindow(Simulation* world = NULL) :
 	//area frame
 	m_area_aFrame.set_child(m_area);
 	m_area_aFrame.set_expand();
-	m_area_aFrame.set_child(m_area_frame);
-	m_area_frame.set_child(m_area);
+	m_area_aFrame.set_child(m_area);
 
 
 	//interface box
@@ -224,7 +223,7 @@ bool GuiWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType sta
 			on_button_clicked_start();
 			return true;
 		case '1':
-			on on_button_clicked_step();
+			on_button_clicked_step();
 			return true;
 	}
     //the event has not been handled

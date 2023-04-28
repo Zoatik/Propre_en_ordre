@@ -10,6 +10,8 @@
 
 #include <cairomm/context.h>
 
+void draw_border(const Cairo::RefPtr<Cairo::Context>& cr, 
+                int size);
 void draw_robotS(const Cairo::RefPtr<Cairo::Context>& cr,
                 int x, int y, double radius);
 void draw_robotN(const Cairo::RefPtr<Cairo::Context>& cr,

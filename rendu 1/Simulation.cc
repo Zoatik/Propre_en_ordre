@@ -60,6 +60,7 @@ void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, d
 {
     
     cr->set_line_width(1.0*ratio);
+    draw_border(cr,xc*2);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
         if(m_robots[i]->get_type()=="S") 

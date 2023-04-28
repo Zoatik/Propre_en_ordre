@@ -23,7 +23,6 @@
 #include "graphic.h"
 
 
-
 class DrawArea : public Gtk::DrawingArea // héritage
 {
 public:
