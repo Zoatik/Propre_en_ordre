@@ -62,7 +62,7 @@ protected:
 
 	void refresh_label_values();
 
-	std::shared_ptr<Simulation> m_ptr_world = NULL;
+	std::shared_ptr<Simulation> m_ptr_world = nullptr;
 	DrawArea m_area;
 
 	bool keyb_driven_state;

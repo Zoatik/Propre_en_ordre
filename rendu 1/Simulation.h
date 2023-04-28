@@ -46,6 +46,7 @@ class Simulation
 
         //lecture de fichiers
         bool read_file(std::string file_path);//lit un fichier "test".txt
+        bool write_file(std::string file_path);
         
     private:
         //lecture des fichiers

@@ -9,6 +9,7 @@
 
 #include "Simulation.h"
 #include <iostream>
+#include <fstream>
 
 
 using namespace std;
@@ -91,6 +92,7 @@ bool Simulation::read_file(string file_path)
         {
             getline(file, line);
             lines.push_back(line);
+            cout<<line<<endl;
         }
     }
     else
@@ -101,6 +103,77 @@ bool Simulation::read_file(string file_path)
     file.close();
     return sep_file_infos(lines);
 
+}
+
+bool Simulation::write_file(std::string file_path)
+{
+    cout<<"on entre"<<endl;
+    string file_text;
+    file_text += "# Custom file text saved\n\n";
+    file_text += to_string(m_nbP) + "\n";
+    for(unsigned int i(0); i < m_nbP; i++)
+    {
+        string tmp_x = to_string(m_particles_vect[i].get_shape().m_center.m_x);
+        string tmp_y = to_string(m_particles_vect[i].get_shape().m_center.m_y);
+        string tmp_d = to_string(m_particles_vect[i].get_shape().m_size);
+        file_text += "\t" + tmp_x + " " + tmp_y + " " + tmp_d + "\n";
+        
+    }
+    if(m_robots.size() > 0)
+    {
+        Robot_S tmp_robotS = dynamic_cast<Robot_S&>(*m_robots[0]);
+        string tmp_x = to_string(tmp_robotS.get_shape().m_center.m_x);
+        string tmp_y = to_string(tmp_robotS.get_shape().m_center.m_y);
+        string tmp_nbUpdate = to_string(tmp_robotS.get_nb_update());
+        string tmp_nbNr = to_string(tmp_robotS.get_nbNr());
+        string tmp_nbNs = to_string(tmp_robotS.get_nbNs());
+        string tmp_nbNd = to_string(tmp_robotS.get_nbNd());
+        string tmp_nbRr = to_string(tmp_robotS.get_nbRr());
+        string tmp_nbRs = to_string(tmp_robotS.get_nbRs());
+        file_text += "\n" + tmp_x + " " + tmp_y + " " + tmp_nbUpdate + " "
+                  + tmp_nbNr + " " + tmp_nbNs + " " + tmp_nbNd + " "
+                  + tmp_nbNr + " " + tmp_nbRs + "\n";
+
+        for(unsigned int i(1); i <= tmp_robotS.get_nbRs(); i++)
+        {
+            if(m_robots[i]->get_type() == "R")
+            {
+                string tmp_x = to_string(m_robots[i]->get_shape().m_center.m_x);
+                string tmp_y = to_string(m_robots[i]->get_shape().m_center.m_y);
+                file_text += "\t" + tmp_x + " " + tmp_y + "\n";
+            }
+        }
+        file_text += "\n";
+        for(unsigned int i(tmp_robotS.get_nbRs()+1); i-tmp_robotS.get_nbRs() <= tmp_robotS.get_nbNs(); i++)
+        {
+            if(m_robots[i]->get_type() == "N")
+            {
+                Robot_N tmp_robotN = dynamic_cast<Robot_N&>(*m_robots[i]);
+                string tmp_x = to_string(m_robots[i]->get_shape().m_center.m_x);
+                string tmp_y = to_string(m_robots[i]->get_shape().m_center.m_y);
+                string tmp_a = to_string(tmp_robotN.get_angle());
+                string tmp_c_n = to_string(tmp_robotN.get_c_n());
+                string tmp_panne = "false";
+                string tmp_k_update_panne = to_string(tmp_robotN.get_k_update_panne());
+                if (tmp_robotN.get_panne())
+                    tmp_panne = "true";
+
+                file_text += "\t" + tmp_x + " " + tmp_y + " "+ tmp_a + " " + 
+                            tmp_c_n + " " + tmp_panne  + " " + tmp_k_update_panne +"\n";
+            }
+        }
+    }
+    else return false;
+    
+    ofstream out(file_path, std::ofstream::out | std::ofstream::trunc);
+    if (out.is_open())
+    {
+        out << file_text;
+        out.close();
+    }
+    else cout<<"could not open file (writing)"<<endl;
+    
+    return true;
 }
 
 int Simulation::get_nbP()
@@ -184,14 +257,17 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
     while (i <= j + m_nbP)//on boucle sur le nb de particules
     {
         stringstream current_line(lines[i]);
-        string stmp_x, stmp_y, stmp_d;
-        double tmp_x, tmp_y, tmp_d;
+        //current_line << lines[i];
+        string stmp_x(""), stmp_y(""), stmp_d("");
+        double tmp_x(0.), tmp_y(0.), tmp_d(0.);
         cout<<lines[i]<<endl;
-        
+        //current_line.clear();
         current_line >> stmp_x >> stmp_y >> stmp_d;
+        stmp_d += " ";
         tmp_x = stod(stmp_x);
         tmp_y = stod(stmp_y);
-        tmp_d = stod(stmp_d);
+        tmp_d = stod(stmp_d.c_str());
+        cout<<"size : "<<tmp_d<<endl; // debug
         
         Particle part(square(s_2d(tmp_x, tmp_y), tmp_d));
         if (!check_particles(part))
@@ -259,6 +335,7 @@ bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
                         tmp_str_panne >> stmp_k_update_panne;
         tmp_x = stod(stmp_x);
         tmp_y = stod(stmp_y);
+        tmp_a = stod(stmp_a);
         tmp_c_n = stoi(stmp_c_n);
         tmp_k_update_panne = stoi(stmp_k_update_panne);
         bool tmp_panne(bool(tmp_str_panne == "true"));
@@ -285,6 +362,7 @@ void Simulation::clear()
  
 bool Simulation::check_particles(Particle part)
 {
+   // cout<<"size : "<<part.get_shape().m_size<<endl; // debug
     if(part.get_shape().m_size<d_particule_min)
     {
         cout<<message::particle_too_small(part.get_shape().m_center.m_x,
@@ -299,6 +377,7 @@ bool Simulation::check_particles(Particle part)
                                     part.get_shape().m_size);
         return false;
     }
+    //cout<<"nb de particules : "<<m_particles_vect.size()<<endl;
     for(unsigned int i(0); i < m_particles_vect.size(); i++)
     {
         if(collision(part.get_shape(),m_particles_vect[i].get_shape(), true))
@@ -474,4 +553,5 @@ void Simulation::set_nbNp()
     }
     get_robotS().set_nbNp(count);
 }
+
 

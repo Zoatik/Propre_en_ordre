@@ -177,10 +177,11 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 void GuiWindow::on_button_clicked_save()
 {
 	std::cout<<"on save"<<std::endl;
-	auto dialog = new Gtk::FileChooserDialog("Please choose a file",
-	Gtk::FileChooser::Action::SAVE);
+	auto dialog = new Gtk::FileChooserDialog("Save a file",
+											 Gtk::FileChooser::Action::SAVE);
 	dialog->set_transient_for(*this);
 	dialog->set_modal(true);
+	dialog->set_current_name("untitled.txt");
 	dialog->signal_response().connect(sigc::bind(
 	sigc::mem_fun(*this, &GuiWindow::on_file_save_dialog_response),
 	dialog));
@@ -223,8 +224,9 @@ void GuiWindow::on_file_save_dialog_response(int response_id,
 
 			//Notice that this is a std::string, not a Glib::ustring.
 			auto filename = dialog->get_file()->get_path();
-			std::cout << "File selected: " << filename << std::endl;
 			
+			std::cout << "File selected: " << filename << std::endl;
+			m_ptr_world->write_file(filename);
 			break;
 		}
 			case Gtk::ResponseType::CANCEL:

@@ -7,7 +7,7 @@
 * FILE: Robot.cc                 *
 *********************************/
 
-
+#include<iostream> //debug
 
 
 #include "Robot.h"
@@ -179,6 +179,11 @@ Robot_N::~Robot_N()
 bool Robot_N::get_panne()
 {
     return m_panne;
+}
+
+int Robot_N::get_c_n()
+{
+    return m_coord_type;
 }
 
 std::string Robot_N::get_type()

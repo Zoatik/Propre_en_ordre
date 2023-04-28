@@ -107,6 +107,7 @@ class Robot_N : public Robot
         int get_k_update_panne();
         double get_angle();
         bool get_panne();
+        int get_c_n();
 
     private:
         double m_angle;
