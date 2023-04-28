@@ -403,10 +403,9 @@ void Simulation::show_particle_robot_superposition(unique_ptr<Robot>& robot, int
                 robot->get_shape().m_radius);
 }
 
-unique_ptr<Robot_S>& Simulation::get_robotS()
+Robot_S* Simulation::get_robotS()
 {
-    
-    return unique_ptr<Robot_S>(Robot_S *ptr(m_robots[0]));
+    return dynamic_cast<Robot_S*>(m_robots[0].get());
 }
 
 vector<Particle> Simulation::get_particles_vect()

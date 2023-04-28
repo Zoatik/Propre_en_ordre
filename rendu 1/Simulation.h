@@ -34,7 +34,7 @@ class Simulation
         void next_step();
         void clear();
 
-        std::unique_ptr<Robot_S>& get_robotS();
+        Robot_S* get_robotS();
         std::vector<Particle> get_particles_vect();
         std::vector<std::unique_ptr<Robot>>& get_robots_ptr_vect();
         int get_nbP();

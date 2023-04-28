@@ -111,11 +111,11 @@ void GuiWindow::on_button_clicked_start()
 	{
 		std::cout<<"on start"<<std::endl;
 		m_running = true;
-		m_button_start.set_text("Stop");
+		m_button_start.set_label("Stop");
 	}else{
 		std::cout<<"on stop"<<std::endl;
 		m_running = false;
-		m_button_start.set_text("Start");
+		m_button_start.set_label("Start");
 	}
 	
 }
@@ -189,7 +189,6 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
 		
 
  		//std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
-		std::cout<<m_ptr_world->get_robots_ptr_vect().size()<<" robots"<<std::endl;
 		m_ptr_world->draw(cr, xc, yc, ratio);
 	
     }
