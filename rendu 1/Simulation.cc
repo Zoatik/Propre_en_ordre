@@ -253,6 +253,7 @@ bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
 
 void Simulation::clear()
 {
+    m_empty = true;
     m_robots.clear();
     m_nbP = 0;
     m_particles_vect.clear();

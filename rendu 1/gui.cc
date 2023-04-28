@@ -155,6 +155,8 @@ void GuiWindow::on_file_dialog_response(int response_id,
 			//Notice that this is a std::string, not a Glib::ustring.
 			auto filename = dialog->get_file()->get_path();
 			std::cout << "File selected: " << filename << std::endl;
+			m_ptr_world->clear();
+			m_ptr_world->read_file(filename);
 			break;
 		}
 			case Gtk::ResponseType::CANCEL:
