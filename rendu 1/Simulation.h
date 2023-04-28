@@ -34,7 +34,7 @@ class Simulation
         void next_step();
         void clear();
 
-        Robot_S get_robotS();
+        std::unique_ptr<Robot_S>& get_robotS();
         std::vector<Particle> get_particles_vect();
         std::vector<std::unique_ptr<Robot>>& get_robots_ptr_vect();
         int get_nbP();
@@ -65,7 +65,7 @@ class Simulation
         void show_neutralizers_superposition(Robot_N curr_robotN, int j);
         void show_repairer_neutralizer_superposition(Robot_N curr_robotN, int j);
         void show_particle_robot_superposition(std::unique_ptr<Robot>& robot, int j);
-
+        
         //attributs
         int m_nbP;
         std::vector<std::unique_ptr<Robot>> m_robots;

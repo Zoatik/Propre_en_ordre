@@ -31,7 +31,7 @@ Simulation::~Simulation()
 void Simulation::next_step()
 {
     update();
-    get_robotS().update();
+    get_robotS()->update();
 }
 
 void Simulation::update()
@@ -65,7 +65,7 @@ void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, d
     {
         if(m_robots[i]->get_type()=="S") 
         {
-            draw_info_robotS(cr, xc, yc, ratio, get_robotS().get_shape());
+            draw_info_robotS(cr, xc, yc, ratio, get_robotS()->get_shape());
             
         }
         else if(m_robots[i]->get_type()=="N"){
@@ -114,12 +114,12 @@ int Simulation::get_nbP()
 
 int Simulation::get_nb_N()
 {
-    return get_robotS().get_nbNs();
+    return get_robotS()->get_nbNs();
 }
 
 int Simulation::get_nb_R()
 {
-    return get_robotS().get_nbRs();
+    return get_robotS()->get_nbRs();
 }
 
 bool Simulation::sep_file_infos(vector<string> lines)
@@ -340,7 +340,7 @@ bool Simulation::check_robotR(Robot_R robotR)
 
 bool Simulation::check_robotN(Robot_N robotN)
 {
-    if(robotN.get_k_update_panne() > get_robotS().get_nb_update())
+    if(robotN.get_k_update_panne() > get_robotS()->get_nb_update())
     {
         show_invalid_k_update(robotN);
         return false;
@@ -374,7 +374,7 @@ void Simulation::show_invalid_k_update(Robot_N curr_robotN)
                 curr_robotN.get_shape().m_center.m_x,
                 curr_robotN.get_shape().m_center.m_y,
                 curr_robotN.get_k_update_panne(),
-                get_robotS().get_nb_update());
+                get_robotS()->get_nb_update());
 }
 void Simulation::show_neutralizers_superposition(Robot_N curr_robotN, int j)
 {
@@ -403,9 +403,10 @@ void Simulation::show_particle_robot_superposition(unique_ptr<Robot>& robot, int
                 robot->get_shape().m_radius);
 }
 
-Robot_S Simulation::get_robotS()
+unique_ptr<Robot_S>& Simulation::get_robotS()
 {
-    return dynamic_cast<Robot_S&>(*m_robots[0]);
+    
+    return unique_ptr<Robot_S>(Robot_S *ptr(m_robots[0]));
 }
 
 vector<Particle> Simulation::get_particles_vect()
@@ -420,7 +421,7 @@ std::vector<unique_ptr<Robot>>& Simulation::get_robots_ptr_vect()
 
 int Simulation::get_updates()
 {
-    return get_robotS().get_nb_update();
+    return get_robotS()->get_nb_update();
 }
 
 

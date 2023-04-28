@@ -53,7 +53,8 @@ protected:
 
 	std::shared_ptr<Simulation> m_ptr_world = NULL;
 	DrawArea m_area;
-	
+
+	bool m_running;
 
 	Gtk::Frame m_area_frame;
 	Gtk::AspectFrame m_area_aFrame;

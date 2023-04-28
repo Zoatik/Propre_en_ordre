@@ -24,7 +24,7 @@ GuiWindow::GuiWindow(Simulation* world) :
 
 	m_button_exit("Exit"), m_button_open("Open"),
 	m_button_save("Save"), m_button_start("Start"), m_button_step("Step"),
-	m_buttons_frame("General"), m_area(world)
+	m_buttons_frame("General"), m_area(world), m_running(false)
 	
 {
 	// ptr to the main simulation
@@ -106,23 +106,41 @@ void GuiWindow::on_button_clicked_save()
 	std::cout<<"on save"<<std::endl;
 }
 void GuiWindow::on_button_clicked_start()
-{
-	std::cout<<"on start"<<std::endl;
+{	
+	if(not m_running)
+	{
+		std::cout<<"on start"<<std::endl;
+		m_running = true;
+		m_button_start.set_text("Stop");
+	}else{
+		std::cout<<"on stop"<<std::endl;
+		m_running = false;
+		m_button_start.set_text("Start");
+	}
+	
 }
 void GuiWindow::on_button_clicked_step()
-{
-	std::cout<<"on step"<<std::endl;
-	m_ptr_world->next_step();
-	m_area.draw();
+{	
+	if(not m_running)
+	{
+		std::cout<<"on step"<<std::endl;
+		m_ptr_world->next_step();
+		m_area.draw();
+	}
+	
 }
 
 bool GuiWindow::on_timeout()
-{
-	std::cout<<"update"<<std::endl;
-	std::cout<<m_ptr_world->get_updates()<<std::endl;
-	m_ptr_world->next_step();
-	m_area.draw();
+{	
+	if(m_running)
+	{
+		std::cout<<"update"<<std::endl;
+		std::cout<<m_ptr_world->get_updates()<<std::endl;
+		m_ptr_world->next_step();
+		m_area.draw();
+	}
 	return true;
+
 }
 
 ///DRAWAREA
