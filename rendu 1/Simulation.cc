@@ -121,6 +121,11 @@ int Simulation::get_nb_R()
     return get_robotS().get_nbRs();
 }
 
+bool Simulation::get_emptiness()
+{
+    return m_empty;
+}
+
 bool Simulation::sep_file_infos(vector<string> lines)
 {
     int line_type(0);//0: infos particules, 1: ' robot spatial,
@@ -137,19 +142,31 @@ bool Simulation::sep_file_infos(vector<string> lines)
         {
         case 0 : //particules
             if (!read_particles_prop(spec, lines, i))
+            {
+                m_empty = true;
                 return false;
+            }
             break;
         case 1 : //robot Spatial
             if(!read_robotS_prop(lines, i))
+            {
+                m_empty = true;
                 return false;
+            }
             break;
         case 2 : //robot R�parateur
             if (!read_robotR_prop(lines, i))
+            {
+                m_empty = true;
                 return false;
+            }
             break;
         case 3 : //robot Neutralisateur
             if (!read_robotN_prop(lines, i))
+            {
+                m_empty = true;
                 return false;
+            } 
             break;
         default :
             break;
@@ -157,6 +174,7 @@ bool Simulation::sep_file_infos(vector<string> lines)
         line_type++; //on passe au type suivant
     }
     cout<<message::success();
+    m_empty = false;
     return true;
 }
 

@@ -41,6 +41,7 @@ class Simulation
         int get_updates();
         int get_nb_N();
         int get_nb_R();
+        bool get_emptiness();
 
 
         //lecture de fichiers
@@ -69,6 +70,7 @@ class Simulation
         
         //attributs
         int m_nbP;
+        bool m_empty;
         std::vector<std::unique_ptr<Robot>> m_robots;
         std::vector<Particle> m_particles_vect;
         

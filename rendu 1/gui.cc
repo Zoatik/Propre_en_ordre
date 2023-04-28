@@ -14,7 +14,7 @@
 #include "gui.h"
 
 
-GuiWindow::GuiWindow(Simulation* world) : 
+GuiWindow::GuiWindow(Simulation* world = NULL) : 
 	m_main_box(Gtk::Orientation::HORIZONTAL, 0),
  	m_interface_box(Gtk::Orientation::VERTICAL, 0),
 	m_buttons_box(Gtk::Orientation::VERTICAL, 2),
@@ -150,24 +150,30 @@ bool GuiWindow::on_timeout()
 }
 
 void GuiWindow::refresh_label_values()
-{
-	m_values_label.set_label(
-	std::to_string(m_ptr_world->get_updates())+"\n"+
-	std::to_string(m_ptr_world->get_nbP())+"\n"+
-	std::to_string(m_ptr_world->get_robotS().get_nbRs())+"\n"+
-	std::to_string(m_ptr_world->get_robotS().get_nbRr())+"\n"+
-	std::to_string(m_ptr_world->get_robotS().get_nbNs())+"\n"+
-	std::to_string(m_ptr_world->get_robotS().get_nbNp())+"\n"+
-	std::to_string(m_ptr_world->get_robotS().get_nbNd())+"\n"+
-	std::to_string(m_ptr_world->get_robotS().get_nbNr())
-	);
+{	
+	if(not m_ptr_world->get_emptiness()) 
+	{
+		m_values_label.set_label(
+		std::to_string(m_ptr_world->get_updates())+"\n"+
+		std::to_string(m_ptr_world->get_nbP())+"\n"+
+		std::to_string(m_ptr_world->get_robotS().get_nbRs())+"\n"+
+		std::to_string(m_ptr_world->get_robotS().get_nbRr())+"\n"+
+		std::to_string(m_ptr_world->get_robotS().get_nbNs())+"\n"+
+		std::to_string(m_ptr_world->get_robotS().get_nbNp())+"\n"+
+		std::to_string(m_ptr_world->get_robotS().get_nbNd())+"\n"+
+		std::to_string(m_ptr_world->get_robotS().get_nbNr())
+		);
+	}else{
+		m_values_label.set_label("-\n-\n-\n-\n-\n-\n-\n-\n-");
+	}
+	
 }
 
 ///DRAWAREA
 
 constexpr int area_side(400);
 
-DrawArea::DrawArea(Simulation *ptr_world): m_empty(false), m_ptr_world(ptr_world)
+DrawArea::DrawArea(Simulation *ptr_world): m_ptr_world(ptr_world)
 {
     set_content_width(area_side);
     set_content_height(area_side);
@@ -199,7 +205,7 @@ void DrawArea::clear()
 void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
 	
-    if (not m_empty)
+    if (not m_ptr_world->get_emptiness())
     {	
 		
 		 // center of the window
