@@ -50,8 +50,10 @@ public:
 protected:
     void on_button_clicked_exit();
 	void on_button_clicked_open();
-	void on_file_dialog_response(int response_id,
+	void on_file_save_dialog_response(int response_id,
  						     	 Gtk::FileChooserDialog* dialog);
+	void on_file_open_dialog_response(int response_id,
+ 						     	 Gtk::FileChooserDialog* dialog);						 
 	void on_button_clicked_save();
 	void on_button_clicked_start();
 	void on_button_clicked_step();
