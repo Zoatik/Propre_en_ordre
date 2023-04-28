@@ -18,7 +18,11 @@
 #include <gtkmm/label.h>
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/eventcontrollerkey.h>
+#include <gtkmm/filechooserdialog.h>
+#include <gtkmm/filechooser.h>
 #include "graphic.h"
+
+
 
 class DrawArea : public Gtk::DrawingArea // héritage
 {
@@ -46,6 +50,8 @@ public:
 protected:
     void on_button_clicked_exit();
 	void on_button_clicked_open();
+	void on_file_dialog_response(int response_id,
+ 						     	 Gtk::FileChooserDialog* dialog);
 	void on_button_clicked_save();
 	void on_button_clicked_start();
 	void on_button_clicked_step();
@@ -78,6 +84,7 @@ protected:
 	Gtk::Label m_values_label;
 
 };
+
 
 
 #endif //GUI_H
