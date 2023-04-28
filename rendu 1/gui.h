@@ -17,6 +17,7 @@
 #include <gtkmm/aspectframe.h>
 #include <gtkmm/label.h>
 #include <gtkmm/drawingarea.h>
+#include <gtkmm/eventcontrollerkey.h>
 #include "graphic.h"
 
 class DrawArea : public Gtk::DrawingArea // héritage
@@ -49,12 +50,14 @@ protected:
 	void on_button_clicked_start();
 	void on_button_clicked_step();
 	bool on_timeout();
+	bool on_window_key_pressed(guint keyval, guint keycode, Gdk::ModifierType state); 
 
 	void refresh_label_values();
 
 	std::shared_ptr<Simulation> m_ptr_world = NULL;
 	DrawArea m_area;
 
+	bool keyb_driven_state;
 	bool m_running;
 
 	Gtk::Frame m_area_frame;

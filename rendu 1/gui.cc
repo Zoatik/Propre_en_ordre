@@ -90,6 +90,11 @@ GuiWindow::GuiWindow(Simulation* world = NULL) :
 	//timer
 	sigc::slot<bool()> my_slot = sigc::bind(sigc::mem_fun(*this, &GuiWindow::on_timeout));
 	auto conn = Glib::signal_timeout().connect(my_slot,delta_t*1000);
+	//events
+    auto controller = Gtk::EventControllerKey::create();
+    controller->signal_key_pressed().connect(
+                  sigc::mem_fun(*this, &GuiWindow::on_window_key_pressed), false);
+    add_controller(controller);
 }
 GuiWindow::~GuiWindow()
 {
@@ -132,7 +137,6 @@ void GuiWindow::on_button_clicked_step()
 		m_area.draw();
 		refresh_label_values();
 	}
-	
 }
 
 bool GuiWindow::on_timeout()
@@ -146,7 +150,29 @@ bool GuiWindow::on_timeout()
 		refresh_label_values();
 	}
 	return true;
+}
 
+bool GuiWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType state)
+{
+	switch(gdk_keyval_to_unicode(keyval))
+	{
+		case 'w':
+			std::cout << " Waow! key 'w' has been pressed !" << std::endl;
+			return true;
+		case 'c':
+			std::cout << " action sur le lable du bouton Clear" 
+				      << std::endl;
+			return true;
+		case 'C':
+			std::cout << " action sur le lable du bouton Clear" 
+				      << std::endl;
+			return true;
+		case 'q':
+			std::cout << "Quit" << std::endl;
+			return true;
+	}
+    //the event has not been handled
+    return false;
 }
 
 void GuiWindow::refresh_label_values()
