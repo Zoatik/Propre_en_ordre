@@ -157,6 +157,8 @@ void GuiWindow::on_file_dialog_response(int response_id,
 			std::cout << "File selected: " << filename << std::endl;
 			m_ptr_world->clear();
 			m_ptr_world->read_file(filename);
+			m_area.draw();
+			refresh_label_values();
 			break;
 		}
 			case Gtk::ResponseType::CANCEL:
@@ -259,12 +261,12 @@ void GuiWindow::refresh_label_values()
 
 ///DRAWAREA
 
-constexpr int area_side(400);
+constexpr unsigned taille_dessin(500); 
 
 DrawArea::DrawArea(Simulation *ptr_world): m_ptr_world(ptr_world)
 {
-    set_content_width(area_side);
-    set_content_height(area_side);
+    set_content_width(taille_dessin);
+    set_content_height(taille_dessin);
     set_draw_func(sigc::mem_fun(*this, &DrawArea::on_draw));
 }
 
