@@ -41,6 +41,7 @@ void Simulation::update()
     {
         std::cout<<m_bernoulli(e);
     }*/
+    std::bernoulli_distribution m_bernoulli(desintegration_rate/m_nbP);
     for(int i(0); i<m_nbP;i++)
     {
         if(m_bernoulli(e)==1)
@@ -49,7 +50,6 @@ void Simulation::update()
             {
                 cout<<"separated "<<i<<endl;
                 m_particles_vect.erase(m_particles_vect.begin()+i);
-                std::bernoulli_distribution (desintegration_rate/m_nbP);
                 m_nbP += 3;
             }
         }

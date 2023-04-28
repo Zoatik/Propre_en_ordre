@@ -85,7 +85,7 @@ GuiWindow::GuiWindow(Simulation* world) :
 
 	//timer
 	sigc::slot<bool()> my_slot = sigc::bind(sigc::mem_fun(*this, &GuiWindow::on_timeout));
-	auto conn = Glib::signal_timeout().connect(my_slot,1000);
+	auto conn = Glib::signal_timeout().connect(my_slot,delta_t*1000);
 }
 GuiWindow::~GuiWindow()
 {
