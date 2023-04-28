@@ -220,19 +220,11 @@ bool GuiWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType sta
 {
 	switch(gdk_keyval_to_unicode(keyval))
 	{
-		case 'w':
-			std::cout << " Waow! key 'w' has been pressed !" << std::endl;
+		case 's':
+			on_button_clicked_start();
 			return true;
-		case 'c':
-			std::cout << " action sur le lable du bouton Clear" 
-				      << std::endl;
-			return true;
-		case 'C':
-			std::cout << " action sur le lable du bouton Clear" 
-				      << std::endl;
-			return true;
-		case 'q':
-			std::cout << "Quit" << std::endl;
+		case '1':
+			on on_button_clicked_step();
 			return true;
 	}
     //the event has not been handled
