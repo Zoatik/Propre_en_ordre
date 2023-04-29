@@ -173,6 +173,7 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 		}
 	}
 	delete dialog;
+
 } 
 void GuiWindow::on_button_clicked_save()
 {
@@ -357,13 +358,13 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
 	
     if (not m_ptr_world->get_emptiness())
     {	
-		
+		graphic_set_context(cr);
 		 // center of the window
         int xc(width/2), yc(height/2);
  		 // window enlargment ratio
 		double ratio(width/(2*dmax));
 
-		m_ptr_world->draw(cr, xc, yc, ratio);
+		m_ptr_world->draw(xc, yc, ratio);
 	
     }
     else 

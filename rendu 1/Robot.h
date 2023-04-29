@@ -51,6 +51,7 @@ class Robot_S : public Robot
         void set(s_2d pos, int nbUpdate, int nbNr, int nbNs,
                  int nbNd, int nbRr, int nbRs);
         void set_nbNp(int count);
+        void draw(int xc, int yc, double ratio);
         int get_nb_update();
         int get_nbNr();
         int get_nbNs();
@@ -83,6 +84,7 @@ class Robot_R : public Robot
         virtual std::string get_type();
         //methods
         void set(s_2d pos);
+        void draw(int xc, int yc, double ratio);
 
     private:
         const std::string m_type = "R";
@@ -104,6 +106,7 @@ class Robot_N : public Robot
         //méthodes
         void set(s_2d pos, double angle, int coord_type,
                  bool panne, int k_update_panne);
+        void draw(int xc, int yc, double ratio);
         int get_k_update_panne();
         double get_angle();
         bool get_panne();

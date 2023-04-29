@@ -24,6 +24,7 @@ class Particle
         virtual ~Particle();
 
         //méthodes
+        void draw(int xc, int yc, double ratio);
         void set_particle(square s);
         square get_shape();
         bool separate(std::vector<Particle> &list);

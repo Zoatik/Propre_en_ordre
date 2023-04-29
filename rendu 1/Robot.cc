@@ -7,8 +7,8 @@
 * FILE: Robot.cc                 *
 *********************************/
 
-#include<iostream> //debug
-
+#include <iostream> //debug
+#include <math.h>
 
 #include "Robot.h"
 
@@ -88,6 +88,14 @@ void Robot_S::set_nbNp(int count)
     m_nbNp = count;
 }
 
+void Robot_S::draw(int xc, int yc, double ratio)
+{
+    s_2d center(xc+m_circle.m_center.m_x,yc-m_circle.m_center.m_y);
+    double radius(m_circle.m_radius*ratio);
+    double thickness(1.0*ratio);
+    draw_circle(center, radius, thickness, false, cyan, white);
+}
+
 //méthodes
 int Robot_S::get_nb_update()
 {
@@ -155,6 +163,14 @@ void Robot_R::set(s_2d pos)
     m_circle.m_radius = r_reparateur;
 }
 
+void Robot_R::draw(int xc, int yc, double ratio)
+{
+    s_2d center(xc+m_circle.m_center.m_x,yc-m_circle.m_center.m_y);
+    double radius(m_circle.m_radius*ratio);
+    double thickness(1.0*ratio);
+    draw_circle(center, radius, thickness, true, black, green);
+}
+
 /**NEUTRALISEURS**/
 Robot_N::Robot_N()
 {
@@ -200,6 +216,16 @@ void Robot_N::set(s_2d pos, double angle, int coord_type, bool panne, int k_upda
     m_coord_type = coord_type;
     m_panne = panne;
     m_k_update_panne = k_update_panne;
+}
+
+void Robot_N::draw(int xc, int yc, double ratio)
+{
+    s_2d center(xc+m_circle.m_center.m_x,yc-m_circle.m_center.m_y);
+    double radius(m_circle.m_radius*ratio);
+    s_2d end(center.m_x+sin(m_angle*M_PI),center.m_y-cos(m_angle*M_PI));
+    double thickness(1.0*ratio);
+    draw_circle(center, radius, thickness, false, black, white);
+    draw_line(center, end, thickness, green);
 }
 
 //méthodes

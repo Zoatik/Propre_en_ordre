@@ -8,100 +8,159 @@
 *********************************/
 
 #include "graphic.h"
-#include <math.h>
 #include <cairomm/context.h>
 
+static const Cairo::RefPtr<Cairo::Context>* ptcr(nullptr);
 
 
-void draw_border(const Cairo::RefPtr<Cairo::Context>& cr,
-                double ratio, int size)
+void graphic_set_context( const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    cr->set_line_width(1.0*ratio);
-    cr->set_source_rgb(0.3, 0.3, 0.3);
-    cr->move_to(0,0);
-    cr->line_to(0,size);
-    cr->line_to(size,size);
-    cr->line_to(size,0);
-    cr->line_to(0,0);
-    cr->stroke();
+ptcr = &cr;
 }
 
-void draw_robotN(const Cairo::RefPtr<Cairo::Context>& cr,
+void draw_border(double ratio, int size)
+{
+    (*ptcr)->set_line_width(1.0*ratio);
+    (*ptcr)->set_source_rgb(0.3, 0.3, 0.3);
+    (*ptcr)->move_to(0,0);
+    (*ptcr)->line_to(0,size);
+    (*ptcr)->line_to(size,size);
+    (*ptcr)->line_to(size,0);
+    (*ptcr)->line_to(0,0);
+    (*ptcr)->stroke();
+}
+
+void gtkmm_line(double x1, double y1, double x2, double y2, double thickness, Color color)
+{
+    (*ptcr)->set_line_width(thickness);
+    (*ptcr)->set_source_rgb(color.m_r, color.m_g, color.m_b);
+    (*ptcr)->move_to(x1, y1);
+    (*ptcr)->line_to(x2, y2);
+    (*ptcr)->stroke();
+}
+void gtkmm_square(double x, double y, double size, double thickness, Color color1)
+{
+    (*ptcr)->set_line_width(thickness);
+    (*ptcr)->set_source_rgb(color1.m_r, color1.m_g, color1.m_b);
+    (*ptcr)->move_to(x-size/2,y-size/2);
+    (*ptcr)->line_to(x-size/2,y+size/2);
+    (*ptcr)->line_to(x+size/2,y+size/2);
+    (*ptcr)->line_to(x+size/2,y-size/2);
+    (*ptcr)->line_to(x-size/2,y-size/2);
+    (*ptcr)->stroke();
+}
+void gtkmm_square(double x, double y, double size, double thickness, Color color1, Color color2)
+{
+    (*ptcr)->set_line_width(thickness);
+    (*ptcr)->set_source_rgb(color1.m_r, color1.m_g, color1.m_b);
+    (*ptcr)->save();
+    (*ptcr)->move_to(x-size/2,y-size/2);
+    (*ptcr)->line_to(x-size/2,y+size/2);
+    (*ptcr)->line_to(x+size/2,y+size/2);
+    (*ptcr)->line_to(x+size/2,y-size/2);
+    (*ptcr)->line_to(x-size/2,y-size/2);
+    (*ptcr)->close_path();
+	(*ptcr)->set_source_rgb(color2.m_r, color2.m_g, color2.m_b);
+  	(*ptcr)->fill_preserve();
+	(*ptcr)->restore();
+    (*ptcr)->stroke();
+}
+void gtkmm_circle(double x, double y, double radius, double thickness, Color color1)
+{
+    (*ptcr)->set_line_width(thickness);
+    (*ptcr)->set_source_rgb(0.0, 0.4, 0.4);
+	(*ptcr)->arc(x, y, radius, 0.0, 2.0 * M_PI);
+	(*ptcr)->stroke();
+}
+void gtkmm_circle(double x, double y, double radius, double thickness, Color color1, Color color2)
+{
+    (*ptcr)->set_line_width(thickness);
+    (*ptcr)->set_source_rgb(color1.m_r, color1.m_g, color1.m_b);
+	(*ptcr)->save();
+	(*ptcr)->arc(x, y, radius, 0.0, 2.0 * M_PI);
+	(*ptcr)->close_path();
+	(*ptcr)->set_source_rgb(color2.m_r, color2.m_g, color2.m_b);
+  	(*ptcr)->fill_preserve();
+	(*ptcr)->restore();
+	(*ptcr)->stroke();
+}
+
+/*void draw_robotN(const Cairo::RefPtr<Cairo::Context>& cr,
         double ratio, int x, int y, double radius, double angle)
 {
-    cr->set_line_width(1.0*ratio);
-    cr->set_source_rgb(0.1, 0.1, 0.1);
+    (*ptcr)->set_line_width(1.0*ratio);
+    (*ptcr)->set_source_rgb(0.1, 0.1, 0.1);
 
-	cr->arc(x, y, 
+	(*ptcr)->arc(x, y, 
             radius, 
             0.0, 2.0 * M_PI);
-    cr->stroke();
-	cr->move_to(x,y);
-	cr->arc(x, y, 
+    (*ptcr)->stroke();
+	(*ptcr)->move_to(x,y);
+	(*ptcr)->arc(x, y, 
             0.5, 
             0.0, 2.0 * M_PI);
-    cr->fill_preserve();
-    cr->stroke();
+    (*ptcr)->fill_preserve();
+    (*ptcr)->stroke();
 
-	cr->set_source_rgb(0.0, 0.7, 0.0);
-    cr->save();
-	cr->move_to(x, y);
-    cr->line_to(x+cos(angle)*radius, y-sin(angle)*radius);
-    cr->restore();
-	cr->stroke();
+	(*ptcr)->set_source_rgb(0.0, 0.7, 0.0);
+    (*ptcr)->save();
+	(*ptcr)->move_to(x, y);
+    (*ptcr)->line_to(x+cos(angle)*radius, y-sin(angle)*radius);
+    (*ptcr)->restore();
+	(*ptcr)->stroke();
 }
 
 void draw_robotS(const Cairo::RefPtr<Cairo::Context>& cr,
                 double ratio, int x, int y, double radius)
 {
-    cr->set_line_width(1.0*ratio);
-    cr->save();
-    cr->set_source_rgb(0.0, 0.4, 0.4);
-	cr->arc(x, y, 
+    (*ptcr)->set_line_width(1.0*ratio);
+    (*ptcr)->save();
+    (*ptcr)->set_source_rgb(0.0, 0.4, 0.4);
+	(*ptcr)->arc(x, y, 
             radius, 
             0.0, 2.0 * M_PI);
-	cr->stroke();
-	cr->move_to(x,y);
-	cr->arc(x, y, 
+	(*ptcr)->stroke();
+	(*ptcr)->move_to(x,y);
+	(*ptcr)->arc(x, y, 
             0.5, 
             0.0, 2.0 * M_PI);
-	cr->fill_preserve();
-    cr->restore();
-    cr->stroke();
+	(*ptcr)->fill_preserve();
+    (*ptcr)->restore();
+    (*ptcr)->stroke();
 }
 
 void draw_robotR(const Cairo::RefPtr<Cairo::Context>& cr,
                 double ratio, int x, int y, double radius)
 {
-    cr->set_line_width(1.0*ratio);
-    cr->set_source_rgb(0.1, 0.1, 0.1);
-	cr->save();
+    (*ptcr)->set_line_width(1.0*ratio);
+    (*ptcr)->set_source_rgb(0.1, 0.1, 0.1);
+	(*ptcr)->save();
 	
-	cr->arc(x, y, 
+	(*ptcr)->arc(x, y, 
             radius, 
             0.0, 2.0 * M_PI);
-	cr->close_path();
-	cr->set_source_rgb(0.0, 0.8, 0.0);
-  	cr->fill_preserve();
-	cr->restore();
-	cr->stroke();
+	(*ptcr)->close_path();
+	(*ptcr)->set_source_rgb(0.0, 0.8, 0.0);
+  	(*ptcr)->fill_preserve();
+	(*ptcr)->restore();
+	(*ptcr)->stroke();
 
 }
 
 void draw_particle(const Cairo::RefPtr<Cairo::Context>& cr,
                 double ratio, int x, int y, double size)
 {
-    cr->set_line_width(0.2*ratio);
-    cr->set_source_rgb(0.8, 0.0, 0.0);
-    cr->save();
- 	cr->move_to(x-size/2, y-size/2);
-    cr->line_to(x+size/2,y-size/2);
-    cr->line_to(x+size/2,y+size/2);
-    cr->line_to(x-size/2,y+size/2);
-    cr->line_to(x-size/2,y-size/2);
-    cr->close_path();
-	cr->set_source_rgb(0.7, 0.7, 0.7);
-  	cr->fill_preserve();
-	cr->restore();
-    cr->stroke();
-}
+    (*ptcr)->set_line_width(0.2*ratio);
+    (*ptcr)->set_source_rgb(0.8, 0.0, 0.0);
+    (*ptcr)->save();
+ 	(*ptcr)->move_to(x-size/2, y-size/2);
+    (*ptcr)->line_to(x+size/2,y-size/2);
+    (*ptcr)->line_to(x+size/2,y+size/2);
+    (*ptcr)->line_to(x-size/2,y+size/2);
+    (*ptcr)->line_to(x-size/2,y-size/2);
+    (*ptcr)->close_path();
+	(*ptcr)->set_source_rgb(0.7, 0.7, 0.7);
+  	(*ptcr)->fill_preserve();
+	(*ptcr)->restore();
+    (*ptcr)->stroke();
+}*/

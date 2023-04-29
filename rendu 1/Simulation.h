@@ -30,7 +30,7 @@ class Simulation
 
         //méthodes
         void update();
-        void draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, double ratio);
+        void draw(int xc, int yc, double ratio);
         void next_step();
         void clear();
 

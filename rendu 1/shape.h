@@ -67,13 +67,10 @@ bool check_position(square s1, double dmax);
 bool collision(circle c1, square s1, bool init);//init = true : phase d'initialisation
 bool collision(circle c1, circle c2, bool init);
 bool collision(square s1, square s2, bool init);
-void draw_info_robotS(const Cairo::RefPtr<Cairo::Context>& cr,
-                    int xc, int yc, double ratio, circle circle);
-void draw_info_robotN(const Cairo::RefPtr<Cairo::Context>& cr, 
-                        int xc, int yc, double ratio, circle circle, double angle);
-void draw_info_robotR(const Cairo::RefPtr<Cairo::Context>& cr, 
-                        int xc, int yc, double ratio, circle circle);
-void draw_info_particle(const Cairo::RefPtr<Cairo::Context>& cr, 
-                        int xc, int yc, double ratio, square square);
+void draw_line(s_2d start, s_2d end, double thickness, Color color);
+void draw_square(s_2d center, double size, double thickness,
+        bool filled, Color color1, Color color2);
+void draw_circle(s_2d center, double radius, double thickness, 
+        bool filled, Color color1, Color color2);
 
 #endif // SHAPE_H_INCLUDED

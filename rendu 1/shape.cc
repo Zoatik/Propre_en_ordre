@@ -86,36 +86,29 @@ bool collision(square s1, square s2, bool init = false)
             s1.m_size/2 + s2.m_size/2 + int(!init)*epsil_zero);
 }
 
-void draw_info_robotS(const Cairo::RefPtr<Cairo::Context>& cr, 
-                    int xc, int yc, double ratio, circle circle)
+void draw_line(s_2d start, s_2d end, double thickness, Color color)
 {
-    draw_robotS(cr, ratio, 
-                xc + circle.m_center.m_x*ratio, 
-                yc - circle.m_center.m_y*ratio, 
-                circle.m_radius*ratio);
+    gtkmm_line(start.m_x, start.m_y, end.m_x, end.m_y, thickness, color);
 }
-void draw_info_robotN(const Cairo::RefPtr<Cairo::Context>& cr, 
-                    int xc, int yc, double ratio, circle circle, double angle)
+
+void draw_square(s_2d center, double size, double thickness, 
+            bool filled, Color color1, Color color2)
 {
-    draw_robotN(cr, ratio,
-                xc + circle.m_center.m_x*ratio, 
-                yc - circle.m_center.m_y*ratio, 
-                circle.m_radius*ratio,
-                angle);
+    if(filled)
+    {
+        gtkmm_square(center.m_x, center.m_y, size, thickness, color1, color2);
+    }else{
+        gtkmm_square(center.m_x, center.m_y, size, thickness, color1);
+    }
 }
-void draw_info_robotR(const Cairo::RefPtr<Cairo::Context>& cr, 
-                    int xc, int yc, double ratio, circle circle)
+
+void draw_circle(s_2d center, double radius, double thickness, 
+            bool filled, Color color1, Color color2)
 {
-    draw_robotR(cr, ratio,
-                xc + circle.m_center.m_x*ratio, 
-                yc - circle.m_center.m_y*ratio, 
-                circle.m_radius*ratio);
-}
-void draw_info_particle(const Cairo::RefPtr<Cairo::Context>& cr, 
-                    int xc, int yc, double ratio, square square)
-{
-    draw_particle(cr, ratio,
-                xc + square.m_center.m_x*ratio, 
-                yc - square.m_center.m_y*ratio, 
-                square.m_size*ratio);
+    if(filled)
+    {
+        gtkmm_circle(center.m_x, center.m_y, radius, thickness, color1, color2);
+    }else{
+        gtkmm_circle(center.m_x, center.m_y, radius, thickness, color1);
+    }
 }

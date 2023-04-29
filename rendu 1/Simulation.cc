@@ -54,28 +54,28 @@ void Simulation::update()
     }
 }
 
-void Simulation::draw(const Cairo::RefPtr<Cairo::Context>& cr, int xc, int yc, double ratio)
+void Simulation::draw(int xc, int yc, double ratio)
 {
-    draw_border(cr, ratio, xc*2);
+    draw_border(ratio, xc*2);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
         if(m_robots[i]->get_type()=="S") 
         {
-            draw_info_robotS(cr, xc, yc, ratio, get_robotS().get_shape());
-            
+            Robot_S robotS = dynamic_cast<Robot_S&>(*m_robots[i]);
+            robotS.draw(xc, yc, ratio);
         }
         else if(m_robots[i]->get_type()=="N"){
             Robot_N robotN = dynamic_cast<Robot_N&>(*m_robots[i]);
-            draw_info_robotN(cr, xc, yc, ratio, 
-                        robotN.get_shape(), 
-                        robotN.get_angle());
+            robotN.draw(xc, yc, ratio);
         }
-        else
-            draw_info_robotR(cr, xc, yc, ratio, m_robots[i]->get_shape());
+        else{
+            Robot_R robotR = dynamic_cast<Robot_R&>(*m_robots[i]);
+            robotR.draw(xc, yc, ratio);
+        }
     }
 	for(int i=0;i<get_nbP();i++)
 	{
-		draw_info_particle(cr, xc, yc, ratio, m_particles_vect[i].get_shape());
+		m_particles_vect[i].draw(xc, yc, ratio);
 	};
 }
 
