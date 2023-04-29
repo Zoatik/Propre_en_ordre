@@ -89,7 +89,7 @@ bool collision(square s1, square s2, bool init = false)
 void draw_info_robotS(const Cairo::RefPtr<Cairo::Context>& cr, 
                     int xc, int yc, double ratio, circle circle)
 {
-    draw_robotS(cr, 
+    draw_robotS(cr, ratio, 
                 xc + circle.m_center.m_x*ratio, 
                 yc - circle.m_center.m_y*ratio, 
                 circle.m_radius*ratio);
@@ -97,7 +97,7 @@ void draw_info_robotS(const Cairo::RefPtr<Cairo::Context>& cr,
 void draw_info_robotN(const Cairo::RefPtr<Cairo::Context>& cr, 
                     int xc, int yc, double ratio, circle circle, double angle)
 {
-    draw_robotN(cr,
+    draw_robotN(cr, ratio,
                 xc + circle.m_center.m_x*ratio, 
                 yc - circle.m_center.m_y*ratio, 
                 circle.m_radius*ratio,
@@ -106,7 +106,7 @@ void draw_info_robotN(const Cairo::RefPtr<Cairo::Context>& cr,
 void draw_info_robotR(const Cairo::RefPtr<Cairo::Context>& cr, 
                     int xc, int yc, double ratio, circle circle)
 {
-    draw_robotR(cr,
+    draw_robotR(cr, ratio,
                 xc + circle.m_center.m_x*ratio, 
                 yc - circle.m_center.m_y*ratio, 
                 circle.m_radius*ratio);
@@ -114,7 +114,7 @@ void draw_info_robotR(const Cairo::RefPtr<Cairo::Context>& cr,
 void draw_info_particle(const Cairo::RefPtr<Cairo::Context>& cr, 
                     int xc, int yc, double ratio, square square)
 {
-    draw_particle(cr,
+    draw_particle(cr, ratio,
                 xc + square.m_center.m_x*ratio, 
                 yc - square.m_center.m_y*ratio, 
                 square.m_size*ratio);

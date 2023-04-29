@@ -362,9 +362,7 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
         int xc(width/2), yc(height/2);
  		 // window enlargment ratio
 		double ratio(width/(2*dmax));
-		
 
- 		//std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
 		m_ptr_world->draw(cr, xc, yc, ratio);
 	
     }

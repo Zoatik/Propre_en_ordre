@@ -9,10 +9,15 @@
 
 #include "graphic.h"
 #include <math.h>
+#include <cairomm/context.h>
 
-void draw_border(const Cairo::RefPtr<Cairo::Context>& cr, int size)
+
+
+void draw_border(const Cairo::RefPtr<Cairo::Context>& cr,
+                double ratio, int size)
 {
-    cr->set_source_rgb(0.1, 0.1, 0.1);
+    cr->set_line_width(1.0*ratio);
+    cr->set_source_rgb(0.3, 0.3, 0.3);
     cr->move_to(0,0);
     cr->line_to(0,size);
     cr->line_to(size,size);
@@ -22,8 +27,9 @@ void draw_border(const Cairo::RefPtr<Cairo::Context>& cr, int size)
 }
 
 void draw_robotN(const Cairo::RefPtr<Cairo::Context>& cr,
-                int x, int y, double radius, double angle)
+        double ratio, int x, int y, double radius, double angle)
 {
+    cr->set_line_width(1.0*ratio);
     cr->set_source_rgb(0.1, 0.1, 0.1);
 
 	cr->arc(x, y, 
@@ -46,8 +52,9 @@ void draw_robotN(const Cairo::RefPtr<Cairo::Context>& cr,
 }
 
 void draw_robotS(const Cairo::RefPtr<Cairo::Context>& cr,
-                int x, int y, double radius)
+                double ratio, int x, int y, double radius)
 {
+    cr->set_line_width(1.0*ratio);
     cr->save();
     cr->set_source_rgb(0.0, 0.4, 0.4);
 	cr->arc(x, y, 
@@ -64,8 +71,9 @@ void draw_robotS(const Cairo::RefPtr<Cairo::Context>& cr,
 }
 
 void draw_robotR(const Cairo::RefPtr<Cairo::Context>& cr,
-                int x, int y, double radius)
+                double ratio, int x, int y, double radius)
 {
+    cr->set_line_width(1.0*ratio);
     cr->set_source_rgb(0.1, 0.1, 0.1);
 	cr->save();
 	
@@ -81,8 +89,9 @@ void draw_robotR(const Cairo::RefPtr<Cairo::Context>& cr,
 }
 
 void draw_particle(const Cairo::RefPtr<Cairo::Context>& cr,
-                int x, int y, double size)
+                double ratio, int x, int y, double size)
 {
+    cr->set_line_width(0.2*ratio);
     cr->set_source_rgb(0.8, 0.0, 0.0);
     cr->save();
  	cr->move_to(x-size/2, y-size/2);
