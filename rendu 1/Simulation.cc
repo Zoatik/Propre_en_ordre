@@ -526,6 +526,7 @@ void Simulation::set_nbNp()
     int count(0);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
+cout<<"check"<<endl;
         if(m_robots[i]->get_type() == "N" and dynamic_cast<Robot_N&>(*m_robots[i]).get_panne() == true)
         {
             count+=1;

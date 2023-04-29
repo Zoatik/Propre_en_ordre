@@ -54,7 +54,8 @@ Robot_S::Robot_S(s_2d pos, int nbUpdate, int nbNr, int nbNs,
                                         m_nbNs(nbNs),
                                         m_nbNd(nbNd),
                                         m_nbRr(nbRr),
-                                        m_nbRs(nbRs)
+                                        m_nbRs(nbRs),
+                                        m_nbNp(0)
 {
    //ctor
 }
