@@ -110,7 +110,7 @@ void GuiWindow::on_button_clicked_open()
 {
 	std::cout<<"on ouvre"<<std::endl;
 	auto dialog = new Gtk::FileChooserDialog("Please choose a file",
-	Gtk::FileChooser::Action::OPEN);
+	Gtk::FileChooser::Action::OPEN, this);
 	dialog->set_transient_for(*this);
 	dialog->set_modal(true);
 	dialog->signal_response().connect(sigc::bind(
@@ -125,15 +125,8 @@ void GuiWindow::on_button_clicked_open()
 
 	auto filter_text = Gtk::FileFilter::create();
 	filter_text->set_name("Text files");
-	filter_text->add_mime_type("text/plain");
+	filter_text->add_pattern("*.txt");
 	dialog->add_filter(filter_text);
-
-	auto filter_cpp = Gtk::FileFilter::create();
-	filter_cpp->set_name("C/C++ files");
-	filter_cpp->add_mime_type("text/x-c");
-	filter_cpp->add_mime_type("text/x-c++");
-	filter_cpp->add_mime_type("text/x-c-header");
-	dialog->add_filter(filter_cpp);
 
 	auto filter_any = Gtk::FileFilter::create();
 	filter_any->set_name("Any files");
@@ -179,7 +172,7 @@ void GuiWindow::on_button_clicked_save()
 {
 	std::cout<<"on save"<<std::endl;
 	auto dialog = new Gtk::FileChooserDialog("Save a file",
-											 Gtk::FileChooser::Action::SAVE);
+											 Gtk::FileChooser::Action::SAVE, this);
 	dialog->set_transient_for(*this);
 	dialog->set_modal(true);
 	dialog->set_current_name("untitled.txt");
@@ -195,15 +188,8 @@ void GuiWindow::on_button_clicked_save()
 
 	auto filter_text = Gtk::FileFilter::create();
 	filter_text->set_name("Text files");
-	filter_text->add_mime_type("text/plain");
+	filter_text->add_pattern("*.txt");
 	dialog->add_filter(filter_text);
-
-	auto filter_cpp = Gtk::FileFilter::create();
-	filter_cpp->set_name("C/C++ files");
-	filter_cpp->add_mime_type("text/x-c");
-	filter_cpp->add_mime_type("text/x-c++");
-	filter_cpp->add_mime_type("text/x-c-header");
-	dialog->add_filter(filter_cpp);
 
 	auto filter_any = Gtk::FileFilter::create();
 	filter_any->set_name("Any files");
