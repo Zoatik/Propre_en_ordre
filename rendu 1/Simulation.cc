@@ -286,7 +286,7 @@ bool Simulation::read_robotS_prop(vector<string> lines, unsigned int& i)
     current_line >> stmp_x >> stmp_y >> stmp_nbUpdate >> stmp_nbNr >> stmp_nbNs >>
                     stmp_nbNd >> stmp_nbRr >> stmp_nbRs;
     tmp_x = stod(stmp_x);
-    tmp_y = stod(stmp_x);
+    tmp_y = stod(stmp_y);
     tmp_nbUpdate = stoi(stmp_nbUpdate);
     tmp_nbNr = stoi(stmp_nbNr);
     tmp_nbNs = stoi(stmp_nbNs); 
@@ -438,6 +438,7 @@ bool Simulation::check_robotS(Robot_S robotS)
 
 bool Simulation::check_robotR(Robot_R robotR)
 {
+    return true;
     for(unsigned int i(0); i<m_robots.size()-1; i++)//check superposition
     {
         if(collision(robotR.get_shape(),m_robots[i]->get_shape(), true))

@@ -245,21 +245,24 @@ void GuiWindow::on_file_save_dialog_response(int response_id,
 
 void GuiWindow::on_button_clicked_start()
 {	
-	if(not m_running)
+	if(not m_ptr_world->get_emptiness())
 	{
-		std::cout<<"on start"<<std::endl;
-		m_running = true;
-		m_button_start.set_label("Stop");
-	}else{
-		std::cout<<"on stop"<<std::endl;
-		m_running = false;
-		m_button_start.set_label("Start");
+		if(not m_running)
+		{
+			std::cout<<"on start"<<std::endl;
+			m_running = true;
+			m_button_start.set_label("Stop");
+		}else{
+			std::cout<<"on stop"<<std::endl;
+			m_running = false;
+			m_button_start.set_label("Start");
+		}
 	}
-	
 }
+
 void GuiWindow::on_button_clicked_step()
 {	
-	if(not m_running)
+	if(not m_ptr_world->get_emptiness() and not m_running)
 	{
 		std::cout<<"on step"<<std::endl;
 		m_ptr_world->next_step();
@@ -270,7 +273,7 @@ void GuiWindow::on_button_clicked_step()
 
 bool GuiWindow::on_timeout()
 {	
-	if(m_running)
+	if(not m_ptr_world->get_emptiness() and m_running)
 	{
 		std::cout<<"update"<<std::endl;
 		std::cout<<m_ptr_world->get_updates()<<std::endl;
@@ -358,7 +361,7 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
 		 // center of the window
         int xc(width/2), yc(height/2);
  		 // window enlargment ratio
-		double ratio(width/250.0);
+		double ratio(width/(2*dmax));
 		
 
  		//std::cout<<width<<" "<<height<<" "<<ratio<<std::endl;
