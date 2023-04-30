@@ -1,9 +1,9 @@
 /************|HEADER|*************
-* AUTHORS: - Hall Axel           *
-*          - Michel Lucas        *
+* AUTHORS: - Hall Axel (30%)     *
+*          - Michel Lucas (70%)  *
 * SCIPERS: - 346228              *
 *          - 363073              *
-* VERSION: 2.0                   *
+* VERSION: 2.6                   *
 * FILE: Particle.cc              *
 *********************************/
 
@@ -33,7 +33,6 @@ Particle::~Particle()
 {
     //dtor
 }
-
 
 void Particle::set_particle(square s)
 {

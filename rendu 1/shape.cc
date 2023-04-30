@@ -1,9 +1,9 @@
 /************|HEADER|*************
-* AUTHORS: - Hall Axel           *
-*          - Michel Lucas        *
+* AUTHORS: - Hall Axel (30%)     *
+*          - Michel Lucas (70%)  *
 * SCIPERS: - 346228              *
 *          - 363073              *
-* VERSION: 2.0                   *
+* VERSION: 2.6                   *
 * FILE: shape.cc                 *
 *********************************/
 
@@ -69,6 +69,7 @@ bool collision(circle c1, square s1, bool init = false)
                  fabs(c1.m_center.m_y-s1.m_center.m_y)>s1.m_size/2 and
                  L > c1.m_radius+int(!init)*epsil_zero);
     }
+    
     return false;
 }
 
@@ -97,9 +98,9 @@ void draw_square(s_2d center, double size, double thickness,
     if(filled)
     {
         gtkmm_square(center.m_x, center.m_y, size, thickness, color1, color2);
-    }else{
-        gtkmm_square(center.m_x, center.m_y, size, thickness, color1);
     }
+    else
+        gtkmm_square(center.m_x, center.m_y, size, thickness, color1);
 }
 
 void draw_circle(s_2d center, double radius, double thickness, 
@@ -108,7 +109,7 @@ void draw_circle(s_2d center, double radius, double thickness,
     if(filled)
     {
         gtkmm_circle(center.m_x, center.m_y, radius, thickness, color1, color2);
-    }else{
-        gtkmm_circle(center.m_x, center.m_y, radius, thickness, color1);
     }
+    else
+        gtkmm_circle(center.m_x, center.m_y, radius, thickness, color1);
 }

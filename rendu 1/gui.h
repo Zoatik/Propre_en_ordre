@@ -3,7 +3,7 @@
 *          - Michel Lucas        *
 * SCIPERS: - 346228              *
 *          - 363073              *
-* VERSION: 2.0                   *
+* VERSION: 2.6                   *
 * FILE: gui.h                    *
 *********************************/
 
@@ -65,7 +65,6 @@ protected:
 	std::shared_ptr<Simulation> m_ptr_world = nullptr;
 	DrawArea m_area;
 	bool m_empty;
-
 	bool keyb_driven_state;
 	bool m_running;
 
@@ -85,7 +84,6 @@ protected:
 	Gtk::Button m_button_step;
 	Gtk::Label m_texts_label;
 	Gtk::Label m_values_label;
-
 };
 
 

@@ -3,7 +3,7 @@
 *          - Michel Lucas        *
 * SCIPERS: - 346228              *
 *          - 363073              *
-* VERSION: 2.0                   *
+* VERSION: 2.6                   *
 * FILE: Simulation.h             *
 *********************************/
 
@@ -34,6 +34,7 @@ class Simulation
         void next_step();
         void clear();
 
+        //getter
         Robot_S& get_robotS();
         std::vector<Particle> get_particles_vect();
         std::vector<std::unique_ptr<Robot>>& get_robots_ptr_vect();
@@ -41,8 +42,6 @@ class Simulation
         int get_updates();
         int get_nb_N();
         int get_nb_R();
-        bool get_emptiness();
-
 
         //lecture de fichiers
         bool read_file(std::string file_path);//lit un fichier "test".txt
@@ -67,13 +66,12 @@ class Simulation
         void show_invalid_k_update(Robot_N curr_robotN);
         void show_neutralizers_superposition(Robot_N curr_robotN, int j);
         void show_repairer_neutralizer_superposition(Robot_N curr_robotN, int j);
-        void show_particle_robot_superposition(std::unique_ptr<Robot>& robot, int j);
-        
+        void show_particle_robot_superposition(std::unique_ptr<Robot>& robot, int j);    
+
         //attributs
         int m_nbP;
-        bool m_empty;
         std::vector<std::unique_ptr<Robot>> m_robots;
-        std::vector<Particle> m_particles_vect;
+        std::vector<Particle> m_particles_vect;  
         
         // attributs désintégration particules
         std::bernoulli_distribution m_bernoulli;

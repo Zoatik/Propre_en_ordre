@@ -1,9 +1,9 @@
 /************|HEADER|*************
-* AUTHORS: - Hall Axel           *
-*          - Michel Lucas        *
+* AUTHORS: - Hall Axel (80%)     *
+*          - Michel Lucas (20%)  *
 * SCIPERS: - 346228              *
 *          - 363073              *
-* VERSION: 2.0                   *
+* VERSION: 2.6                   *
 * FILE: Simulation.cc            *
 *********************************/
 
@@ -140,7 +140,8 @@ bool Simulation::write_file(std::string file_path)
             }
         }
         file_text += "\n";
-        for(int i(tmp_robotS.get_nbRs()+1); i-tmp_robotS.get_nbRs() <= tmp_robotS.get_nbNs(); i++)
+        for(int i(tmp_robotS.get_nbRs()+1); i-tmp_robotS.get_nbRs()
+                                            <= tmp_robotS.get_nbNs(); i++)
         {
             if(m_robots[i]->get_type() == "N")
             {
@@ -154,8 +155,8 @@ bool Simulation::write_file(std::string file_path)
                 if (tmp_robotN.get_panne())
                     tmp_panne = "true";
 
-                file_text += "\t" + tmp_x + " " + tmp_y + " "+ tmp_a + " " + 
-                            tmp_c_n + " " + tmp_panne  + " " + tmp_k_update_panne +"\n";
+                file_text += "\t" + tmp_x + " " + tmp_y + " "+ tmp_a + " " + tmp_c_n +
+                             " " + tmp_panne  + " " + tmp_k_update_panne +"\n";
             }
         }
     }
@@ -187,10 +188,6 @@ int Simulation::get_nb_R()
     return get_robotS().get_nbRs();
 }
 
-bool Simulation::get_emptiness()
-{
-    return m_empty;
-}
 
 bool Simulation::sep_file_infos(vector<string> lines)
 {
@@ -208,31 +205,19 @@ bool Simulation::sep_file_infos(vector<string> lines)
         {
         case 0 : //particules
             if (!read_particles_prop(spec, lines, i))
-            {
-                m_empty = true;
                 return false;
-            }
             break;
         case 1 : //robot Spatial
             if(!read_robotS_prop(lines, i))
-            {
-                m_empty = true;
                 return false;
-            }
             break;
         case 2 : //robot R�parateur
             if (!read_robotR_prop(lines, i))
-            {
-                m_empty = true;
                 return false;
-            }
             break;
         case 3 : //robot Neutralisateur
             if (!read_robotN_prop(lines, i))
-            {
-                m_empty = true;
                 return false;
-            } 
             break;
         default :
             break;
@@ -240,7 +225,7 @@ bool Simulation::sep_file_infos(vector<string> lines)
         line_type++; //on passe au type suivant
     }
     cout<<message::success();
-    m_empty = false;
+
     return true;
 }
 
@@ -254,16 +239,14 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
     {
         istringstream current_line(lines[i]);
         current_line.imbue( std::locale( "C" ) ); //set default format
-        string stmp_x(""), stmp_y(""), stmp_d("");
         double tmp_x(0.), tmp_y(0.), tmp_d(0.);
-        //cout<<lines[i]<<endl;
+
         current_line >> tmp_x >> tmp_y >> tmp_d;
-        stmp_d += " ";
-        //cout<<"size : "<<tmp_d<<endl; // debug
-        
         Particle part(square(s_2d(tmp_x, tmp_y), tmp_d));
+
         if (!check_particles(part))
             return false;
+
         i++;
     }
     return true;
@@ -275,11 +258,12 @@ bool Simulation::read_robotS_prop(vector<string> lines, unsigned int& i)
     current_line.imbue( std::locale( "C" ) ); 
     double tmp_x, tmp_y;
     int tmp_nbUpdate, tmp_nbNr, tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs;
+    
     current_line >> tmp_x >> tmp_y >> tmp_nbUpdate >> tmp_nbNr >> tmp_nbNs >>
                     tmp_nbNd >> tmp_nbRr >> tmp_nbRs;
 
-    m_robots.push_back(make_unique<Robot_S>(s_2d(tmp_x, tmp_y), tmp_nbUpdate, tmp_nbNr,
-					   tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs));
+    m_robots.push_back(make_unique<Robot_S>(s_2d(tmp_x, tmp_y), tmp_nbUpdate,
+                       tmp_nbNr, tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs));
 
     return check_robot(m_robots[0]);
 }
@@ -292,10 +276,13 @@ bool Simulation::read_robotR_prop(vector<string> lines, unsigned int& i)
         stringstream current_line(lines[i]);
         current_line.imbue( std::locale( "C" ) ); 
         double tmp_x, tmp_y;
+
         current_line >> tmp_x >> tmp_y;
         m_robots.push_back(make_unique<Robot_R>(s_2d(tmp_x, tmp_y)));
+
         if (!check_robot(m_robots[m_robots.size()-1]))
             return false;
+
         i++;
     }
     return true;
@@ -311,23 +298,26 @@ bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
         double tmp_x, tmp_y, tmp_a;
         int tmp_c_n, tmp_k_update_panne;
         string tmp_str_panne;
+
         current_line >> tmp_x >> tmp_y >> tmp_a >> tmp_c_n >>
                         tmp_str_panne >> tmp_k_update_panne;
         
         bool tmp_panne(bool(tmp_str_panne == "true"));
         m_robots.push_back(make_unique<Robot_N>(s_2d(tmp_x, tmp_y), tmp_a, tmp_c_n,
                                        tmp_panne, tmp_k_update_panne));
+
         if (!check_robot(m_robots[m_robots.size()-1]))
             return false;
+
         i++;
     }
-    set_nbNp();
+    set_nbNp();//set nombre de robot_N en panne
+
     return true;
 }
 
 void Simulation::clear()
 {
-    m_empty = true;
     m_robots.clear();
     m_nbP = 0;
     m_particles_vect.clear();
@@ -338,7 +328,6 @@ void Simulation::clear()
  
 bool Simulation::check_particles(Particle part)
 {
-   // cout<<"size : "<<part.get_shape().m_size<<endl; // debug
     if(part.get_shape().m_size<d_particule_min)
     {
         cout<<message::particle_too_small(part.get_shape().m_center.m_x,
@@ -346,6 +335,7 @@ bool Simulation::check_particles(Particle part)
                                             part.get_shape().m_size);
         return false;
     }
+
     if (!check_position(part.get_shape(), dmax))//check position valide
     {
         cout<<message::particle_outside(part.get_shape().m_center.m_x,
@@ -353,7 +343,7 @@ bool Simulation::check_particles(Particle part)
                                     part.get_shape().m_size);
         return false;
     }
-    //cout<<"nb de particules : "<<m_particles_vect.size()<<endl;
+    
     for(unsigned int i(0); i < m_particles_vect.size(); i++)
     {
         if(collision(part.get_shape(),m_particles_vect[i].get_shape(), true))
@@ -414,7 +404,6 @@ bool Simulation::check_robotS(Robot_S robotS)
 
 bool Simulation::check_robotR(Robot_R robotR)
 {
-    return true;
     for(unsigned int i(0); i<m_robots.size()-1; i++)//check superposition
     {
         if(collision(robotR.get_shape(),m_robots[i]->get_shape(), true))
@@ -430,6 +419,7 @@ bool Simulation::check_robotR(Robot_R robotR)
             }
         }
     }
+
     return true;
 }
 
@@ -458,6 +448,7 @@ bool Simulation::check_robotN(Robot_N robotN)
             }
         }
     }
+
     return true;
 }
 
@@ -524,9 +515,7 @@ void Simulation::set_nbNp()
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
         if(m_robots[i]->get_type() == "N" and dynamic_cast<Robot_N&>(*m_robots[i]).get_panne() == true)
-        {
             count+=1;
-        }
     }
     get_robotS().set_nbNp(count);
 }

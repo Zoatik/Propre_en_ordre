@@ -1,9 +1,9 @@
 /************|HEADER|*************
-* AUTHORS: - Hall Axel           *
-*          - Michel Lucas        *
+* AUTHORS: - Hall Axel (50%)     *
+*          - Michel Lucas (50%)  *
 * SCIPERS: - 346228              *
 *          - 363073              *
-* VERSION: 2.0                   *
+* VERSION: 2.6                   *
 * FILE: gui.cc                   *
 *********************************/
 
@@ -22,8 +22,7 @@ GuiWindow::GuiWindow(bool read_success, Simulation* world = nullptr) :
  	m_interface_box(Gtk::Orientation::VERTICAL, 0),
 	m_buttons_box(Gtk::Orientation::VERTICAL, 2),
 	m_infos_box(Gtk::Orientation::HORIZONTAL, 2),//contient du texte
-	m_area_aFrame(Gtk::Align::CENTER, /* center x */Gtk::Align::CENTER, /* center y */
-    				1, /* xsize/ysize = 2 */true /* ignore child's aspect */),
+	m_area_aFrame(Gtk::Align::CENTER,Gtk::Align::CENTER, 1, true),
 	m_buttons_frame("General"),
 	m_button_exit("Exit"), m_button_open("Open"),
 	m_button_save("Save"), m_button_start("Start"), m_button_step("Step"),
@@ -32,8 +31,8 @@ GuiWindow::GuiWindow(bool read_success, Simulation* world = nullptr) :
 	"robots neutraliseurs en panne:\nrobots neutraliseurs détruits:\n"
 	"robots neutraliseurs en réserve:")
 {
-	// ptr to the main simulation
-	m_ptr_world = std::shared_ptr<Simulation>(world);//On partage le pointer avec DrawArea
+	// pointeur partagé du monde
+	m_ptr_world = std::shared_ptr<Simulation>(world);
 	
 	//window's name
 	set_title("Propre En Ordre");
@@ -43,7 +42,6 @@ GuiWindow::GuiWindow(bool read_success, Simulation* world = nullptr) :
 	m_area_aFrame.set_expand();
 	m_area_aFrame.set_child(m_area);
 
-
 	//interface box
 	m_buttons_frame.set_margin(10);
 	m_buttons_frame.set_child(m_buttons_box);
@@ -51,11 +49,8 @@ GuiWindow::GuiWindow(bool read_success, Simulation* world = nullptr) :
 	m_infos_frame.set_margin(10);
 	m_infos_frame.set_child(m_infos_box);
 	refresh_label_values();
-	update_users_buttons();
 	m_infos_box.append(m_texts_label);
 	m_infos_box.append(m_values_label);
-
-
 	m_interface_box.append(m_buttons_frame);
 	m_interface_box.append(m_infos_frame);
 
@@ -65,31 +60,34 @@ GuiWindow::GuiWindow(bool read_success, Simulation* world = nullptr) :
 	m_main_box.append(m_interface_box);
 	m_main_box.append(m_area_aFrame);
 	m_main_box.set_homogeneous(false);
-	
-	
-	
+
 	m_button_exit.set_size_request(300,0);//request une taille minimale (si possible)
 	m_button_open.set_size_request(300,0);
 	m_button_save.set_size_request(300,0);
 	m_button_start.set_size_request(300,0);
 	m_button_step.set_size_request(300,0);
-	//m_buttons_box.set_size_request(400,400);//limite la taille des children (seulement largeur)
 
 	m_buttons_box.append(m_button_exit);
 	m_buttons_box.append(m_button_open);
 	m_buttons_box.append(m_button_save);
 	m_buttons_box.append(m_button_start);
 	m_buttons_box.append(m_button_step);
+	update_users_buttons();
 	
-
-	m_button_exit.signal_clicked().connect(sigc::mem_fun(*this, &GuiWindow::on_button_clicked_exit));
-	m_button_open.signal_clicked().connect(sigc::mem_fun(*this, &GuiWindow::on_button_clicked_open));
-	m_button_save.signal_clicked().connect(sigc::mem_fun(*this, &GuiWindow::on_button_clicked_save));
-	m_button_start.signal_clicked().connect(sigc::mem_fun(*this, &GuiWindow::on_button_clicked_start));
-	m_button_step.signal_clicked().connect(sigc::mem_fun(*this, &GuiWindow::on_button_clicked_step));
+	m_button_exit.signal_clicked().connect(
+		sigc::mem_fun(*this, &GuiWindow::on_button_clicked_exit));
+	m_button_open.signal_clicked().connect(
+		sigc::mem_fun(*this, &GuiWindow::on_button_clicked_open));
+	m_button_save.signal_clicked().connect(
+		sigc::mem_fun(*this, &GuiWindow::on_button_clicked_save));
+	m_button_start.signal_clicked().connect(
+		sigc::mem_fun(*this, &GuiWindow::on_button_clicked_start));
+	m_button_step.signal_clicked().connect(
+		sigc::mem_fun(*this, &GuiWindow::on_button_clicked_step));
 
 	//timer
-	sigc::slot<bool()> my_slot = sigc::bind(sigc::mem_fun(*this, &GuiWindow::on_timeout));
+	sigc::slot<bool()> my_slot = sigc::bind(
+		sigc::mem_fun(*this, &GuiWindow::on_timeout));
 	auto conn = Glib::signal_timeout().connect(my_slot,delta_t*1000);
 	//events
     auto controller = Gtk::EventControllerKey::create();
@@ -97,9 +95,10 @@ GuiWindow::GuiWindow(bool read_success, Simulation* world = nullptr) :
                   sigc::mem_fun(*this, &GuiWindow::on_window_key_pressed), false);
     add_controller(controller);
 }
+
 GuiWindow::~GuiWindow()
 {
-
+	//dtor
 }
 
 void GuiWindow::on_button_clicked_exit()
@@ -117,12 +116,11 @@ void GuiWindow::on_button_clicked_open()
 	sigc::mem_fun(*this, &GuiWindow::on_file_open_dialog_response),
 	dialog));
 
-	//Add response buttons to the dialog:
+	//response buttons
 	dialog->add_button("_Cancel", Gtk::ResponseType::CANCEL);
 	dialog->add_button("_Open", Gtk::ResponseType::OK);
 
-	//Add filters, so that only certain file types can be selected:
-
+	//filtres
 	auto filter_text = Gtk::FileFilter::create();
 	filter_text->set_name("Text files");
 	filter_text->add_pattern("*.txt");
@@ -135,17 +133,15 @@ void GuiWindow::on_button_clicked_open()
 
 	dialog->show();
 }
+
 void GuiWindow::on_file_open_dialog_response(int response_id,
  											Gtk::FileChooserDialog* dialog)
 {
-	//Handle the response:
 	switch (response_id)
 	{
 		case Gtk::ResponseType::OK: 
 		{
-			//Notice that this is a std::string, not a Glib::ustring.
 			auto filename = dialog->get_file()->get_path();
-			//std::cout << "File selected: " << filename << std::endl;
 			m_ptr_world->clear();
 			m_empty = !m_ptr_world->read_file(filename);
 			m_area.set_emptiness(m_empty);
@@ -154,20 +150,19 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 			update_users_buttons();
 			break;
 		}
-			case Gtk::ResponseType::CANCEL:
+		case Gtk::ResponseType::CANCEL:
 		{
-			//std::cout << "Cancel clicked." << std::endl;
 			break;
 		}
-			default:
+		default:
 		{
 			std::cout << "Unexpected button clicked." << std::endl;
 			break;
 		}
 	}
 	dialog->hide();
-
 } 
+
 void GuiWindow::on_button_clicked_save()
 {
 	auto dialog = new Gtk::FileChooserDialog(*this, "Save a file",
@@ -179,12 +174,11 @@ void GuiWindow::on_button_clicked_save()
 	sigc::mem_fun(*this, &GuiWindow::on_file_save_dialog_response),
 	dialog));
 
-	//Add response buttons to the dialog:
+	//response buttons
 	dialog->add_button("_Cancel", Gtk::ResponseType::CANCEL);
 	dialog->add_button("_Save", Gtk::ResponseType::OK);
 
-	//Add filters, so that only certain file types can be selected:
-
+	//filtres
 	auto filter_text = Gtk::FileFilter::create();
 	filter_text->set_name("Text files");
 	filter_text->add_pattern("*.txt");
@@ -201,26 +195,21 @@ void GuiWindow::on_button_clicked_save()
 void GuiWindow::on_file_save_dialog_response(int response_id,
  											Gtk::FileChooserDialog* dialog)
 {
-	//Handle the response:
 	switch (response_id)
 	{
 		case Gtk::ResponseType::OK: 
 		{
-			//Notice that this is a std::string, not a Glib::ustring.
-			auto filename = dialog->get_file()->get_path();
-			
-			//std::cout << "File selected: " << filename << std::endl;
+			auto filename = dialog->get_file()->get_path();	
 			m_ptr_world->write_file(filename);
 			break;
 		}
-			case Gtk::ResponseType::CANCEL:
+		case Gtk::ResponseType::CANCEL:
 		{
-			//std::cout << "Cancel clicked." << std::endl;
 			break;
 		}
-			default:
+		default:
 		{
-			//std::cout << "Unexpected button clicked." << std::endl;
+			std::cout << "Unexpected button clicked." << std::endl;
 			break;
 		}
 	}
@@ -239,7 +228,9 @@ void GuiWindow::on_button_clicked_start()
 			m_button_save.set_sensitive(false);
 			m_button_step.set_sensitive(false);
 
-		}else{
+		}
+		else
+		{
 			m_running = false;
 			m_button_start.set_label("Start");
 			m_button_open.set_sensitive(true);
@@ -263,7 +254,6 @@ bool GuiWindow::on_timeout()
 {	
 	if(!m_empty and m_running)
 	{
-		//std::cout<<m_ptr_world->get_updates()<<std::endl;
 		m_ptr_world->next_step();
 		m_area.queue_draw();
 		refresh_label_values();
@@ -298,12 +288,10 @@ void GuiWindow::refresh_label_values()
 		std::to_string(m_ptr_world->get_robotS().get_nbNs())+"\n"+
 		std::to_string(m_ptr_world->get_robotS().get_nbNp())+"\n"+
 		std::to_string(m_ptr_world->get_robotS().get_nbNd())+"\n"+
-		std::to_string(m_ptr_world->get_robotS().get_nbNr())
-		);
-	}else{
-		m_values_label.set_label("-\n-\n-\n-\n-\n-\n-\n-\n-");
+		std::to_string(m_ptr_world->get_robotS().get_nbNr()));
 	}
-	
+	else
+		m_values_label.set_label("-\n-\n-\n-\n-\n-\n-\n-\n-");
 }
 
 void GuiWindow::update_users_buttons()
@@ -315,7 +303,6 @@ void GuiWindow::update_users_buttons()
 }
 
 ///DRAWAREA
-
 constexpr unsigned taille_dessin(500); 
 
 DrawArea::DrawArea(bool read_success, Simulation *ptr_world): m_empty(!read_success),
@@ -328,7 +315,7 @@ DrawArea::DrawArea(bool read_success, Simulation *ptr_world): m_empty(!read_succ
 
 DrawArea::~DrawArea()
 {
-
+	//dtor
 }
 
 void DrawArea::set_world_ptr(std::shared_ptr<Simulation>& ptr_world)
@@ -343,21 +330,18 @@ void DrawArea::set_emptiness(bool is_empty)
 
 void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
-	
     if (!m_empty)
     {	
 		graphic_set_context(cr);
-		 // center of the window
+		// center of the window
         int xc(width/2), yc(height/2);
- 		 // window enlargment ratio
+ 		// window enlargment ratio
 		double ratio(width/(2*dmax));
 
 		m_ptr_world->draw(xc, yc, ratio);
-	
     }
     else 
     {
         std::cout<<"EMPTY"<<std::endl;
-    }
-    
+    }  
 }

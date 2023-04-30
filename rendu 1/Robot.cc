@@ -1,9 +1,9 @@
 /************|HEADER|*************
-* AUTHORS: - Hall Axel           *
-*          - Michel Lucas        *
+* AUTHORS: - Hall Axel (60%)     *
+*          - Michel Lucas (40%)  *
 * SCIPERS: - 346228              *
 *          - 363073              *
-* VERSION: 2.0                   *
+* VERSION: 2.6                   *
 * FILE: Robot.cc                 *
 *********************************/
 
@@ -211,7 +211,8 @@ std::string Robot_N::get_type()
     return m_type;
 }
 
-void Robot_N::set(s_2d pos, double angle, int coord_type, bool panne, int k_update_panne)
+void Robot_N::set(s_2d pos, double angle, int coord_type,
+                  bool panne, int k_update_panne)
 {
     m_circle.m_center = pos;
     m_circle.m_radius = r_neutraliseur;

@@ -3,7 +3,7 @@
 *          - Michel Lucas        *
 * SCIPERS: - 346228              *
 *          - 363073              *
-* VERSION: 2.0                   *
+* VERSION: 2.6                   *
 * FILE: Robot.h                  *
 *********************************/
 

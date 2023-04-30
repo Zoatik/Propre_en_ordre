@@ -1,11 +1,14 @@
+/************|HEADER|*************
+* AUTHORS: - Hall Axel           *
+*          - Michel Lucas        *
+* SCIPERS: - 346228              *
+*          - 363073              *
+* VERSION: 2.6                   *
+* FILE: constantes.h             *
+*********************************/
+
 #ifndef CONSTANTES_H_INCLUDED
 #define CONSTANTES_H_INCLUDED
-/***************************************
-/nom du fichier : constantes.h
-/auteurs        : - Axel Hall - 346228
-/		  - Lucas Michel - 363073
-/version        : 1.1
-****************************************/
 
 #include "shape.h" // nécessaire pour utiliser epsil_zero et disposer des symbols de graphic.h
 
