@@ -90,10 +90,12 @@ void Robot_S::set_nbNp(int count)
 
 void Robot_S::draw(int xc, int yc, double ratio)
 {
-    s_2d center(xc+m_circle.m_center.m_x,yc-m_circle.m_center.m_y);
+    s_2d center(xc+m_circle.m_center.m_x*ratio,
+                yc-m_circle.m_center.m_y*ratio);
     double radius(m_circle.m_radius*ratio);
     double thickness(1.0*ratio);
     draw_circle(center, radius, thickness, false, cyan, white);
+    gtkmm_point(center.m_x, center.m_y, 1, cyan);
 }
 
 //méthodes
@@ -165,7 +167,8 @@ void Robot_R::set(s_2d pos)
 
 void Robot_R::draw(int xc, int yc, double ratio)
 {
-    s_2d center(xc+m_circle.m_center.m_x,yc-m_circle.m_center.m_y);
+    s_2d center(xc+m_circle.m_center.m_x*ratio,
+                yc-m_circle.m_center.m_y*ratio);
     double radius(m_circle.m_radius*ratio);
     double thickness(1.0*ratio);
     draw_circle(center, radius, thickness, true, black, green);
@@ -220,12 +223,20 @@ void Robot_N::set(s_2d pos, double angle, int coord_type, bool panne, int k_upda
 
 void Robot_N::draw(int xc, int yc, double ratio)
 {
-    s_2d center(xc+m_circle.m_center.m_x,yc-m_circle.m_center.m_y);
+    s_2d center(xc+m_circle.m_center.m_x*ratio,
+                yc-m_circle.m_center.m_y*ratio);
     double radius(m_circle.m_radius*ratio);
-    s_2d end(center.m_x+sin(m_angle*M_PI),center.m_y-cos(m_angle*M_PI));
+    s_2d end(center.m_x+cos(m_angle)*m_circle.m_radius*ratio,
+            center.m_y-sin(m_angle)*m_circle.m_radius*ratio);
     double thickness(1.0*ratio);
-    draw_circle(center, radius, thickness, false, black, white);
+    if(m_panne){
+        draw_circle(center, radius, thickness, false, orange, white);
+    }else{
+        draw_circle(center, radius, thickness, false, black, white);
+    }
+    
     draw_line(center, end, thickness, green);
+    gtkmm_point(center.m_x, center.m_y, 1, black);
 }
 
 //méthodes

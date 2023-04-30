@@ -42,9 +42,10 @@ void Particle::set_particle(square s)
 
 void Particle::draw(int xc, int yc, double ratio)
 {
-    s_2d center(xc, yc);
-    double thickness(0.2*ratio);
-    draw_square(center, m_square.m_size, thickness, true, red, grey);
+    s_2d center(xc+m_square.m_center.m_x*ratio, yc-m_square.m_center.m_y*ratio);
+    double size(m_square.m_size*ratio);
+    double thickness(0.3*ratio);
+    draw_square(center, size, thickness, true, red, grey);
 }
 
 //méthodes

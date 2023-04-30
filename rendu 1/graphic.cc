@@ -10,6 +10,8 @@
 #include "graphic.h"
 #include <cairomm/context.h>
 
+
+
 static const Cairo::RefPtr<Cairo::Context>* ptcr(nullptr);
 
 
@@ -28,6 +30,18 @@ void draw_border(double ratio, int size)
     (*ptcr)->line_to(size,0);
     (*ptcr)->line_to(0,0);
     (*ptcr)->stroke();
+}
+
+void gtkmm_point(double x, double y, double radius, Color color)
+{
+    (*ptcr)->set_line_width(0.1);
+    (*ptcr)->set_source_rgb(color.m_r, color.m_g, color.m_b);
+	(*ptcr)->save();
+	(*ptcr)->arc(x, y, radius, 0.0, 2.0 * M_PI);
+	(*ptcr)->close_path();
+  	(*ptcr)->fill_preserve();
+	(*ptcr)->restore();
+	(*ptcr)->stroke();
 }
 
 void gtkmm_line(double x1, double y1, double x2, double y2, double thickness, Color color)
@@ -68,7 +82,7 @@ void gtkmm_square(double x, double y, double size, double thickness, Color color
 void gtkmm_circle(double x, double y, double radius, double thickness, Color color1)
 {
     (*ptcr)->set_line_width(thickness);
-    (*ptcr)->set_source_rgb(0.0, 0.4, 0.4);
+    (*ptcr)->set_source_rgb(color1.m_r, color1.m_g, color1.m_b);
 	(*ptcr)->arc(x, y, radius, 0.0, 2.0 * M_PI);
 	(*ptcr)->stroke();
 }
