@@ -17,7 +17,7 @@ static const Cairo::RefPtr<Cairo::Context>* ptcr(nullptr);
 
 void graphic_set_context( const Cairo::RefPtr<Cairo::Context>& cr)
 {
-ptcr = &cr;
+    ptcr = &cr;
 }
 
 void draw_border(double ratio, int size)
