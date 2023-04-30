@@ -61,6 +61,7 @@ protected:
 	bool on_window_key_pressed(guint keyval, guint keycode, Gdk::ModifierType state); 
 
 	void refresh_label_values();
+	void update_users_buttons();
 
 	std::shared_ptr<Simulation> m_ptr_world = nullptr;
 	DrawArea m_area;

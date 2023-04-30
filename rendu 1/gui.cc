@@ -17,7 +17,7 @@
 #include "gui.h"
 
 
-GuiWindow::GuiWindow(Simulation* world = NULL) : 
+GuiWindow::GuiWindow(Simulation* world = nullptr) : 
 	m_main_box(Gtk::Orientation::HORIZONTAL, 0),
  	m_interface_box(Gtk::Orientation::VERTICAL, 0),
 	m_buttons_box(Gtk::Orientation::VERTICAL, 2),
@@ -52,6 +52,7 @@ GuiWindow::GuiWindow(Simulation* world = NULL) :
 	m_infos_frame.set_margin(10);
 	m_infos_frame.set_child(m_infos_box);
 	refresh_label_values();
+	update_users_buttons();
 	m_infos_box.append(m_texts_label);
 	m_infos_box.append(m_values_label);
 
@@ -150,6 +151,7 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 			m_ptr_world->read_file(filename);
 			m_area.draw();
 			refresh_label_values();
+			update_users_buttons();
 			break;
 		}
 			case Gtk::ResponseType::CANCEL:
@@ -233,9 +235,16 @@ void GuiWindow::on_button_clicked_start()
 		{
 			m_running = true;
 			m_button_start.set_label("Stop");
+			m_button_open.set_sensitive(false);
+			m_button_save.set_sensitive(false);
+			m_button_step.set_sensitive(false);
+
 		}else{
 			m_running = false;
 			m_button_start.set_label("Start");
+			m_button_open.set_sensitive(true);
+			m_button_save.set_sensitive(true);
+			m_button_step.set_sensitive(true);
 		}
 	}
 }
@@ -295,6 +304,14 @@ void GuiWindow::refresh_label_values()
 		m_values_label.set_label("-\n-\n-\n-\n-\n-\n-\n-\n-");
 	}
 	
+}
+
+void GuiWindow::update_users_buttons()
+{
+	bool is_active = !m_ptr_world->get_emptiness();
+	m_button_save.set_sensitive(is_active);
+	m_button_start.set_sensitive(is_active);
+	m_button_step.set_sensitive(is_active);
 }
 
 ///DRAWAREA
