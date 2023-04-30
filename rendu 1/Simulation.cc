@@ -107,7 +107,7 @@ bool Simulation::write_file(std::string file_path)
     string file_text;
     file_text += "# Custom file text saved\n\n";
     file_text += to_string(m_nbP) + "\n";
-    for(unsigned int i(0); i < m_nbP; i++)
+    for(int i(0); i < m_nbP; i++)
     {
         string tmp_x = to_string(m_particles_vect[i].get_shape().m_center.m_x);
         string tmp_y = to_string(m_particles_vect[i].get_shape().m_center.m_y);
@@ -130,7 +130,7 @@ bool Simulation::write_file(std::string file_path)
                   + tmp_nbNr + " " + tmp_nbNs + " " + tmp_nbNd + " "
                   + tmp_nbNr + " " + tmp_nbRs + "\n";
 
-        for(unsigned int i(1); i <= tmp_robotS.get_nbRs(); i++)
+        for(int i(1); i <= tmp_robotS.get_nbRs(); i++)
         {
             if(m_robots[i]->get_type() == "R")
             {
@@ -140,7 +140,7 @@ bool Simulation::write_file(std::string file_path)
             }
         }
         file_text += "\n";
-        for(unsigned int i(tmp_robotS.get_nbRs()+1); i-tmp_robotS.get_nbRs() <= tmp_robotS.get_nbNs(); i++)
+        for(int i(tmp_robotS.get_nbRs()+1); i-tmp_robotS.get_nbRs() <= tmp_robotS.get_nbNs(); i++)
         {
             if(m_robots[i]->get_type() == "N")
             {
