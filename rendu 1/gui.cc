@@ -159,11 +159,11 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 		}
 			default:
 		{
-			//std::cout << "Unexpected button clicked." << std::endl;
+			std::cout << "Unexpected button clicked." << std::endl;
 			break;
 		}
 	}
-	delete dialog;
+	dialog->hide();
 
 } 
 void GuiWindow::on_button_clicked_save()
@@ -222,7 +222,7 @@ void GuiWindow::on_file_save_dialog_response(int response_id,
 			break;
 		}
 	}
-	delete dialog;
+	dialog->hide();
 } 
 
 void GuiWindow::on_button_clicked_start()
