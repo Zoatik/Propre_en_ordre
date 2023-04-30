@@ -11,6 +11,8 @@
 #include <iostream>
 #include <cairomm/context.h>
 #include <glibmm.h>
+#include <gtkmm.h>
+#include <gtkmm/application.h>
 #include "Simulation.h"
 #include "gui.h"
 
@@ -32,11 +34,10 @@ GuiWindow::GuiWindow(Simulation* world = NULL) :
 	"robots neutraliseurs en réserve:")
 {
 	// ptr to the main simulation
-	m_ptr_world = std::shared_ptr<Simulation>(world);
-	//m_area.set_world_ptr(m_ptr_world);//On partage le pointer avec DrawArea
+	m_ptr_world = std::shared_ptr<Simulation>(world);//On partage le pointer avec DrawArea
 	
 	//window's name
-	set_title("Drawing test");
+	set_title("Propre En Ordre");
 
 	//area frame
 	m_area_aFrame.set_child(m_area);
@@ -108,7 +109,6 @@ void GuiWindow::on_button_clicked_exit()
 
 void GuiWindow::on_button_clicked_open()
 {
-	std::cout<<"on ouvre"<<std::endl;
 	auto dialog = new Gtk::FileChooserDialog("Please choose a file",
 	Gtk::FileChooser::Action::OPEN, this);
 	dialog->set_transient_for(*this);
@@ -143,11 +143,9 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 	{
 		case Gtk::ResponseType::OK: 
 		{
-			std::cout << "Open clicked." << std::endl;
-
 			//Notice that this is a std::string, not a Glib::ustring.
 			auto filename = dialog->get_file()->get_path();
-			std::cout << "File selected: " << filename << std::endl;
+			//std::cout << "File selected: " << filename << std::endl;
 			m_ptr_world->clear();
 			m_ptr_world->read_file(filename);
 			m_area.draw();
@@ -156,12 +154,12 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 		}
 			case Gtk::ResponseType::CANCEL:
 		{
-			std::cout << "Cancel clicked." << std::endl;
+			//std::cout << "Cancel clicked." << std::endl;
 			break;
 		}
 			default:
 		{
-			std::cout << "Unexpected button clicked." << std::endl;
+			//std::cout << "Unexpected button clicked." << std::endl;
 			break;
 		}
 	}
@@ -170,7 +168,6 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 } 
 void GuiWindow::on_button_clicked_save()
 {
-	std::cout<<"on save"<<std::endl;
 	auto dialog = new Gtk::FileChooserDialog("Save a file",
 											 Gtk::FileChooser::Action::SAVE, this);
 	dialog->set_transient_for(*this);
@@ -207,23 +204,21 @@ void GuiWindow::on_file_save_dialog_response(int response_id,
 	{
 		case Gtk::ResponseType::OK: 
 		{
-			std::cout << "Open clicked." << std::endl;
-
 			//Notice that this is a std::string, not a Glib::ustring.
 			auto filename = dialog->get_file()->get_path();
 			
-			std::cout << "File selected: " << filename << std::endl;
+			//std::cout << "File selected: " << filename << std::endl;
 			m_ptr_world->write_file(filename);
 			break;
 		}
 			case Gtk::ResponseType::CANCEL:
 		{
-			std::cout << "Cancel clicked." << std::endl;
+			//std::cout << "Cancel clicked." << std::endl;
 			break;
 		}
 			default:
 		{
-			std::cout << "Unexpected button clicked." << std::endl;
+			//std::cout << "Unexpected button clicked." << std::endl;
 			break;
 		}
 	}
@@ -236,11 +231,9 @@ void GuiWindow::on_button_clicked_start()
 	{
 		if(not m_running)
 		{
-			std::cout<<"on start"<<std::endl;
 			m_running = true;
 			m_button_start.set_label("Stop");
 		}else{
-			std::cout<<"on stop"<<std::endl;
 			m_running = false;
 			m_button_start.set_label("Start");
 		}
@@ -251,7 +244,6 @@ void GuiWindow::on_button_clicked_step()
 {	
 	if(not m_ptr_world->get_emptiness() and not m_running)
 	{
-		std::cout<<"on step"<<std::endl;
 		m_ptr_world->next_step();
 		m_area.draw();
 		refresh_label_values();
@@ -262,8 +254,7 @@ bool GuiWindow::on_timeout()
 {	
 	if(not m_ptr_world->get_emptiness() and m_running)
 	{
-		std::cout<<"update"<<std::endl;
-		std::cout<<m_ptr_world->get_updates()<<std::endl;
+		//std::cout<<m_ptr_world->get_updates()<<std::endl;
 		m_ptr_world->next_step();
 		m_area.draw();
 		refresh_label_values();

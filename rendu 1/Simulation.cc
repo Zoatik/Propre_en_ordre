@@ -46,7 +46,6 @@ void Simulation::update()
         {
             if(m_particles_vect[i].separate(m_particles_vect))
             {
-                cout<<"separated "<<i<<endl;
                 m_particles_vect.erase(m_particles_vect.begin()+i);
                 m_nbP += 3;
             }
@@ -91,7 +90,6 @@ bool Simulation::read_file(string file_path)
         {
             getline(file, line);
             lines.push_back(line);
-            cout<<line<<endl;
         }
     }
     else
@@ -106,7 +104,6 @@ bool Simulation::read_file(string file_path)
 
 bool Simulation::write_file(std::string file_path)
 {
-    cout<<"on entre"<<endl;
     string file_text;
     file_text += "# Custom file text saved\n\n";
     file_text += to_string(m_nbP) + "\n";
@@ -259,10 +256,10 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
         current_line.imbue( std::locale( "C" ) ); //set default format
         string stmp_x(""), stmp_y(""), stmp_d("");
         double tmp_x(0.), tmp_y(0.), tmp_d(0.);
-        cout<<lines[i]<<endl;
+        //cout<<lines[i]<<endl;
         current_line >> tmp_x >> tmp_y >> tmp_d;
         stmp_d += " ";
-        cout<<"size : "<<tmp_d<<endl; // debug
+        //cout<<"size : "<<tmp_d<<endl; // debug
         
         Particle part(square(s_2d(tmp_x, tmp_y), tmp_d));
         if (!check_particles(part))
@@ -526,7 +523,6 @@ void Simulation::set_nbNp()
     int count(0);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
-cout<<"check"<<endl;
         if(m_robots[i]->get_type() == "N" and dynamic_cast<Robot_N&>(*m_robots[i]).get_panne() == true)
         {
             count+=1;
