@@ -66,9 +66,9 @@ class Robot_S : public Robot
         int m_nbNr;
         int m_nbNs;
         int m_nbNd;
-        int m_nbNp;
         int m_nbRr;
         int m_nbRs;
+        int m_nbNp;
         const std::string m_type = "S";
 };
 

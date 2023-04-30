@@ -11,23 +11,22 @@
 #include <iostream>
 #include <cairomm/context.h>
 #include <glibmm.h>
-#include <gtkmm.h>
 #include <gtkmm/application.h>
 #include "Simulation.h"
 #include "gui.h"
 
 
-GuiWindow::GuiWindow(Simulation* world = nullptr) : 
+GuiWindow::GuiWindow(bool read_success, Simulation* world = nullptr) : 
+	m_area(read_success, world), m_empty(!read_success), m_running(false),
 	m_main_box(Gtk::Orientation::HORIZONTAL, 0),
  	m_interface_box(Gtk::Orientation::VERTICAL, 0),
 	m_buttons_box(Gtk::Orientation::VERTICAL, 2),
 	m_infos_box(Gtk::Orientation::HORIZONTAL, 2),//contient du texte
 	m_area_aFrame(Gtk::Align::CENTER, /* center x */Gtk::Align::CENTER, /* center y */
     				1, /* xsize/ysize = 2 */true /* ignore child's aspect */),
-
+	m_buttons_frame("General"),
 	m_button_exit("Exit"), m_button_open("Open"),
 	m_button_save("Save"), m_button_start("Start"), m_button_step("Step"),
-	m_buttons_frame("General"), m_area(world), m_running(false),
 	m_texts_label("mises à jour :\nparticules:\nRobots réparateurs en service:\n"
 	"Robots réparateurs en réserve:\nrobots neutraliseurs en service:\n"
 	"robots neutraliseurs en panne:\nrobots neutraliseurs détruits:\n"
@@ -148,8 +147,9 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 			auto filename = dialog->get_file()->get_path();
 			//std::cout << "File selected: " << filename << std::endl;
 			m_ptr_world->clear();
-			m_ptr_world->read_file(filename);
-			m_area.draw();
+			m_empty = !m_ptr_world->read_file(filename);
+			m_area.set_emptiness(m_empty);
+			m_area.queue_draw();
 			refresh_label_values();
 			update_users_buttons();
 			break;
@@ -229,9 +229,9 @@ void GuiWindow::on_file_save_dialog_response(int response_id,
 
 void GuiWindow::on_button_clicked_start()
 {	
-	if(not m_ptr_world->get_emptiness())
+	if(!m_empty)
 	{
-		if(not m_running)
+		if(!m_running)
 		{
 			m_running = true;
 			m_button_start.set_label("Stop");
@@ -251,21 +251,21 @@ void GuiWindow::on_button_clicked_start()
 
 void GuiWindow::on_button_clicked_step()
 {	
-	if(not m_ptr_world->get_emptiness() and not m_running)
+	if(!m_empty and !m_running)
 	{
 		m_ptr_world->next_step();
-		m_area.draw();
+		m_area.queue_draw();
 		refresh_label_values();
 	}
 }
 
 bool GuiWindow::on_timeout()
 {	
-	if(not m_ptr_world->get_emptiness() and m_running)
+	if(!m_empty and m_running)
 	{
 		//std::cout<<m_ptr_world->get_updates()<<std::endl;
 		m_ptr_world->next_step();
-		m_area.draw();
+		m_area.queue_draw();
 		refresh_label_values();
 	}
 	return true;
@@ -288,7 +288,7 @@ bool GuiWindow::on_window_key_pressed(guint keyval, guint, Gdk::ModifierType sta
 
 void GuiWindow::refresh_label_values()
 {	
-	if(not m_ptr_world->get_emptiness()) 
+	if(!m_empty) 
 	{
 		m_values_label.set_label(
 		std::to_string(m_ptr_world->get_updates())+"\n"+
@@ -308,7 +308,7 @@ void GuiWindow::refresh_label_values()
 
 void GuiWindow::update_users_buttons()
 {
-	bool is_active = !m_ptr_world->get_emptiness();
+	bool is_active = !m_empty;
 	m_button_save.set_sensitive(is_active);
 	m_button_start.set_sensitive(is_active);
 	m_button_step.set_sensitive(is_active);
@@ -318,7 +318,8 @@ void GuiWindow::update_users_buttons()
 
 constexpr unsigned taille_dessin(500); 
 
-DrawArea::DrawArea(Simulation *ptr_world): m_ptr_world(ptr_world)
+DrawArea::DrawArea(bool read_success, Simulation *ptr_world): m_empty(!read_success),
+															  m_ptr_world(ptr_world)
 {
     set_content_width(taille_dessin);
     set_content_height(taille_dessin);
@@ -335,22 +336,15 @@ void DrawArea::set_world_ptr(std::shared_ptr<Simulation>& ptr_world)
 	m_ptr_world = ptr_world;
 }
 
-void DrawArea::draw()
+void DrawArea::set_emptiness(bool is_empty)
 {
-    m_empty = false;
-    queue_draw();
-}
-
-void DrawArea::clear()
-{
-    m_empty = true;
-    queue_draw();
+	m_empty = is_empty;
 }
 
 void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
 	
-    if (not m_ptr_world->get_emptiness())
+    if (!m_empty)
     {	
 		graphic_set_context(cr);
 		 // center of the window

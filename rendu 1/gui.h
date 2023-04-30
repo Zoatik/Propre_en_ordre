@@ -27,12 +27,11 @@
 class DrawArea : public Gtk::DrawingArea // héritage
 {
 public:
-    DrawArea(Simulation *ptr_world);
+    DrawArea(bool read_success, Simulation *ptr_world);
     virtual ~DrawArea();
 
-    void draw();
-    void clear();
 	void set_world_ptr(std::shared_ptr<Simulation>& ptr_world);
+	void set_emptiness(bool is_empty);
 protected:
     void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
 
@@ -45,7 +44,7 @@ private:
 class GuiWindow: public Gtk::Window
 {
 public:
-    GuiWindow(Simulation* world);
+    GuiWindow(bool read_success, Simulation* world);
     ~GuiWindow() override;
 protected:
     void on_button_clicked_exit();
@@ -65,19 +64,20 @@ protected:
 
 	std::shared_ptr<Simulation> m_ptr_world = nullptr;
 	DrawArea m_area;
+	bool m_empty;
 
 	bool keyb_driven_state;
 	bool m_running;
 
 	Gtk::Frame m_area_frame;
-	Gtk::AspectFrame m_area_aFrame;
 	Gtk::Frame m_main_frame;
 	Gtk::Box m_main_box;
 	Gtk::Box m_interface_box;
 	Gtk::Box m_buttons_box;	
 	Gtk::Box m_infos_box;
-	Gtk::Frame m_buttons_frame;	
 	Gtk::Frame m_infos_frame;
+	Gtk::AspectFrame m_area_aFrame;
+	Gtk::Frame m_buttons_frame;	
 	Gtk::Button m_button_exit;
 	Gtk::Button m_button_open;
 	Gtk::Button m_button_save;

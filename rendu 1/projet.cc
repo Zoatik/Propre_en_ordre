@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     bool read_success = world.read_file(file_path);//vérifications des infos et création du monde
     auto app = Gtk::Application::create();
     
-    return app->make_window_and_run<GuiWindow>(1, argv, &world);
+    return app->make_window_and_run<GuiWindow>(1, argv, read_success, &world);
       
 }
 
