@@ -110,7 +110,7 @@ void GuiWindow::on_button_clicked_exit()
 void GuiWindow::on_button_clicked_open()
 {
 	auto dialog = new Gtk::FileChooserDialog(*this, "Please choose a file",
-	Gtk::FileChooser::Action::OPEN);
+	Gtk::FileChooser::Action::OPEN, true);
 	dialog->set_transient_for(*this);
 	dialog->set_modal(true);
 	dialog->signal_response().connect(sigc::bind(
@@ -171,7 +171,7 @@ void GuiWindow::on_file_open_dialog_response(int response_id,
 void GuiWindow::on_button_clicked_save()
 {
 	auto dialog = new Gtk::FileChooserDialog(*this, "Save a file",
-											 Gtk::FileChooser::Action::SAVE);
+											 Gtk::FileChooser::Action::SAVE, true);
 	dialog->set_transient_for(*this);
 	dialog->set_modal(true);
 	dialog->set_current_name("untitled.txt");
