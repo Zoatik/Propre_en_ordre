@@ -235,11 +235,12 @@ std::string Robot_N::get_type()
 {
     return m_type;
 }
-
+/*Imprécis. p.ex aux frames 247,300, rotate pour se réajuster*/
 bool Robot_N::move_to_target()
 {
-    if(m_target == nullptr)
+    if(m_target == nullptr || m_is_destroying)
         return false;
+    m_is_destroying = collision(m_circle,m_target->get_shape(),false);
     s_2d seg = m_target->get_shape().m_center - m_circle.m_center; //segment entre le robot et la target
     double target_orientation = atan2(seg.m_y,seg.m_x);
     if (m_coord_type == 1)
@@ -250,18 +251,14 @@ bool Robot_N::move_to_target()
             if(abs(m_angle-target_orientation)<a)
             {
                 a = m_angle - target_orientation;  
-                std::cout<<"ok"<<std::endl;
+                std::cout<<"ok : "<<target_orientation<<std::endl;
             }  
-            if(m_angle-target_orientation>0)
-                a*=(-1);
+            //a*=(-1);
             rotate(a);
             std::cout<<"angle "<<m_angle<<std::endl;
         }
         else
-        {
-            std::cout<<"mieux"<<std::endl;
             translate();
-        }
     }
 
     return true;

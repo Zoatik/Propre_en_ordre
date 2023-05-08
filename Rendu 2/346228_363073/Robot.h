@@ -97,7 +97,7 @@ class Robot_N : public Robot
         int get_c_n();
     private:
         void rotate(double a);
-        void translate();
+        void translate();//déplace le robot
 
         double m_angle;
         int m_coord_type;
@@ -105,6 +105,7 @@ class Robot_N : public Robot
         int m_k_update_panne;
         const std::string m_type = "N";
         Particle* m_target = nullptr;
+        bool m_is_destroying = false;
 };
 
 /**REPARATEURS**/
