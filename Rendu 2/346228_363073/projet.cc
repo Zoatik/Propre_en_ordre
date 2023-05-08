@@ -7,7 +7,6 @@
 * FILE: projet.cc                *
 *********************************/
 
-#include <iostream>
 #include <gtkmm/application.h>
 #include "Simulation.h"
 #include "gui.h"
@@ -19,7 +18,9 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    string file_path = argv[1];
+    string file_path("");
+    if(argc>1)
+        file_path = argv[1];
     Simulation world;
     //vérifications des infos et création du monde
     bool read_success = world.read_file(file_path);

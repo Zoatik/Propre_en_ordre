@@ -10,7 +10,6 @@
 #include "Simulation.h"
 
 
-
 using namespace std;
 
 static default_random_engine e;
@@ -37,7 +36,7 @@ void Simulation::next_step()
 void Simulation::update()
 {
 
-    std::bernoulli_distribution m_bernoulli(desintegration_rate/m_nbP);
+    bernoulli_distribution m_bernoulli(desintegration_rate/m_nbP);
     for(int i(0); i<m_nbP;i++)
     {
         if(m_bernoulli(e)==1)
@@ -100,7 +99,7 @@ bool Simulation::read_file(string file_path)
 
 }
 
-bool Simulation::write_file(std::string file_path)
+bool Simulation::write_file(string file_path)
 {
     string file_text;
     file_text += "# Custom file text saved\n\n";
@@ -160,7 +159,7 @@ bool Simulation::write_file(std::string file_path)
     }
     else return false;
     
-    ofstream out(file_path, std::ofstream::out | std::ofstream::trunc);
+    ofstream out(file_path, ofstream::out | ofstream::trunc);
     if (out.is_open())
     {
         out << file_text;
@@ -236,7 +235,7 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
     while (i <= j + m_nbP)//on boucle sur le nb de particules
     {
         istringstream current_line(lines[i]);
-        current_line.imbue( std::locale( "C" ) ); //set default format
+        current_line.imbue( locale( "C" ) ); //set default format
         double tmp_x(0.), tmp_y(0.), tmp_d(0.);
 
         current_line >> tmp_x >> tmp_y >> tmp_d;
@@ -253,7 +252,7 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
 bool Simulation::read_robotS_prop(vector<string> lines, unsigned int& i)
 {
     stringstream current_line(lines[i]);
-    current_line.imbue( std::locale( "C" ) ); 
+    current_line.imbue( locale( "C" ) ); 
     double tmp_x, tmp_y;
     int tmp_nbUpdate, tmp_nbNr, tmp_nbNs, tmp_nbNd, tmp_nbRr, tmp_nbRs;
     
@@ -272,7 +271,7 @@ bool Simulation::read_robotR_prop(vector<string> lines, unsigned int& i)
     while (i < j + dynamic_cast<Robot_S&>(*m_robots[0]).get_nbRs())
     {
         stringstream current_line(lines[i]);
-        current_line.imbue( std::locale( "C" ) ); 
+        current_line.imbue( locale( "C" ) ); 
         double tmp_x, tmp_y;
 
         current_line >> tmp_x >> tmp_y;
@@ -292,7 +291,7 @@ bool Simulation::read_robotN_prop(vector<string> lines, unsigned int& i)
     while (i < j + dynamic_cast<Robot_S&>(*m_robots[0]).get_nbNs())
     {
         istringstream current_line(lines[i]);
-        current_line.imbue( std::locale( "C" ) ); 
+        current_line.imbue( locale( "C" ) ); 
         double tmp_x, tmp_y, tmp_a;
         int tmp_c_n, tmp_k_update_panne;
         string tmp_str_panne;
@@ -497,7 +496,7 @@ vector<Particle> Simulation::get_particles_vect()
     return m_particles_vect;
 }
 
-std::vector<unique_ptr<Robot>>& Simulation::get_robots_ptr_vect()
+vector<unique_ptr<Robot>>& Simulation::get_robots_ptr_vect()
 {
     return m_robots;
 }
