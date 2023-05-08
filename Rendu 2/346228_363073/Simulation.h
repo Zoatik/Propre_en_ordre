@@ -30,9 +30,11 @@ class Simulation
 
         //méthodes
         void update();
+        void update_movement();//update tous les déplacements (robots N et R)
         void draw(int xc, int yc, double ratio);
         void next_step();
         void clear();
+        void assign_target();
 
         //getter
         Robot_S& get_robotS();
@@ -66,12 +68,16 @@ class Simulation
         void show_invalid_k_update(Robot_N curr_robotN);
         void show_neutralizers_superposition(Robot_N curr_robotN, int j);
         void show_repairer_neutralizer_superposition(Robot_N curr_robotN, int j);
-        void show_particle_robot_superposition(std::unique_ptr<Robot>& robot, int j);    
+        void show_particle_robot_superposition(std::unique_ptr<Robot>& robot, int j);   
+        //déplacement
+        int find_particle(circle c_robotN);//retourne l'index de la particule 
+                                           //(-1 si aucune particule)
 
         //attributs
         int m_nbP;
         std::vector<std::unique_ptr<Robot>> m_robots;
         std::vector<Particle> m_particles_vect;  
+        std::vector<Particle> m_untargeted_part;
         
         // attributs désintégration particules
         std::bernoulli_distribution m_bernoulli;

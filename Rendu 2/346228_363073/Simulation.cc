@@ -31,6 +31,7 @@ void Simulation::next_step()
 {
     update();
     get_robotS().update();
+    update_movement();
 }
 
 void Simulation::update()
@@ -50,6 +51,19 @@ void Simulation::update()
     }
 }
 
+void Simulation::update_movement()
+{
+    for(unsigned int i(1); i<m_robots.size(); i++)
+    {
+        if(m_robots[i]->get_type() == "N")
+        {
+            dynamic_cast<Robot_N*>(m_robots[i].get())->move_to_target();///return un booléen DEBUG
+            cout<<"x: "<<m_robots[i]->get_shape().m_center.m_x<<" y: "<<m_robots[i]->get_shape().m_center.m_y<<endl;
+        }
+    }
+    
+}
+
 void Simulation::draw(int xc, int yc, double ratio)
 {
     draw_border(ratio, xc*2);
@@ -57,8 +71,8 @@ void Simulation::draw(int xc, int yc, double ratio)
     {
         if(m_robots[i]->get_type()=="S") 
         {
-            Robot_S robotS = dynamic_cast<Robot_S&>(*m_robots[i]);
-            robotS.draw(xc, yc, ratio);
+            Robot_S* robotS = dynamic_cast<Robot_S*>(m_robots[i].get());
+            robotS->draw(xc, yc, ratio);
         }
         else if(m_robots[i]->get_type()=="N"){
             Robot_N robotN = dynamic_cast<Robot_N&>(*m_robots[i]);
@@ -114,20 +128,20 @@ bool Simulation::write_file(string file_path)
     }
     if(m_robots.size() > 0)
     {
-        Robot_S tmp_robotS = dynamic_cast<Robot_S&>(*m_robots[0]);
-        string tmp_x = to_string(tmp_robotS.get_shape().m_center.m_x);
-        string tmp_y = to_string(tmp_robotS.get_shape().m_center.m_y);
-        string tmp_nbUpdate = to_string(tmp_robotS.get_nb_update());
-        string tmp_nbNr = to_string(tmp_robotS.get_nbNr());
-        string tmp_nbNs = to_string(tmp_robotS.get_nbNs());
-        string tmp_nbNd = to_string(tmp_robotS.get_nbNd());
-        string tmp_nbRr = to_string(tmp_robotS.get_nbRr());
-        string tmp_nbRs = to_string(tmp_robotS.get_nbRs());
+        Robot_S* tmp_robotS = dynamic_cast<Robot_S*>(m_robots[0].get());
+        string tmp_x = to_string(tmp_robotS->get_shape().m_center.m_x);
+        string tmp_y = to_string(tmp_robotS->get_shape().m_center.m_y);
+        string tmp_nbUpdate = to_string(tmp_robotS->get_nb_update());
+        string tmp_nbNr = to_string(tmp_robotS->get_nbNr());
+        string tmp_nbNs = to_string(tmp_robotS->get_nbNs());
+        string tmp_nbNd = to_string(tmp_robotS->get_nbNd());
+        string tmp_nbRr = to_string(tmp_robotS->get_nbRr());
+        string tmp_nbRs = to_string(tmp_robotS->get_nbRs());
         file_text += "\n" + tmp_x + " " + tmp_y + " " + tmp_nbUpdate + " "
                   + tmp_nbNr + " " + tmp_nbNs + " " + tmp_nbNd + " "
                   + tmp_nbNr + " " + tmp_nbRs + "\n";
 
-        for(int i(1); i <= tmp_robotS.get_nbRs(); i++)
+        for(int i(1); i <= tmp_robotS->get_nbRs(); i++)
         {
             if(m_robots[i]->get_type() == "R")
             {
@@ -137,8 +151,8 @@ bool Simulation::write_file(string file_path)
             }
         }
         file_text += "\n";
-        for(int i(tmp_robotS.get_nbRs()+1); i-tmp_robotS.get_nbRs()
-                                            <= tmp_robotS.get_nbNs(); i++)
+        for(int i(tmp_robotS->get_nbRs()+1); i-tmp_robotS->get_nbRs()
+                                            <= tmp_robotS->get_nbNs(); i++)
         {
             if(m_robots[i]->get_type() == "N")
             {
@@ -221,6 +235,7 @@ bool Simulation::sep_file_infos(vector<string> lines)
         }
         line_type++; //on passe au type suivant
     }
+    assign_target();//on assigne les targets
     cout<<message::success();
 
     return true;
@@ -246,6 +261,7 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
 
         i++;
     }
+    m_untargeted_part = m_particles_vect;//on initialise les particules pas target
     return true;
 }
 
@@ -320,6 +336,22 @@ void Simulation::clear()
     m_particles_vect.clear();
 }
 
+void Simulation::assign_target()
+{
+    for(unsigned int i(1); i<m_robots.size(); i++)
+    {
+        if(m_robots[i]->get_type() == "N")
+        {
+            int part_index = find_particle(m_robots[i]->get_shape());
+            if(part_index > -1)
+            {
+                dynamic_cast<Robot_N*>(m_robots[i].get())
+                    ->set_target(m_untargeted_part[part_index]);
+                m_untargeted_part.erase(m_untargeted_part.begin()+i);
+            }
+        }
+    }
+}
 
 ///méthodes privées de génération
  
@@ -371,18 +403,18 @@ bool Simulation::check_robot(unique_ptr<Robot>& robot)
 
     if(robot->get_type() == "N")
     {
-        Robot_N robotN = dynamic_cast<Robot_N&>(*robot);
-        return check_robotN(robotN);    
+        Robot_N* robotN = dynamic_cast<Robot_N*>(robot.get());
+        return check_robotN(*robotN);    
     }
     if(robot->get_type() == "R")
     {
-        Robot_R robotR = dynamic_cast<Robot_R&>(*robot);
-        return check_robotR(robotR);    
+        Robot_R* robotR = dynamic_cast<Robot_R*>(robot.get());
+        return check_robotR(*robotR);    
     }
     if(robot->get_type() == "S")
     {
-        Robot_S robotS = dynamic_cast<Robot_S&>(*robot);
-        return check_robotS(robotS);    
+        Robot_S* robotS = dynamic_cast<Robot_S*>(robot.get());
+        return check_robotS(*robotS);    
     }
     
     return true;
@@ -484,6 +516,30 @@ void Simulation::show_particle_robot_superposition(unique_ptr<Robot>& robot, int
                 robot->get_shape().m_center.m_x,
                 robot->get_shape().m_center.m_y,
                 robot->get_shape().m_radius);
+}
+
+int Simulation::find_particle(circle c_robotN)
+{
+    int best_choice_index = -1;
+    double best_dist = -1;
+    for (unsigned int i(0); i < m_untargeted_part.size(); i++)
+    {
+        s_2d point_part = m_untargeted_part[i].get_shape().m_center;
+        if(i==0)
+        {
+            best_choice_index = i;
+            best_dist = distance(c_robotN.m_center, point_part);
+        }
+        else
+        {
+            if(distance(c_robotN.m_center,point_part)<best_dist)
+            {
+                best_choice_index = i;
+                best_dist = distance(c_robotN.m_center,point_part);
+            }
+        }
+    }
+    return best_choice_index;
 }
 
 Robot_S& Simulation::get_robotS()

@@ -34,6 +34,11 @@ s_2d operator-(s_2d vect1, s_2d vect2)
     return s_2d(vect1.m_x - vect2.m_x, vect1.m_y - vect2.m_y);
 }
 
+s_2d operator*(double lambda, s_2d vect)
+{
+    return s_2d(vect.m_x*lambda, vect.m_y*lambda);
+}
+
 /**TESTS DE POSITION**/
 bool check_position(circle c1, double dmax)
 {

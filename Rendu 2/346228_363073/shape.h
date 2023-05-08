@@ -30,6 +30,7 @@ struct s_2d
 
 s_2d operator+(s_2d vect1, s_2d vect2);
 s_2d operator-(s_2d vect1, s_2d vect2);
+s_2d operator*(double lambda, s_2d vect);
 
 /**CIRCLE**/
 struct circle

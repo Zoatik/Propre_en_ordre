@@ -8,6 +8,7 @@
 *********************************/
 
 #include <math.h>
+#include <iostream> ///DEBUG
 
 #include "Robot.h"
 
@@ -158,10 +159,23 @@ std::string Robot_R::get_type()
     return m_type;
 }
 
+bool Robot_R::move_to_target()
+{
+    if(m_target == nullptr)
+        return false;
+    
+    return true;
+}
+
 void Robot_R::set(s_2d pos)
 {
     m_circle.m_center = pos;
     m_circle.m_radius = r_reparateur;
+}
+
+void Robot_R::set_target(Robot_N& target)
+{
+    m_target = &target;
 }
 
 void Robot_R::draw(int xc, int yc, double ratio)
@@ -205,9 +219,52 @@ int Robot_N::get_c_n()
     return m_coord_type;
 }
 
+void Robot_N::rotate(double a)
+{
+    m_angle += a;
+}
+
+void Robot_N::translate()
+{
+    s_2d new_pos = m_circle.m_center + (vtran_max*delta_t)*
+                                        s_2d(cos(m_angle),sin(m_angle));
+    m_circle.m_center = new_pos;
+}
+
 std::string Robot_N::get_type()
 {
     return m_type;
+}
+
+bool Robot_N::move_to_target()
+{
+    if(m_target == nullptr)
+        return false;
+    s_2d seg = m_target->get_shape().m_center - m_circle.m_center; //segment entre le robot et la target
+    double target_orientation = atan2(seg.m_y,seg.m_x);
+    if (m_coord_type == 1)
+    {
+        double a = vrot_max*delta_t;
+        if(abs(m_angle-target_orientation)>epsil_alignement)
+        {
+            if(abs(m_angle-target_orientation)<a)
+            {
+                a = m_angle - target_orientation;  
+                std::cout<<"ok"<<std::endl;
+            }  
+            if(m_angle-target_orientation>0)
+                a*=(-1);
+            rotate(a);
+            std::cout<<"angle "<<m_angle<<std::endl;
+        }
+        else
+        {
+            std::cout<<"mieux"<<std::endl;
+            translate();
+        }
+    }
+
+    return true;
 }
 
 void Robot_N::set(s_2d pos, double angle, int coord_type,
@@ -219,6 +276,11 @@ void Robot_N::set(s_2d pos, double angle, int coord_type,
     m_coord_type = coord_type;
     m_panne = panne;
     m_k_update_panne = k_update_panne;
+}
+
+void Robot_N::set_target(Particle& target)
+{
+    m_target = &target;
 }
 
 void Robot_N::draw(int xc, int yc, double ratio)

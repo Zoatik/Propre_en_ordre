@@ -12,6 +12,7 @@
 #define ROBOT_H
 
 #include "constantes.h"
+#include "Particle.h"
 
 
 class Robot
@@ -71,24 +72,6 @@ class Robot_S : public Robot
         const std::string m_type = "S";
 };
 
-/**REPARATEURS**/
-class Robot_R : public Robot
-{
-    public:
-        //ctor-dtor
-        Robot_R();
-        Robot_R(s_2d pos);
-        virtual ~Robot_R();
-        //virtual
-        virtual std::string get_type();
-        //methods
-        void set(s_2d pos);
-        void draw(int xc, int yc, double ratio);
-
-    private:
-        const std::string m_type = "R";
-};
-
 /**NEUTRALISEUR**/
 class Robot_N : public Robot
 {
@@ -101,23 +84,52 @@ class Robot_N : public Robot
 
         //virtual
         virtual std::string get_type();
+        bool move_to_target();
 
         //méthodes
         void set(s_2d pos, double angle, int coord_type,
                  bool panne, int k_update_panne);
+        void set_target(Particle& target);
         void draw(int xc, int yc, double ratio);
         int get_k_update_panne();
         double get_angle();
         bool get_panne();
         int get_c_n();
-
     private:
+        void rotate(double a);
+        void translate();
+
         double m_angle;
         int m_coord_type;
         bool m_panne;
         int m_k_update_panne;
         const std::string m_type = "N";
+        Particle* m_target = nullptr;
 };
+
+/**REPARATEURS**/
+class Robot_R : public Robot
+{
+    public:
+        //ctor-dtor
+        Robot_R();
+        Robot_R(s_2d pos);
+        virtual ~Robot_R();
+        //virtual
+        virtual std::string get_type();
+        bool move_to_target();
+        //methods
+        void set(s_2d pos);
+        void set_target(Robot_N& target);
+
+        void draw(int xc, int yc, double ratio);
+
+    private:
+        const std::string m_type = "R";
+        Robot_N* m_target = nullptr;
+};
+
+
 
 
 
