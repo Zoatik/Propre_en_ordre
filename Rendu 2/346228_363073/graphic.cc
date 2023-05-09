@@ -20,15 +20,15 @@ void graphic_set_context( const Cairo::RefPtr<Cairo::Context>& cr)
     ptcr = &cr;
 }
 
-void draw_border(double ratio, int size)
+void draw_border(int size)
 {
-    (*ptcr)->set_line_width(1.0*ratio);
+    (*ptcr)->set_line_width(1.0);
     (*ptcr)->set_source_rgb(0.3, 0.3, 0.3);
-    (*ptcr)->move_to(0,0);
-    (*ptcr)->line_to(0,size);
-    (*ptcr)->line_to(size,size);
-    (*ptcr)->line_to(size,0);
-    (*ptcr)->line_to(0,0);
+    (*ptcr)->move_to(-size/2,-size/2);
+    (*ptcr)->line_to(-size/2,size/2);
+    (*ptcr)->line_to(size/2, size/2);
+    (*ptcr)->line_to(size/2,-size/2);
+    (*ptcr)->line_to(-size/2,-size/2);
     (*ptcr)->stroke();
 }
 

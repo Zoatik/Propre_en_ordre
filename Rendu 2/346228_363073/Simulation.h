@@ -31,7 +31,7 @@ class Simulation
         //méthodes
         void update();
         void update_movement();//update tous les déplacements (robots N et R)
-        void draw(int xc, int yc, double ratio);
+        void draw();
         void next_step();
         void clear();
         void assign_target();

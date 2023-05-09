@@ -32,7 +32,7 @@ static constexpr Color cyan(0., 0.7, 0.7);
 
 void graphic_set_context(const Cairo::RefPtr<Cairo::Context>& cr);
 
-void draw_border(double ratio, int size);
+void draw_border(int size);
 void gtkmm_point(double x, double y, double radius, Color color);
 void gtkmm_line(double x1, double y1, double x2,
                 double y2, double thickness, Color color);

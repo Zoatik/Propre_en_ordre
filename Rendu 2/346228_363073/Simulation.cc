@@ -64,28 +64,27 @@ void Simulation::update_movement()
     
 }
 
-void Simulation::draw(int xc, int yc, double ratio)
+void Simulation::draw()
 {
-    draw_border(ratio, xc*2);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
         if(m_robots[i]->get_type()=="S") 
         {
             Robot_S* robotS = dynamic_cast<Robot_S*>(m_robots[i].get());
-            robotS->draw(xc, yc, ratio);
+            robotS->draw();
         }
         else if(m_robots[i]->get_type()=="N"){
             Robot_N robotN = dynamic_cast<Robot_N&>(*m_robots[i]);
-            robotN.draw(xc, yc, ratio);
+            robotN.draw();
         }
         else{
             Robot_R robotR = dynamic_cast<Robot_R&>(*m_robots[i]);
-            robotR.draw(xc, yc, ratio);
+            robotR.draw();
         }
     }
 	for(int i=0;i<get_nbP();i++)
 	{
-		m_particles_vect[i].draw(xc, yc, ratio);
+		m_particles_vect[i].draw();
 	};
 }
 

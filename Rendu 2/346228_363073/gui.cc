@@ -337,6 +337,11 @@ void DrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int h
  		// window enlargment ratio
 		double ratio(width/(2*dmax));
 
-		m_ptr_world->draw(xc, yc, ratio);
+		cr->translate(xc, yc);
+		cr->scale(ratio, -ratio);
+		//cr->translate(-Xmid, -Ymid);
+		
+		draw_border(2*dmax);
+		m_ptr_world->draw();
     }
 }

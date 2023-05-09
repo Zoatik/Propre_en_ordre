@@ -51,7 +51,7 @@ class Robot_S : public Robot
         void set(s_2d pos, int nbUpdate, int nbNr, int nbNs,
                  int nbNd, int nbRr, int nbRs);
         void set_nbNp(int count);
-        void draw(int xc, int yc, double ratio);
+        void draw();
         int get_nb_update();
         int get_nbNr();
         int get_nbNs();
@@ -90,7 +90,7 @@ class Robot_N : public Robot
         void set(s_2d pos, double angle, int coord_type,
                  bool panne, int k_update_panne);
         void set_target(Particle& target);
-        void draw(int xc, int yc, double ratio);
+        void draw();
         int get_k_update_panne();
         double get_angle();
         bool get_panne();
@@ -123,7 +123,7 @@ class Robot_R : public Robot
         void set(s_2d pos);
         void set_target(Robot_N& target);
 
-        void draw(int xc, int yc, double ratio);
+        void draw();
 
     private:
         const std::string m_type = "R";

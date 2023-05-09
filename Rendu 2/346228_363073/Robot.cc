@@ -88,14 +88,11 @@ void Robot_S::set_nbNp(int count)
     m_nbNp = count;
 }
 
-void Robot_S::draw(int xc, int yc, double ratio)
+void Robot_S::draw()
 {
-    s_2d center(xc+m_circle.m_center.m_x*ratio,
-                yc-m_circle.m_center.m_y*ratio);
-    double radius(m_circle.m_radius*ratio);
-    double thickness(1.0*ratio);
-    draw_circle(center, radius, thickness, false, cyan, white);
-    gtkmm_point(center.m_x, center.m_y, 1, cyan);
+    double thickness(1.0);
+    draw_circle(m_circle.m_center, m_circle.m_radius, thickness, false, cyan, white);
+    gtkmm_point(m_circle.m_center.m_x, m_circle.m_center.m_y, 1, cyan);
 }
 
 //méthodes
@@ -178,13 +175,10 @@ void Robot_R::set_target(Robot_N& target)
     m_target = &target;
 }
 
-void Robot_R::draw(int xc, int yc, double ratio)
+void Robot_R::draw()
 {
-    s_2d center(xc+m_circle.m_center.m_x*ratio,
-                yc-m_circle.m_center.m_y*ratio);
-    double radius(m_circle.m_radius*ratio);
-    double thickness(1.0*ratio);
-    draw_circle(center, radius, thickness, true, black, green);
+    double thickness(1.0);
+    draw_circle(m_circle.m_center, m_circle.m_radius, thickness, true, black, green);
 }
 
 /**NEUTRALISEURS**/
@@ -280,18 +274,17 @@ void Robot_N::set_target(Particle& target)
     m_target = &target;
 }
 
-void Robot_N::draw(int xc, int yc, double ratio)
+void Robot_N::draw()
 {
-    s_2d center(xc+m_circle.m_center.m_x*ratio,
-                yc-m_circle.m_center.m_y*ratio);
-    double radius(m_circle.m_radius*ratio);
-    s_2d end(center.m_x+cos(m_angle)*m_circle.m_radius*ratio,
-            center.m_y-sin(m_angle)*m_circle.m_radius*ratio);
-    double thickness(1.0*ratio);
+    s_2d center(m_circle.m_center.m_x,
+                m_circle.m_center.m_y);
+    s_2d end(center.m_x+cos(m_angle)*m_circle.m_radius,
+            center.m_y+sin(m_angle)*m_circle.m_radius);
+    double thickness(1.0);
     if(m_panne){
-        draw_circle(center, radius, thickness, false, orange, white);
+        draw_circle(center, m_circle.m_radius, thickness, false, orange, white);
     }else{
-        draw_circle(center, radius, thickness, false, black, white);
+        draw_circle(center, m_circle.m_radius, thickness, false, black, white);
     }
     
     draw_line(center, end, thickness, green);
