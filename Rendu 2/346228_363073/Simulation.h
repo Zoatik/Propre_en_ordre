@@ -34,8 +34,8 @@ class Simulation
         void draw();
         void next_step();
         void clear();
-        void delete_target(Particle* ptr);
-        void assign_target();
+        void remove_part(int part_index);
+        void assign_target(bool force_assign = false);
 
         //getter
         Robot_S& get_robotS();
@@ -71,15 +71,17 @@ class Simulation
         void show_repairer_neutralizer_superposition(Robot_N curr_robotN, int j);
         void show_particle_robot_superposition(std::unique_ptr<Robot>& robot, int j);   
         //déplacement
-        int find_particle(circle c_robotN);//retourne l'index de la particule 
-                                           //(-1 si aucune particule)
+        int find_nearest_robot(square s_part, bool force_assign = false);//retourne l'index du robot
+                                           //(-1 si aucun robot)
         void set_robots_state(Particle const &part);//mets en panne les robots si risk_zone
+        std::vector<Particle*> get_untargeted_part();//retourne un vect de pointeurs
+        void tri_size(std::vector<Particle*>& part_vect);
 
         //attributs
         int m_nbP;
         std::vector<std::unique_ptr<Robot>> m_robots;
         std::vector<Particle> m_particles_vect;  
-        std::vector<Particle> m_untargeted_part;
+        //std::vector<Particle> m_untargeted_part;
         
         // attributs désintégration particules
         std::bernoulli_distribution m_bernoulli;

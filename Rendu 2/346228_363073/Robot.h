@@ -102,6 +102,8 @@ class Robot_N : public Robot
         bool destroy_target();
         void rotate(double a);
         void translate();//déplace le robot
+        bool move_to(s_2d point);
+        void make_target_transform();//crée les infos de directions/rotations
 
         double m_angle;
         int m_coord_type;
@@ -110,6 +112,8 @@ class Robot_N : public Robot
         const std::string m_type = "N";
         Particle* m_target = nullptr;
         bool m_in_collision = false;
+        s_2d m_target_direction;
+        double m_target_orientation;
 };
 
 /**REPARATEURS**/

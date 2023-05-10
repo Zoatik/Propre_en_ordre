@@ -43,11 +43,12 @@ void Simulation::update()
     {
         if(m_bernoulli(e)==1)
         {
-            if(m_particles_vect[i].separate(m_particles_vect, m_untargeted_part))
+            if(m_particles_vect[i].separate(m_particles_vect))
             {
                 set_robots_state(m_particles_vect[i]);
-                m_particles_vect.erase(m_particles_vect.begin()+i);
+                remove_part(i);
                 m_nbP += 3;
+                assign_target(true);
             }
         }
     }
@@ -59,12 +60,11 @@ void Simulation::update_movement()
     {
         if(m_robots[i]->get_type() == "N")
         {
-            if(!dynamic_cast<Robot_N*>(m_robots[i].get())->move_to_target())
+            if(!dynamic_cast<Robot_N*>(m_robots[i].get())->move_to_target())//bool pas forcément nécessaire
             {
-                delete_target(dynamic_cast<Robot_N*>(m_robots[i].get())->get_target());
-                assign_target();
+                //assign_target();
             }
-            cout<<"x: "<<m_robots[i]->get_shape().m_center.m_x<<" y: "<<m_robots[i]->get_shape().m_center.m_y<<endl;
+            //cout<<"x: "<<m_robots[i]->get_shape().m_center.m_x<<" y: "<<m_robots[i]->get_shape().m_center.m_y<<endl;//DEBUG
         }
     }
     
@@ -266,7 +266,7 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
 
         i++;
     }
-    m_untargeted_part = m_particles_vect;//on initialise les particules pas target
+    //m_untargeted_part = m_particles_vect;//on initialise les particules pas target
     return true;
 }
 
@@ -341,35 +341,25 @@ void Simulation::clear()
     m_particles_vect.clear();
 }
 
-void Simulation::assign_target()
+void Simulation::remove_part(int part_index)
 {
-    for(unsigned int i(1); i<m_robots.size(); i++)
+    m_particles_vect.erase(m_particles_vect.begin()+part_index);
+}
+
+void Simulation::assign_target(bool force_assign)
+{
+    int robot_index = -1;
+    vector<Particle*> tmp_untargeted_part = get_untargeted_part();
+    for(unsigned int i(0); i < tmp_untargeted_part.size(); i++)
     {
-        if(m_robots[i]->get_type() == "N") /*&&
-            dynamic_cast<Robot_N*>(m_robots[i].get())->get_target() == nullptr)*/
+        robot_index = find_nearest_robot(tmp_untargeted_part[i]->get_shape(), force_assign);
+        if(robot_index != -1)
         {
-            int part_index = find_particle(m_robots[i]->get_shape());
-            if(part_index > -1)
-            {
-                dynamic_cast<Robot_N*>(m_robots[i].get())
-                    ->set_target(m_untargeted_part[part_index]);
-                m_untargeted_part.erase(m_untargeted_part.begin()+i);
-            }
+            dynamic_cast<Robot_N&>(*m_robots[robot_index]).set_target(*tmp_untargeted_part[i]);
         }
     }
 }
 
-void Simulation::delete_target(Particle* ptr)
-{
-    for(unsigned int i(0); i<m_particles_vect.size(); i++)
-    {
-        if((*ptr).get_shape().m_center == m_particles_vect[i].get_shape().m_center)
-        {
-            m_particles_vect.erase(m_particles_vect.begin()+i);
-            m_nbP -= 1;
-        }
-    }
-}
 
 ///méthodes privées de génération
  
@@ -536,24 +526,31 @@ void Simulation::show_particle_robot_superposition(unique_ptr<Robot>& robot, int
                 robot->get_shape().m_radius);
 }
 
-int Simulation::find_particle(circle c_robotN)
+int Simulation::find_nearest_robot(square s_part, bool force_assign)
 {
     int best_choice_index = -1;
     double best_dist = -1;
-    for (unsigned int i(0); i < m_untargeted_part.size(); i++)
+    unsigned int t = get_robotS().get_nbRs();//début robots N
+
+    for (unsigned int i(t+1); i < m_robots.size(); i++)
     {
-        s_2d point_part = m_untargeted_part[i].get_shape().m_center;
-        if(i==0)
+        if(m_robots[i]->get_type() != "N")//on saute quand ce n'est pas robot_N
+            continue;
+        if(dynamic_cast<Robot_N&>(*m_robots[i]).get_target() != nullptr 
+            && !force_assign)
+            continue; //on saute si déjà une cible
+        s_2d point_robot = m_robots[i]->get_shape().m_center;
+        if(i==t+1)
         {
             best_choice_index = i;
-            best_dist = distance(c_robotN.m_center, point_part);
+            best_dist = distance(s_part.m_center, point_robot);
         }
         else
         {
-            if(distance(c_robotN.m_center,point_part)<best_dist)
+            if(distance(s_part.m_center,point_robot)<best_dist)
             {
                 best_choice_index = i;
-                best_dist = distance(c_robotN.m_center,point_part);
+                best_dist = distance(s_part.m_center,point_robot);
             }
         }
     }
@@ -571,6 +568,31 @@ void Simulation::set_robots_state(Particle const &part)
                 curr_robotN.set_panne(true);
             
         }
+    }
+}
+
+vector<Particle*> Simulation::get_untargeted_part()
+{
+    vector<Particle*> untargeted_part;
+    for(unsigned int i(0); i < m_particles_vect.size(); i++)
+    {
+        if(!m_particles_vect[i].get_is_target())
+            untargeted_part.push_back(&m_particles_vect[i]);
+    }
+    tri_size(untargeted_part);
+    return untargeted_part;
+}
+
+void Simulation::tri_size(std::vector<Particle*> &part_vect)
+{
+    unsigned int i, j;
+    for (i = 1; i < part_vect.size(); ++i)
+    {
+        Particle* part = part_vect[i];
+        for (j = i; j > 0 && part_vect[j-1]->get_shape().m_size 
+                             < part->get_shape().m_size; j--)
+            part_vect[j] = part_vect[j-1];
+        part_vect[j] = part;
     }
 }
 

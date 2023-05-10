@@ -28,11 +28,14 @@ class Particle
         void set_particle(square s);
         square get_shape() const;
         square get_risk_zone() const;
-        bool separate(std::vector<Particle> &list, std::vector<Particle> &list2);
+        bool get_is_target();
+        bool separate(std::vector<Particle> &list);
+        
 
     private:
         square m_square;
         square m_risk_zone;
+        bool is_target = false;
 };
 
 #endif // PARTICLE_H
