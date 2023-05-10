@@ -32,6 +32,7 @@ void Simulation::next_step()
     update();
     get_robotS().update();
     update_movement();
+    //set_robots_state(m_particles_vect[0]);///DEBUG A ENLEVER
 }
 
 void Simulation::update()
@@ -44,6 +45,7 @@ void Simulation::update()
         {
             if(m_particles_vect[i].separate(m_particles_vect))
             {
+                set_robots_state(m_particles_vect[i]);
                 m_particles_vect.erase(m_particles_vect.begin()+i);
                 m_nbP += 3;
             }
@@ -539,6 +541,20 @@ int Simulation::find_particle(circle c_robotN)
         }
     }
     return best_choice_index;
+}
+
+void Simulation::set_robots_state(Particle const &part)
+{
+    for(unsigned int i(1); i<m_robots.size(); i++)
+    {
+        if(m_robots[i]->get_type() == "N")
+        {
+            Robot_N& curr_robotN = dynamic_cast<Robot_N&>(*m_robots[i]);
+            if(collision(curr_robotN.get_shape(), part.get_risk_zone()))
+                curr_robotN.set_panne(true);
+            
+        }
+    }
 }
 
 Robot_S& Simulation::get_robotS()

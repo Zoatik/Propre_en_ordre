@@ -274,6 +274,11 @@ void Robot_N::set_target(Particle& target)
     m_target = &target;
 }
 
+void Robot_N::set_panne(bool panne)
+{
+    m_panne = panne;
+}
+
 void Robot_N::draw()
 {
     s_2d center(m_circle.m_center.m_x,

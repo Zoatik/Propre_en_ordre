@@ -90,6 +90,7 @@ class Robot_N : public Robot
         void set(s_2d pos, double angle, int coord_type,
                  bool panne, int k_update_panne);
         void set_target(Particle& target);
+        void set_panne(bool panne);
         void draw();
         int get_k_update_panne();
         double get_angle();

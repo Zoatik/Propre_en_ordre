@@ -21,12 +21,17 @@ Particle::Particle(double x, double y, double size)
     m_square.m_center.m_x = x;
     m_square.m_center.m_y = y;
     m_square.m_size = size;
+    m_risk_zone.m_center.m_x = x;
+    m_risk_zone.m_center.m_y = y;
+    m_risk_zone.m_size = size*risk_factor;
 }
 
 Particle::Particle(square s)
 {
     m_square.m_center = s.m_center;
     m_square.m_size = s.m_size;
+    m_risk_zone.m_center = s.m_center;
+    m_risk_zone.m_size = s.m_size*risk_factor;
 }
 
 Particle::~Particle()
@@ -46,9 +51,14 @@ void Particle::draw()
 }
 
 //méthodes
-square Particle::get_shape()
+square Particle::get_shape() const
 {
     return m_square;
+}
+
+square Particle::get_risk_zone() const
+{
+    return m_risk_zone;
 }
 
 bool Particle::separate(std::vector<Particle> &list)

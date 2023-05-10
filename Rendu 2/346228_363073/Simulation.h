@@ -72,6 +72,7 @@ class Simulation
         //déplacement
         int find_particle(circle c_robotN);//retourne l'index de la particule 
                                            //(-1 si aucune particule)
+        void set_robots_state(Particle const &part);//mets en panne les robots si risk_zone
 
         //attributs
         int m_nbP;
