@@ -61,7 +61,7 @@ square Particle::get_risk_zone() const
     return m_risk_zone;
 }
 
-bool Particle::separate(std::vector<Particle> &list)
+bool Particle::separate(std::vector<Particle> &list, std::vector<Particle> &list2)
 {
     if(m_square.m_size/2-2*epsil_zero>d_particule_min)
     {   
@@ -76,6 +76,10 @@ bool Particle::separate(std::vector<Particle> &list)
         list.push_back(new2);
         list.push_back(new3);
         list.push_back(new4);
+        list2.push_back(new1);
+        list2.push_back(new2);
+        list2.push_back(new3);
+        list2.push_back(new4);
         return 1;
     }
     return 0;

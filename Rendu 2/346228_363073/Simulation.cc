@@ -43,7 +43,7 @@ void Simulation::update()
     {
         if(m_bernoulli(e)==1)
         {
-            if(m_particles_vect[i].separate(m_particles_vect))
+            if(m_particles_vect[i].separate(m_particles_vect, m_untargeted_part))
             {
                 set_robots_state(m_particles_vect[i]);
                 m_particles_vect.erase(m_particles_vect.begin()+i);
@@ -59,7 +59,11 @@ void Simulation::update_movement()
     {
         if(m_robots[i]->get_type() == "N")
         {
-            dynamic_cast<Robot_N*>(m_robots[i].get())->move_to_target();///return un booléen DEBUG
+            if(!dynamic_cast<Robot_N*>(m_robots[i].get())->move_to_target())
+            {
+                delete_target(dynamic_cast<Robot_N*>(m_robots[i].get())->get_target());
+                assign_target();
+            }
             cout<<"x: "<<m_robots[i]->get_shape().m_center.m_x<<" y: "<<m_robots[i]->get_shape().m_center.m_y<<endl;
         }
     }
@@ -341,7 +345,8 @@ void Simulation::assign_target()
 {
     for(unsigned int i(1); i<m_robots.size(); i++)
     {
-        if(m_robots[i]->get_type() == "N")
+        if(m_robots[i]->get_type() == "N") /*&&
+            dynamic_cast<Robot_N*>(m_robots[i].get())->get_target() == nullptr)*/
         {
             int part_index = find_particle(m_robots[i]->get_shape());
             if(part_index > -1)
@@ -350,6 +355,18 @@ void Simulation::assign_target()
                     ->set_target(m_untargeted_part[part_index]);
                 m_untargeted_part.erase(m_untargeted_part.begin()+i);
             }
+        }
+    }
+}
+
+void Simulation::delete_target(Particle* ptr)
+{
+    for(unsigned int i(0); i<m_particles_vect.size(); i++)
+    {
+        if((*ptr).get_shape().m_center == m_particles_vect[i].get_shape().m_center)
+        {
+            m_particles_vect.erase(m_particles_vect.begin()+i);
+            m_nbP -= 1;
         }
     }
 }

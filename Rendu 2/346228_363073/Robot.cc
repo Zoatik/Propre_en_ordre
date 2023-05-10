@@ -213,16 +213,73 @@ int Robot_N::get_c_n()
     return m_coord_type;
 }
 
+bool Robot_N::final_alignment(double target_orientation)
+{
+    if(target_orientation == M_PI/4 || target_orientation == 3*M_PI/4 
+        || target_orientation == 5*M_PI/4 || target_orientation == 7*M_PI/4)
+    {//cas où le robot se situerait pile sur un des coins
+        m_in_collision = false;
+        return false;
+    }
+    double a = vrot_max*delta_t;
+    if(target_orientation>7*M_PI/4 || target_orientation<M_PI/4) 
+    {// cas spécial : l'angle entre -PI/4 et PI/4 n'est pas "continu"
+        if(m_angle>2*M_PI-epsil_alignement || m_angle<epsil_alignement)
+            return destroy_target();
+        if(2*M_PI-m_angle<a || m_angle<a)
+        {
+            rotate(-m_angle);
+            return destroy_target();
+        }
+        rotate(a);
+        return true;
+    }
+    for(int i(1);i<4;i++)//autres cas
+    {   
+        if(target_orientation>-M_PI/4+M_PI/2*i && target_orientation<M_PI/4+M_PI/2*i)
+        {
+            if(abs(m_angle-M_PI/2*i)>epsil_alignement)
+            {
+                if(abs(m_angle-M_PI/2*i)<a)
+                {
+                    rotate(m_angle - M_PI/2*i);
+                    return destroy_target();
+                }
+                rotate(a);
+                return true;
+            }else
+                return destroy_target();
+        }
+    }
+    return true;
+}
+
+bool Robot_N::destroy_target()
+{
+    m_in_collision = false;
+    return false;
+}
+
 void Robot_N::rotate(double a)
 {
     m_angle += a;
+    if(m_angle>2*M_PI)
+    {
+        m_angle = m_angle-2*M_PI;
+    }
 }
 
 void Robot_N::translate()
 {
-    s_2d new_pos = m_circle.m_center + (vtran_max*delta_t)*
-                                        s_2d(cos(m_angle),sin(m_angle));
-    m_circle.m_center = new_pos;
+    s_2d old_pose = m_circle.m_center;
+    m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
+                                s_2d(cos(m_angle),sin(m_angle));
+
+    if(collision(m_circle,m_target->get_shape(),false)){
+        m_in_collision = true;
+        m_circle.m_center = old_pose;
+    }
+    
 }
 
 std::string Robot_N::get_type()
@@ -232,26 +289,29 @@ std::string Robot_N::get_type()
 /*Imprécis. p.ex aux frames 247,300, rotate pour se réajuster (pour t00)*/
 bool Robot_N::move_to_target()
 {
-    if(m_target == nullptr || collision(m_circle,m_target->get_shape(),false))
+    if(m_target == nullptr)
         return false;
     s_2d seg = m_target->get_shape().m_center - m_circle.m_center; //segment entre le robot et la target
     double target_orientation = atan2(seg.m_y,seg.m_x);
     if (m_coord_type == 0)//1er type mvt
-    {
-        double a = vrot_max*delta_t;
-        if(abs(m_angle-target_orientation)>epsil_alignement)
-        {
-            if(abs(m_angle-target_orientation)<a)
+    {   
+        if(!m_in_collision){
+            double a = vrot_max*delta_t;
+            if(abs(m_angle-target_orientation)>epsil_alignement)
             {
-                a = m_angle - target_orientation;  
-                std::cout<<"ok : "<<target_orientation<<std::endl;
-            }  
-            //a*=(-1);
-            rotate(a);
-            std::cout<<"angle "<<m_angle<<std::endl;
+                if(abs(m_angle-target_orientation)<a)
+                {
+                    a = m_angle - target_orientation;  
+                    std::cout<<"ok : "<<target_orientation<<std::endl;
+                } 
+                rotate(a);
+                std::cout<<"angle "<<m_angle<<std::endl;
+            }
+            else
+                translate();
+        }else{
+            return final_alignment(target_orientation);
         }
-        else
-            translate();
     }
 
     return true;
@@ -287,6 +347,8 @@ void Robot_N::draw()
     double thickness(1.0);
     if(m_panne){
         draw_circle(center, m_circle.m_radius, thickness, false, orange, white);
+    }else if(m_in_collision){
+        draw_circle(center, m_circle.m_radius, thickness, false, purple, white);
     }else{
         draw_circle(center, m_circle.m_radius, thickness, false, black, white);
     }
@@ -304,4 +366,9 @@ int Robot_N::get_k_update_panne()
 double Robot_N::get_angle()
 {
     return m_angle;
+}
+
+Particle* Robot_N::get_target()
+{
+    return m_target;
 }

@@ -34,6 +34,7 @@ class Simulation
         void draw();
         void next_step();
         void clear();
+        void delete_target(Particle* ptr);
         void assign_target();
 
         //getter

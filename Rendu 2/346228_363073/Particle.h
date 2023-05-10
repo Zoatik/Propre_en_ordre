@@ -28,7 +28,7 @@ class Particle
         void set_particle(square s);
         square get_shape() const;
         square get_risk_zone() const;
-        bool separate(std::vector<Particle> &list);
+        bool separate(std::vector<Particle> &list, std::vector<Particle> &list2);
 
     private:
         square m_square;
