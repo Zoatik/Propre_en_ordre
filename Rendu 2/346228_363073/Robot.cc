@@ -229,15 +229,14 @@ std::string Robot_N::get_type()
 {
     return m_type;
 }
-/*Imprécis. p.ex aux frames 247,300, rotate pour se réajuster*/
+/*Imprécis. p.ex aux frames 247,300, rotate pour se réajuster (pour t00)*/
 bool Robot_N::move_to_target()
 {
-    if(m_target == nullptr || m_is_destroying)
+    if(m_target == nullptr || collision(m_circle,m_target->get_shape(),false))
         return false;
-    m_is_destroying = collision(m_circle,m_target->get_shape(),false);
     s_2d seg = m_target->get_shape().m_center - m_circle.m_center; //segment entre le robot et la target
     double target_orientation = atan2(seg.m_y,seg.m_x);
-    if (m_coord_type == 1)
+    if (m_coord_type == 0)//1er type mvt
     {
         double a = vrot_max*delta_t;
         if(abs(m_angle-target_orientation)>epsil_alignement)
