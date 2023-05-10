@@ -35,7 +35,7 @@ class Simulation
         void next_step();
         void clear();
         void remove_part(int part_index);
-        void assign_target(bool force_assign = false);
+        void assign_target();
 
         //getter
         Robot_S& get_robotS();
@@ -71,7 +71,7 @@ class Simulation
         void show_repairer_neutralizer_superposition(Robot_N curr_robotN, int j);
         void show_particle_robot_superposition(std::unique_ptr<Robot>& robot, int j);   
         //déplacement
-        int find_nearest_robot(square s_part, bool force_assign = false);//retourne l'index du robot
+        int find_nearest_robot(square s_part);//retourne l'index du robot
                                            //(-1 si aucun robot)
         void set_robots_state(Particle const &part);//mets en panne les robots si risk_zone
         std::vector<Particle*> get_untargeted_part();//retourne un vect de pointeurs
