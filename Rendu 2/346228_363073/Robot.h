@@ -96,7 +96,7 @@ class Robot_N : public Robot
         double get_angle();
         bool get_panne();
         int get_c_n();
-        Particle* get_target();
+        Particle& get_target();
     private:
         bool final_alignment(double target_orientation); //false si alignement terminé
         bool destroy_target();
@@ -110,7 +110,7 @@ class Robot_N : public Robot
         bool m_panne;
         int m_k_update_panne;
         const std::string m_type = "N";
-        Particle* m_target = nullptr;
+        Particle m_target;
         bool m_in_collision = false;
         s_2d m_target_direction;
         double m_target_orientation;

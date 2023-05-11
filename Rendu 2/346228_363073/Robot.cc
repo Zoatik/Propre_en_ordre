@@ -158,8 +158,8 @@ std::string Robot_R::get_type()
 
 bool Robot_R::move_to_target()
 {
-    if(m_target == nullptr)
-        return false;
+    /*if(m_target == nullptr)
+        return false;*/
     
     return true;
 }
@@ -275,7 +275,7 @@ void Robot_N::translate()
     m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
                                 s_2d(cos(m_angle),sin(m_angle));
 
-    if(collision(m_circle,m_target->get_shape(),false)){
+    if(collision(m_circle,m_target.get_shape(),false)){
         m_in_collision = true;
         m_circle.m_center = old_pos;
     }
@@ -284,7 +284,8 @@ void Robot_N::translate()
 
 bool Robot_N::move_to(s_2d point)
 {
-    double point_orientation = atan2(point.m_y,point.m_x);
+    s_2d point_direction = point - m_circle.m_center;
+    double point_orientation = atan2(point_direction.m_y,point_direction.m_x);
     if(!m_in_collision)
     {
         double a = vrot_max*delta_t;
@@ -310,7 +311,7 @@ void Robot_N::make_target_transform()
 {
     if(m_target_direction == s_2d(0,0))//seulement si pas déjà assigné
     {
-        m_target_direction = m_target->get_shape().m_center - m_circle.m_center; //segment entre le robot et la target
+        m_target_direction = m_target.get_shape().m_center - m_circle.m_center; //segment entre le robot et la target
         m_target_orientation = atan2(m_target_direction.m_y,m_target_direction.m_x);
     }
 }
@@ -322,45 +323,47 @@ std::string Robot_N::get_type()
 /*Imprécis. p.ex aux frames 247,300, rotate pour se réajuster (pour t00)*/
 bool Robot_N::move_to_target()
 {
-    if(m_target == nullptr || m_panne)
+    if(m_panne)
         return false;
     make_target_transform();
 
     if (m_coord_type == 0)//1er type mvt
     {   
-        return move_to(m_target->get_shape().m_center);
+        return move_to(m_target.get_shape().m_center);
     }
     if(m_coord_type == 1)
     {
         s_2d inter_target;
-        double targ_size = m_target->get_shape().m_size/2;
-        double targ_x = m_target->get_shape().m_center.m_x;
-        double targ_y = m_target->get_shape().m_center.m_y;
+        double targ_size = m_target.get_shape().m_size/2;
+        double targ_x = m_target.get_shape().m_center.m_x;
+        double targ_y = m_target.get_shape().m_center.m_y;
+        double targ_risk_size = m_target.get_risk_zone().m_size/2;
         double x = m_circle.m_center.m_x;
         double y = m_circle.m_center.m_y;
-        std::cout<<"x : "<<x<<std::endl;
-        std::cout<<"targ x : "<<targ_x<<std::endl;
+        std::cout<<"targ size : "<<targ_size<<std::endl;
+        std::cout<<"targ risk zone : "<<targ_risk_size<<std::endl;
         if(x < targ_x + targ_size && x > targ_x - targ_size)
         {
             return move_to(inter_target = s_2d(x,targ_y));
         }
         else if(y < targ_y + targ_size && y > targ_y - targ_size)
         {
+            std::cout<<"on est dedans"<<std::endl;
             return move_to(s_2d(targ_x,y));
         }
         else
         {
             if(x < targ_x && y < targ_y)
-                inter_target = s_2d(targ_x-targ_size-m_circle.m_radius-epsil_zero,
+                inter_target = s_2d(targ_x - targ_risk_size-m_circle.m_radius-epsil_zero,
                                     targ_y - targ_size);
             else if(x < targ_x && y > targ_y)
-                inter_target = s_2d(targ_x-targ_size-m_circle.m_radius-epsil_zero,
+                inter_target = s_2d(targ_x - targ_risk_size-m_circle.m_radius-epsil_zero,
                                     targ_y + targ_size);
             else if(x > targ_x && y < targ_y)
-                inter_target = s_2d(targ_x+targ_size+m_circle.m_radius+epsil_zero,
+                inter_target = s_2d(targ_x + targ_risk_size+m_circle.m_radius+epsil_zero,
                                     targ_y - targ_size);
             else if(x > targ_x && y > targ_y)
-                inter_target = s_2d(targ_x+targ_size+m_circle.m_radius+epsil_zero,
+                inter_target = s_2d(targ_x + targ_risk_size+m_circle.m_radius+epsil_zero,
                                     targ_y + targ_size);
         }
         return move_to(inter_target);
@@ -382,7 +385,7 @@ void Robot_N::set(s_2d pos, double angle, int coord_type,
 
 void Robot_N::set_target(Particle& target)
 {
-    m_target = &target;
+    m_target = target;
 }
 
 void Robot_N::set_panne(bool panne)
@@ -420,7 +423,7 @@ double Robot_N::get_angle()
     return m_angle;
 }
 
-Particle* Robot_N::get_target()
+Particle& Robot_N::get_target()
 {
     return m_target;
 }

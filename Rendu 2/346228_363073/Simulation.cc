@@ -536,8 +536,8 @@ int Simulation::find_nearest_robot(square s_part)
     {
         if(m_robots[i]->get_type() != "N")//on saute quand ce n'est pas robot_N
             continue;
-        if(dynamic_cast<Robot_N&>(*m_robots[i]).get_target() != nullptr)
-            continue; //on saute si déjà une cible
+        /*if(dynamic_cast<Robot_N&>(*m_robots[i]).get_target() != nullptr)
+            continue; //on saute si déjà une cible*/
         s_2d point_robot = m_robots[i]->get_shape().m_center;
         if(i==t+1)
         {
