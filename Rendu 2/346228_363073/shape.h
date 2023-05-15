@@ -23,6 +23,9 @@ struct s_2d
     s_2d(){}
     s_2d(double x, double y): m_x(x), m_y(y){}
 
+    //methodes
+    bool close_to(s_2d vect, double tolerance);
+
     //att
     double m_x = 0.;
     double m_y = 0.;

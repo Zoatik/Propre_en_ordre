@@ -86,6 +86,8 @@ class Robot_N : public Robot
         virtual std::string get_type();
         //bool move_to(s_2d point);
         bool move_to_target();
+        bool move_to_point(s_2d point);
+        s_2d find_safe_point();
 
         //méthodes
         void set(s_2d pos, double angle, int coord_type,
@@ -94,6 +96,7 @@ class Robot_N : public Robot
         void delete_target();
         void set_panne(bool panne);
         void set_in_collision(bool in_collision);
+        void set_safe_point(s_2d safe_point);
         void draw();
         int get_k_update_panne();
         double get_angle();
@@ -107,6 +110,7 @@ class Robot_N : public Robot
         bool destroy_target();
         void rotate(double a);
         void translate();//déplace le robot
+        
 
         double m_angle;
         int m_coord_type;
@@ -115,6 +119,7 @@ class Robot_N : public Robot
         const std::string m_type = "N";
         Particle* m_target = nullptr;
         bool m_in_collision = false;
+        s_2d m_safe_point;
 };
 
 /**REPARATEURS**/

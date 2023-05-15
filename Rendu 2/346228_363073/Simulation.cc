@@ -33,7 +33,6 @@ void Simulation::next_step()
     update();
     get_robotS().update();
     update_movement();
-    //set_robots_state(m_particles_vect[0]);///DEBUG A ENLEVER
 }
 
 void Simulation::update()
@@ -47,8 +46,6 @@ void Simulation::update()
             if(m_particles_vect[i]->separate(m_particles_vect))
             {
                 set_robots_state(*m_particles_vect[i]);
-                //remove_particle(m_particles_vect[i].get());
-                //assign_target();
                 m_particles_vect.erase(m_particles_vect.begin()+i);
                 assign_target(true);
                 m_nbP += 3;
@@ -385,10 +382,21 @@ void Simulation::assign_target(bool override)
         int robot_index = find_nearest_robot(m_particles_vect[part_ind[i]]->get_shape());
         if(robot_index != -1)
         {
-            dynamic_cast<Robot_N*>(m_robots[robot_index].get())
-                ->set_target(m_particles_vect[part_ind[i]].get());
+            Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[robot_index].get());
+            robotN->set_target(m_particles_vect[part_ind[i]].get());
+            robotN->set_safe_point(robotN->find_safe_point());
         }
     }
+    /*for(unsigned int i(0); i<m_robots.size(); i++)
+    {
+        if(m_robots[i]->get_type() == "N" && dynamic_cast<Robot_N&>(*m_robots[i]).get_target())
+        {
+            Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
+            robotN->set_safe_point(robotN->find_safe_point());
+            //cout<<"safe point : "<<robotN.find_safe_point().m_x<<" , "<<robotN.find_safe_point().m_y<<endl;
+        }
+    }*/
+
 }
 
 void Simulation::remove_particle(Particle* ptr)

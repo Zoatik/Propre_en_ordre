@@ -44,6 +44,7 @@ bool operator==(s_2d vect1, s_2d vect2)
     return vect1.m_x==vect2.m_x && vect1.m_y==vect2.m_y;
 }
 
+
 /**TESTS DE POSITION**/
 bool check_position(circle c1, double dmax)
 {
@@ -121,4 +122,9 @@ void draw_circle(s_2d center, double radius, double thickness,
     }
     else
         gtkmm_circle(center.m_x, center.m_y, radius, thickness, color1);
+}
+
+bool s_2d::close_to(s_2d vect, double tolerance)
+{
+    return abs(m_x - vect.m_x) < tolerance && abs(m_y - vect.m_y) < tolerance;
 }
