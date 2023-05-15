@@ -44,6 +44,11 @@ void Particle::set_particle(square s)
     m_square = s;
 }
 
+void Particle::set_is_target(bool is_target)
+{
+    m_is_target = is_target;
+}
+
 void Particle::draw()
 {
     double thickness(0.3);
@@ -63,10 +68,10 @@ square Particle::get_risk_zone() const
 
 bool Particle::get_is_target()
 {
-    return is_target;
+    return m_is_target;
 }
 
-bool Particle::separate(std::vector<Particle> &list)
+bool Particle::separate(std::vector<std::unique_ptr<Particle>> &list)
 {
     if(m_square.m_size/2-2*epsil_zero>d_particule_min)
     {   
@@ -77,10 +82,10 @@ bool Particle::separate(std::vector<Particle> &list)
         Particle new2(x+delta_size, y-delta_size, m_square.m_size/2-2*epsil_zero);
         Particle new3(x+delta_size, y+delta_size, m_square.m_size/2-2*epsil_zero);
         Particle new4(x-delta_size, y+delta_size, m_square.m_size/2-2*epsil_zero);
-        list.push_back(new1);
-        list.push_back(new2);
-        list.push_back(new3);
-        list.push_back(new4);
+        list.push_back(std::make_unique<Particle>(new1));
+        list.push_back(std::make_unique<Particle>(new2));
+        list.push_back(std::make_unique<Particle>(new3));
+        list.push_back(std::make_unique<Particle>(new4));
         return 1;
     }
     return 0;

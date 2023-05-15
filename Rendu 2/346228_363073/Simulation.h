@@ -34,12 +34,12 @@ class Simulation
         void draw();
         void next_step();
         void clear();
-        void remove_part(int part_index);
-        void assign_target();
+        void remove_particle(Particle* ptr);
+        void assign_target(bool override = false);
 
         //getter
         Robot_S& get_robotS();
-        std::vector<Particle> get_particles_vect();
+        std::vector<std::unique_ptr<Particle>>& get_particles_vect();
         std::vector<std::unique_ptr<Robot>>& get_robots_ptr_vect();
         int get_nbP();
         int get_updates();
@@ -73,14 +73,14 @@ class Simulation
         //déplacement
         int find_nearest_robot(square s_part);//retourne l'index du robot
                                            //(-1 si aucun robot)
+        std::vector<int> get_untargeted_parts_index();
+        void tri_size(std::vector<std::unique_ptr<Particle>>& part_vect);
         void set_robots_state(Particle const &part);//mets en panne les robots si risk_zone
-        std::vector<Particle*> get_untargeted_part();//retourne un vect de pointeurs
-        void tri_size(std::vector<Particle*>& part_vect);
 
         //attributs
         int m_nbP;
         std::vector<std::unique_ptr<Robot>> m_robots;
-        std::vector<Particle> m_particles_vect;  
+        std::vector<std::unique_ptr<Particle>> m_particles_vect;  
         //std::vector<Particle> m_untargeted_part;
         
         // attributs désintégration particules

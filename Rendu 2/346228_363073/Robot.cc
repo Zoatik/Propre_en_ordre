@@ -158,8 +158,8 @@ std::string Robot_R::get_type()
 
 bool Robot_R::move_to_target()
 {
-    /*if(m_target == nullptr)
-        return false;*/
+    if(m_target == nullptr)
+        return false;
     
     return true;
 }
@@ -208,165 +208,109 @@ bool Robot_N::get_panne()
     return m_panne;
 }
 
+bool Robot_N::get_in_collision()
+{
+    return m_in_collision;
+}
+
 int Robot_N::get_c_n()
 {
     return m_coord_type;
 }
 
-bool Robot_N::final_alignment(double target_orientation)
+bool Robot_N::final_alignment()
 {
-    if(target_orientation == M_PI/4 || target_orientation == 3*M_PI/4 
-        || target_orientation == 5*M_PI/4 || target_orientation == 7*M_PI/4)
-    {//cas où le robot se situerait pile sur un des coins
-        m_in_collision = false;
+    s_2d inter_target;
+    double targ_size = m_target->get_shape().m_size/2;
+    double targ_x = m_target->get_shape().m_center.m_x;
+    double targ_y = m_target->get_shape().m_center.m_y;
+    double targ_risk_size = m_target->get_risk_zone().m_size/2;
+    double x = m_circle.m_center.m_x;
+    double y = m_circle.m_center.m_y;
+    if(x < targ_x + targ_size && x > targ_x - targ_size)
+        return alignment(s_2d(x,targ_y));
+    else if(y < targ_y + targ_size && y > targ_y - targ_size)
+        return alignment(s_2d(targ_x,y));
+    else
+        return true;//cas depuis un coin (on dit que c'est bon)
+}
+
+bool Robot_N::alignment(s_2d point)
+{
+    s_2d seg = point - m_circle.m_center;//segment entre point et robot
+    double point_orientation = atan2(seg.m_y,seg.m_x);
+    if(point_orientation < 0)
+        point_orientation = 2*M_PI+point_orientation;
+    double a = vrot_max*delta_t;
+    if(m_angle - point_orientation > 0)
+    {
+        if(m_angle - point_orientation < point_orientation + 2*M_PI-m_angle)
+            a*= -1;
+    }
+    else
+    {
+        if(m_angle + 2*M_PI-point_orientation < point_orientation - m_angle)
+            a*= -1;
+    }
+    if(abs(m_angle-point_orientation)>epsil_alignement)
+    {
+        if(abs(m_angle-point_orientation)<a)
+        {
+            a = m_angle - point_orientation;  
+        } 
+        rotate(a);
         return false;
     }
-    double a = vrot_max*delta_t;
-    if(target_orientation>7*M_PI/4 || target_orientation<M_PI/4) 
-    {// cas spécial : l'angle entre -PI/4 et PI/4 n'est pas "continu"
-        if(m_angle>2*M_PI-epsil_alignement || m_angle<epsil_alignement)
-            return destroy_target();
-        if(2*M_PI-m_angle<a || m_angle<a)
-        {
-            rotate(-m_angle);
-            return destroy_target();
-        }
-        rotate(a);
+    else
         return true;
-    }
-    for(int i(1);i<4;i++)//autres cas
-    {   
-        if(target_orientation>-M_PI/4+M_PI/2*i && target_orientation<M_PI/4+M_PI/2*i)
-        {
-            if(abs(m_angle-M_PI/2*i)>epsil_alignement)
-            {
-                if(abs(m_angle-M_PI/2*i)<a)
-                {
-                    rotate(m_angle - M_PI/2*i);
-                    return destroy_target();
-                }
-                rotate(a);
-                return true;
-            }else
-                return destroy_target();
-        }
-    }
-    return true;
 }
 
 bool Robot_N::destroy_target()
 {
     m_in_collision = false;
-    return false;
+    return true;
 }
 
 void Robot_N::rotate(double a)
 {
     m_angle += a;
     if(m_angle>2*M_PI)
-    {
         m_angle = m_angle-2*M_PI;
-    }
+    if(m_angle < 0)
+        m_angle = 2*M_PI+m_angle;
 }
 
 void Robot_N::translate()
 {
-    s_2d old_pos = m_circle.m_center;
     m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
                                 s_2d(cos(m_angle),sin(m_angle));
 
-    if(collision(m_circle,m_target.get_shape(),false)){
-        m_in_collision = true;
-        m_circle.m_center = old_pos;
-    }
-    
-}
-
-bool Robot_N::move_to(s_2d point)
-{
-    s_2d point_direction = point - m_circle.m_center;
-    double point_orientation = atan2(point_direction.m_y,point_direction.m_x);
-    if(!m_in_collision)
-    {
-        double a = vrot_max*delta_t;
-        if(abs(m_angle-point_orientation)>epsil_alignement)
-        {
-            if(abs(m_angle-point_orientation)<a)
-            {
-                a = m_angle - point_orientation;  
-                //std::cout<<"ok : "<<point_orientation<<std::endl;//DEBUG
-            } 
-            rotate(a);
-            //std::cout<<"angle "<<m_angle<<std::endl;DEBUG
-        }
-        else
-            translate();
-    }
-    else
-        return final_alignment(m_target_orientation);
-    return true;
-}
-
-void Robot_N::make_target_transform()
-{
-    if(m_target_direction == s_2d(0,0))//seulement si pas déjà assigné
-    {
-        m_target_direction = m_target.get_shape().m_center - m_circle.m_center; //segment entre le robot et la target
-        m_target_orientation = atan2(m_target_direction.m_y,m_target_direction.m_x);
-    }
+    if(collision(m_circle,m_target->get_shape(),false))
+        m_in_collision = true;   
 }
 
 std::string Robot_N::get_type()
 {
     return m_type;
 }
-/*Imprécis. p.ex aux frames 247,300, rotate pour se réajuster (pour t00)*/
+
 bool Robot_N::move_to_target()
 {
-    if(m_panne)
+    if(m_target == nullptr || m_panne == true)
         return false;
-    make_target_transform();
-
     if (m_coord_type == 0)//1er type mvt
-    {   
-        return move_to(m_target.get_shape().m_center);
-    }
-    if(m_coord_type == 1)
     {
-        s_2d inter_target;
-        double targ_size = m_target.get_shape().m_size/2;
-        double targ_x = m_target.get_shape().m_center.m_x;
-        double targ_y = m_target.get_shape().m_center.m_y;
-        double targ_risk_size = m_target.get_risk_zone().m_size/2;
-        double x = m_circle.m_center.m_x;
-        double y = m_circle.m_center.m_y;
-        std::cout<<"targ size : "<<targ_size<<std::endl;
-        std::cout<<"targ risk zone : "<<targ_risk_size<<std::endl;
-        if(x < targ_x + targ_size && x > targ_x - targ_size)
+        if(!m_in_collision)
         {
-            return move_to(inter_target = s_2d(x,targ_y));
-        }
-        else if(y < targ_y + targ_size && y > targ_y - targ_size)
-        {
-            std::cout<<"on est dedans"<<std::endl;
-            return move_to(s_2d(targ_x,y));
+            if(alignment(m_target->get_shape().m_center))
+                translate();
         }
         else
-        {
-            if(x < targ_x && y < targ_y)
-                inter_target = s_2d(targ_x - targ_risk_size-m_circle.m_radius-epsil_zero,
-                                    targ_y - targ_size);
-            else if(x < targ_x && y > targ_y)
-                inter_target = s_2d(targ_x - targ_risk_size-m_circle.m_radius-epsil_zero,
-                                    targ_y + targ_size);
-            else if(x > targ_x && y < targ_y)
-                inter_target = s_2d(targ_x + targ_risk_size+m_circle.m_radius+epsil_zero,
-                                    targ_y - targ_size);
-            else if(x > targ_x && y > targ_y)
-                inter_target = s_2d(targ_x + targ_risk_size+m_circle.m_radius+epsil_zero,
-                                    targ_y + targ_size);
-        }
-        return move_to(inter_target);
+            return final_alignment();
+    }
+    if(m_coord_type == 1)//2ème type mvt
+    {
+        
     }
 
     return false;
@@ -383,14 +327,34 @@ void Robot_N::set(s_2d pos, double angle, int coord_type,
     m_k_update_panne = k_update_panne;
 }
 
-void Robot_N::set_target(Particle& target)
+void Robot_N::set_target(Particle* target)
 {
+    target->set_is_target(true);
+    if(m_target)
+        m_target->set_is_target(false);
     m_target = target;
+}
+
+void Robot_N::delete_target()
+{
+    if(m_target)//on contrôle que pas déjà nullptr
+    {
+        m_target->set_is_target(false);
+        m_target = nullptr;
+        m_in_collision = false;
+    }
 }
 
 void Robot_N::set_panne(bool panne)
 {
+    if(panne)
+        delete_target();
     m_panne = panne;
+}
+
+void Robot_N::set_in_collision(bool in_collision)
+{
+    m_in_collision = in_collision;
 }
 
 void Robot_N::draw()
@@ -423,7 +387,7 @@ double Robot_N::get_angle()
     return m_angle;
 }
 
-Particle& Robot_N::get_target()
+Particle* Robot_N::get_target()
 {
     return m_target;
 }

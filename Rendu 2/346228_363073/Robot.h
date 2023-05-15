@@ -84,36 +84,37 @@ class Robot_N : public Robot
 
         //virtual
         virtual std::string get_type();
+        //bool move_to(s_2d point);
         bool move_to_target();
 
         //méthodes
         void set(s_2d pos, double angle, int coord_type,
                  bool panne, int k_update_panne);
-        void set_target(Particle& target);
+        void set_target(Particle* target);
+        void delete_target();
         void set_panne(bool panne);
+        void set_in_collision(bool in_collision);
         void draw();
         int get_k_update_panne();
         double get_angle();
         bool get_panne();
+        bool get_in_collision();
         int get_c_n();
-        Particle& get_target();
+        Particle* get_target();
     private:
-        bool final_alignment(double target_orientation); //false si alignement terminé
+        bool final_alignment(); //false si alignement terminé
+        bool alignment(s_2d point);
         bool destroy_target();
         void rotate(double a);
         void translate();//déplace le robot
-        bool move_to(s_2d point);
-        void make_target_transform();//crée les infos de directions/rotations
 
         double m_angle;
         int m_coord_type;
         bool m_panne;
         int m_k_update_panne;
         const std::string m_type = "N";
-        Particle m_target;
+        Particle* m_target = nullptr;
         bool m_in_collision = false;
-        s_2d m_target_direction;
-        double m_target_orientation;
 };
 
 /**REPARATEURS**/

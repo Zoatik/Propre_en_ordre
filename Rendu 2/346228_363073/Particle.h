@@ -26,16 +26,16 @@ class Particle
         //méthodes
         void draw();
         void set_particle(square s);
+        void set_is_target(bool is_target);
         square get_shape() const;
         square get_risk_zone() const;
         bool get_is_target();
-        bool separate(std::vector<Particle> &list);
-        
+        bool separate(std::vector<std::unique_ptr<Particle>> &list);
 
     private:
         square m_square;
         square m_risk_zone;
-        bool is_target = false;
+        bool m_is_target = false;
 };
 
 #endif // PARTICLE_H
