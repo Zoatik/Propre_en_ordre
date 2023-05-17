@@ -63,8 +63,7 @@ void Simulation::update_movement()
             Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
             for(unsigned int j(0); j < m_particles_vect.size(); j++)
             {
-                if(collision(robotN->get_shape(),m_particles_vect[j]->get_shape())
-                    && robotN->get_target() != m_particles_vect[j].get())
+                if(collision(robotN->get_shape(),m_particles_vect[j]->get_shape()))
                 {
                     robotN->set_target(m_particles_vect[j].get());
                     robotN->set_in_collision(true);
@@ -384,7 +383,7 @@ void Simulation::assign_target(bool override)
         {
             Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[robot_index].get());
             robotN->set_target(m_particles_vect[part_ind[i]].get());
-            robotN->set_safe_point(robotN->find_safe_point());
+            robotN->set_inter_point(robotN->find_safe_point());
         }
     }
     /*for(unsigned int i(0); i<m_robots.size(); i++)
@@ -392,7 +391,7 @@ void Simulation::assign_target(bool override)
         if(m_robots[i]->get_type() == "N" && dynamic_cast<Robot_N&>(*m_robots[i]).get_target())
         {
             Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
-            robotN->set_safe_point(robotN->find_safe_point());
+            robotN->set_inter_point(robotN->find_safe_point());
             //cout<<"safe point : "<<robotN.find_safe_point().m_x<<" , "<<robotN.find_safe_point().m_y<<endl;
         }
     }*/

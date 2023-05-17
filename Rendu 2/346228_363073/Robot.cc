@@ -227,11 +227,24 @@ bool Robot_N::final_alignment()
     double x = m_circle.m_center.m_x;
     double y = m_circle.m_center.m_y;
     if(x < targ_x + targ_size && x > targ_x - targ_size)
-        return alignment(s_2d(x,targ_y));
+        return move_to_point(s_2d(x,targ_y));
     else if(y < targ_y + targ_size && y > targ_y - targ_size)
-        return alignment(s_2d(targ_x,y));
+        return move_to_point(s_2d(targ_x,y));
     else
-        return true;//cas depuis un coin (on dit que c'est bon)
+    {
+        if(x < targ_x && y < targ_y)
+                return move_to_point(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
+                                    targ_y - targ_size));
+        else if(x < targ_x && y > targ_y)
+            return move_to_point(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
+                                targ_y + targ_size));
+        else if(x > targ_x && y < targ_y)
+            return move_to_point(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
+                                targ_y - targ_size));
+        else if(x > targ_x && y > targ_y)
+            return move_to_point(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
+                                targ_y + targ_size));
+    }
 }
 
 bool Robot_N::alignment(s_2d point)
@@ -284,8 +297,6 @@ void Robot_N::translate()
     m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
                                 s_2d(cos(m_angle),sin(m_angle));
 
-    if(collision(m_circle,m_target->get_shape(),false))
-        m_in_collision = true;   
 }
 
 std::string Robot_N::get_type()
@@ -316,15 +327,19 @@ bool Robot_N::move_to_target()
     {
         if(!m_in_collision)
         {    
-            std::cout<<"safe point : "<<m_safe_point.m_x<<" , "<<m_safe_point.m_y<<std::endl;
-
-            if(move_to_point(m_safe_point))
+            //std::cout<<"safe point : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
+            if(collision(m_circle, m_target->get_risk_zone()))
+                m_inter_point = find_safe_point(false);//check pas déjà zone à risque
+            if(move_to_point(m_inter_point))
             {
-                if(x < targ_x + targ_size && x > targ_x - targ_size)
-                    return move_to_point(s_2d(x,targ_y));
-                else if(y < targ_y + targ_size && y > targ_y - targ_size)
-                    return move_to_point(s_2d(targ_x,y));
+                std::cout<<"arrivé en : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
+                m_inter_point = find_safe_point(false);
+                std::cout<<"nouvelle cible en : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
+                std::cout<<m_in_collision<<std::endl;
+
             }
+            else
+                std::cout<<"en déplacement"<<std::endl;
         }
         else
             return final_alignment();
@@ -335,17 +350,18 @@ bool Robot_N::move_to_target()
 
 bool Robot_N::move_to_point(s_2d point)
 {
-    if(collision(m_circle,m_target->get_shape()))
-    {
-        m_in_collision = true;
+    if(m_in_collision)
         return true;
-    }
     if(alignment(point))
     {
+        std::cout<<"aligné"<<std::endl;
         if(m_circle.m_center.close_to(point, vtran_max*delta_t))
+        {
             m_circle.m_center = point;
+        }
         else
         {
+            std::cout<<"avance"<<std::endl;
             m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
                                 s_2d(cos(m_angle),sin(m_angle));
         }
@@ -353,13 +369,15 @@ bool Robot_N::move_to_point(s_2d point)
     return m_circle.m_center == point;
 }
 
-s_2d Robot_N::find_safe_point()
+s_2d Robot_N::find_safe_point(bool outside)
 {
     s_2d seg = m_target->get_shape().m_center - m_circle.m_center;
     double targ_size = m_target->get_shape().m_size/2;
     double targ_x = m_target->get_shape().m_center.m_x;
     double targ_y = m_target->get_shape().m_center.m_y;
     double targ_risk_size = m_target->get_risk_zone().m_size/2;
+    if(!outside)
+        targ_risk_size = targ_size;
     double x = m_circle.m_center.m_x;
     double y = m_circle.m_center.m_y;
     if(x <= targ_x + targ_size && x >= targ_x - targ_size)
@@ -397,8 +415,6 @@ s_2d Robot_N::find_safe_point()
         }
         else//haut droite
         {
-            std::cout<<m_circle.m_center.m_x<<" : haut droite"<<std::endl;
-            std::cout<<"x : "<<seg.m_x<<" y : "<<seg.m_y<<std::endl;
             if(abs(seg.m_x) < abs(seg.m_y))
             {
                 return s_2d(targ_x + targ_size,
@@ -452,9 +468,9 @@ void Robot_N::set_in_collision(bool in_collision)
     m_in_collision = in_collision;
 }
 
-void Robot_N::set_safe_point(s_2d safe_point)
+void Robot_N::set_inter_point(s_2d safe_point)
 {
-    m_safe_point = safe_point;
+    m_inter_point = safe_point;
 }
 
 void Robot_N::draw()
