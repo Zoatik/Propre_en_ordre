@@ -156,12 +156,49 @@ std::string Robot_R::get_type()
     return m_type;
 }
 
-bool Robot_R::move_to_target()
+bool Robot_R::move_to_target(std::vector<std::unique_ptr<Robot>> &robots,
+                            std::vector<std::unique_ptr<Particle>> &particles_vect)
 {
     if(m_target == nullptr)
-        return false;
-    
-    return true;
+        return true;
+    return translate(robots, particles_vect);
+}
+
+bool Robot_R::translate(std::vector<std::unique_ptr<Robot>> &robots,
+                        std::vector<std::unique_ptr<Particle>> &particles_vect)
+{
+    double angle = atan2(m_target->get_shape().m_center.m_y-m_circle.m_center.m_y, 
+                    m_target->get_shape().m_center.m_x-m_circle.m_center.m_x);
+    m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
+                                s_2d(cos(angle),sin(angle));
+    for(unsigned int j(0); j < robots.size(); j++)
+    {
+        if(collision(m_circle,robots[j]->get_shape()))
+        {
+            if(robots[j]->get_shape().m_center==m_target->get_shape().m_center)
+            {
+                m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
+                                s_2d(cos(angle),sin(angle));
+                return true;
+            }
+            if(!(m_circle.m_center == robots[j]->get_shape().m_center))
+            {
+                m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
+                                s_2d(cos(angle),sin(angle));
+                return false;
+            }
+        }
+    }
+    for(unsigned int j(0); j < particles_vect.size(); j++)
+    {
+        if(collision(m_circle,particles_vect[j]->get_shape()))
+        {
+            m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
+                                s_2d(cos(angle),sin(angle));
+            return false;
+        }
+    }
+    return false;
 }
 
 void Robot_R::set(s_2d pos)
@@ -170,9 +207,9 @@ void Robot_R::set(s_2d pos)
     m_circle.m_radius = r_reparateur;
 }
 
-void Robot_R::set_target(Robot_N& target)
+void Robot_R::set_target(Robot_N* target)
 {
-    m_target = &target;
+    m_target = target;
 }
 
 void Robot_R::draw()
@@ -218,7 +255,7 @@ int Robot_N::get_c_n()
     return m_coord_type;
 }
 
-bool Robot_N::final_alignment()
+bool Robot_N::final_alignment(std::vector<std::unique_ptr<Robot>> &robots)
 {
     s_2d inter_target;
     double targ_size = m_target->get_shape().m_size/2;
@@ -227,23 +264,23 @@ bool Robot_N::final_alignment()
     double x = m_circle.m_center.m_x;
     double y = m_circle.m_center.m_y;
     if(x < targ_x + targ_size && x > targ_x - targ_size)
-        return move_to_point(s_2d(x,targ_y));
+        return move_to_point(s_2d(x,targ_y), robots);
     else if(y < targ_y + targ_size && y > targ_y - targ_size)
-        return move_to_point(s_2d(targ_x,y));
+        return move_to_point(s_2d(targ_x,y), robots);
     else
     {
         if(x < targ_x && y < targ_y)
                 return move_to_point(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
-                                    targ_y - targ_size));
+                                    targ_y - targ_size), robots);
         else if(x < targ_x && y > targ_y)
             return move_to_point(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
-                                targ_y + targ_size));
+                                targ_y + targ_size), robots);
         else if(x > targ_x && y < targ_y)
             return move_to_point(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
-                                targ_y - targ_size));
+                                targ_y - targ_size), robots);
         else if(x > targ_x && y > targ_y)
             return move_to_point(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
-                                targ_y + targ_size));
+                                targ_y + targ_size), robots);
     }
 }
 
@@ -292,11 +329,19 @@ void Robot_N::rotate(double a)
         m_angle = 2*M_PI+m_angle;
 }
 
-void Robot_N::translate()
+void Robot_N::translate(std::vector<std::unique_ptr<Robot>> &robots)
 {
     m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
                                 s_2d(cos(m_angle),sin(m_angle));
-
+    for(unsigned int j(0); j < robots.size(); j++)
+    {
+        if(collision(m_circle,robots[j]->get_shape()))
+        {
+            if(!(m_circle.m_center == robots[j]->get_shape().m_center))
+                m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
+                                s_2d(cos(m_angle),sin(m_angle));
+        }
+    }
 }
 
 std::string Robot_N::get_type()
@@ -304,10 +349,13 @@ std::string Robot_N::get_type()
     return m_type;
 }
 
-bool Robot_N::move_to_target()
+bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
 {
     if(m_target == nullptr || m_panne == true)
+    {
+        std::cout<<"plus de cible"<<std::endl;
         return false;
+    }
     double targ_size = m_target->get_shape().m_size/2;
     double targ_x = m_target->get_shape().m_center.m_x;
     double targ_y = m_target->get_shape().m_center.m_y;
@@ -318,52 +366,55 @@ bool Robot_N::move_to_target()
         if(!m_in_collision)
         {
             if(alignment(m_target->get_shape().m_center))
-                translate();
+                translate(robots);
         }
         else
-            return final_alignment();
+            return final_alignment(robots);
     }
     if(m_coord_type == 1)//2ème type mvt
     {
         if(!m_in_collision)
-        {    
+        {   
             //std::cout<<"safe point : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
-            if(collision(m_circle, m_target->get_risk_zone()))
-                m_inter_point = find_safe_point(false);//check pas déjà zone à risque
-            if(move_to_point(m_inter_point))
+            if(move_to_point(m_inter_point, robots))
             {
-                std::cout<<"arrivé en : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
+                std::cout<<"arrivé au point intermédiaire"<<std::endl;
+                //std::cout<<"arrivé en : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
                 m_inter_point = find_safe_point(false);
-                std::cout<<"nouvelle cible en : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
-                std::cout<<m_in_collision<<std::endl;
-
+                //std::cout<<"nouvelle cible en : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
+                //std::cout<<m_in_collision<<std::endl;
             }
-            else
-                std::cout<<"en déplacement"<<std::endl;
         }
         else
-            return final_alignment();
+        {
+            std::cout<<"collision, final alignment"<<std::endl;
+            return final_alignment(robots);
+        }
     }
 
     return false;
 }
 
-bool Robot_N::move_to_point(s_2d point)
+bool Robot_N::move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &robots)
 {
+    std::cout<<point.m_x<<","<<point.m_y<<std::endl;
     if(m_in_collision)
+    {
+        std::cout<<"collision en mouvement"<<std::endl;
         return true;
+    }
     if(alignment(point))
     {
         std::cout<<"aligné"<<std::endl;
+        //std::cout<<"aligné"<<std::endl;
         if(m_circle.m_center.close_to(point, vtran_max*delta_t))
         {
             m_circle.m_center = point;
         }
         else
         {
-            std::cout<<"avance"<<std::endl;
-            m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
-                                s_2d(cos(m_angle),sin(m_angle));
+            std::cout<<"déplacement"<<std::endl;
+            translate(robots);
         }
     }
     return m_circle.m_center == point;
@@ -471,6 +522,11 @@ void Robot_N::set_in_collision(bool in_collision)
 void Robot_N::set_inter_point(s_2d safe_point)
 {
     m_inter_point = safe_point;
+    if(collision(m_circle, m_target->get_risk_zone()))
+    {
+                std::cout<<"dans la zone à risque"<<std::endl;
+                m_inter_point = find_safe_point(false);//check pas déjà zone à risque
+    }
 }
 
 void Robot_N::draw()

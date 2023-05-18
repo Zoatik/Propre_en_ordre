@@ -70,7 +70,7 @@ void Simulation::update_movement()
                 }
             }
             
-            if(robotN->move_to_target())
+            if(robotN->move_to_target(m_robots))
             {
                 if(robotN->get_target())///A CHANGER le remove particle ne fait pas de sens ici...
                 {
@@ -79,6 +79,7 @@ void Simulation::update_movement()
                 }
                 assign_target(true);
             }
+            std::cout<<std::endl;
             
             /*for(unsigned int j(1); j < m_robots.size(); j++)
             {
@@ -90,8 +91,27 @@ void Simulation::update_movement()
                 }
             }*/
         }
+        else if(m_robots[i]->get_type() == "R")
+        {
+            Robot_R* robotR = dynamic_cast<Robot_R*>(m_robots[i].get());
+            if(robotR->move_to_target(m_robots,m_particles_vect))
+            {
+                //réparer le robotN
+                //donner une cible si existante
+                for(unsigned int i(1); i<m_robots.size(); i++)
+                {
+                    if(m_robots[i]->get_type() == "N")
+                    {
+                        Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
+                        if(robotN->get_panne())
+                        {
+                            robotR->set_target(robotN);
+                        }
+                    }
+                }
+            }
+        }
     }
-    
 }
 
 void Simulation::draw()

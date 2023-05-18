@@ -85,8 +85,8 @@ class Robot_N : public Robot
         //virtual
         virtual std::string get_type();
         //bool move_to(s_2d point);
-        bool move_to_target();
-        bool move_to_point(s_2d point);
+        bool move_to_target(std::vector<std::unique_ptr<Robot>> &robots);
+        bool move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &robots);
         s_2d find_safe_point(bool outside = true);
 
         //méthodes
@@ -105,11 +105,11 @@ class Robot_N : public Robot
         int get_c_n();
         Particle* get_target();
     private:
-        bool final_alignment(); //false si alignement terminé
+        bool final_alignment(std::vector<std::unique_ptr<Robot>> &robots); //false si alignement terminé
         bool alignment(s_2d point);
         bool destroy_target();
         void rotate(double a);
-        void translate();//déplace le robot
+        void translate(std::vector<std::unique_ptr<Robot>> &robots);//déplace le robot
         
 
         double m_angle;
@@ -132,10 +132,13 @@ class Robot_R : public Robot
         virtual ~Robot_R();
         //virtual
         virtual std::string get_type();
-        bool move_to_target();
+        bool move_to_target(std::vector<std::unique_ptr<Robot>> &robots,
+                            std::vector<std::unique_ptr<Particle>> &particles_vect);
         //methods
+        bool translate(std::vector<std::unique_ptr<Robot>> &robots,
+                        std::vector<std::unique_ptr<Particle>> &particles_vect);
         void set(s_2d pos);
-        void set_target(Robot_N& target);
+        void set_target(Robot_N* target);
 
         void draw();
 
