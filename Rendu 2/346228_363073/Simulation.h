@@ -35,7 +35,9 @@ class Simulation
         void next_step();
         void clear();
         void remove_particle(Particle* ptr);
+        void store_robot(Robot* ptr);
         void assign_target(bool override = false);
+        void assign_robotR_targets();
 
         //getter
         Robot_S& get_robotS();

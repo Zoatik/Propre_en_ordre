@@ -19,7 +19,7 @@ enum Etat_neutraliseur {EN_PANNE, EN_MARCHE} ;
 constexpr short unsigned maxF(25) ;
 
 constexpr double dmax(128.);
-constexpr double delta_t(0.125); // seconde
+constexpr double delta_t(0.050); // seconde
 constexpr double r_spatial(16.);
 constexpr double r_reparateur(2.);
 constexpr double r_neutraliseur(4.);

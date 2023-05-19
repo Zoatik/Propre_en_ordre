@@ -51,6 +51,11 @@ class Robot_S : public Robot
         void set(s_2d pos, int nbUpdate, int nbNr, int nbNs,
                  int nbNd, int nbRr, int nbRs);
         void set_nbNp(int count);
+        void set_nbNr(int count);
+        void set_nbNs(int count);
+        void set_nbNd(int count);
+        void set_nbRr(int count);
+        void set_nbRs(int count);
         void draw();
         int get_nb_update();
         int get_nbNr();
@@ -88,6 +93,7 @@ class Robot_N : public Robot
         bool move_to_target(std::vector<std::unique_ptr<Robot>> &robots);
         bool move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &robots);
         s_2d find_safe_point(bool outside = true);
+        bool back_to_base(std::vector<std::unique_ptr<Robot>> &robots);
 
         //méthodes
         void set(s_2d pos, double angle, int coord_type,
@@ -134,12 +140,13 @@ class Robot_R : public Robot
         virtual std::string get_type();
         bool move_to_target(std::vector<std::unique_ptr<Robot>> &robots,
                             std::vector<std::unique_ptr<Particle>> &particles_vect);
+        bool back_to_base(std::vector<std::unique_ptr<Robot>> &robots);
         //methods
         bool translate(std::vector<std::unique_ptr<Robot>> &robots,
                         std::vector<std::unique_ptr<Particle>> &particles_vect);
         void set(s_2d pos);
         void set_target(Robot_N* target);
-
+        Robot_N* get_target();
         void draw();
 
     private:

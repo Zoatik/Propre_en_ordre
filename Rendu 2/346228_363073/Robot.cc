@@ -83,10 +83,12 @@ void Robot_S::set(s_2d pos, int nbUpdate, int nbNr, int nbNs,
     m_nbRs = nbRs;
 }
 
-void Robot_S::set_nbNp(int count)
-{
-    m_nbNp = count;
-}
+void Robot_S::set_nbNp(int count){m_nbNp = count;}
+void Robot_S::set_nbNr(int count){m_nbNr = count;}
+void Robot_S::set_nbNs(int count){m_nbNs = count;}
+void Robot_S::set_nbNd(int count){m_nbNd = count;}
+void Robot_S::set_nbRr(int count){m_nbRr = count;}
+void Robot_S::set_nbRs(int count){m_nbRs = count;}
 
 void Robot_S::draw()
 {
@@ -172,17 +174,17 @@ bool Robot_R::translate(std::vector<std::unique_ptr<Robot>> &robots,
     m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
                                 s_2d(cos(angle),sin(angle));
     for(unsigned int j(0); j < robots.size(); j++)
-    {
+    {//collisions entre robots
         if(collision(m_circle,robots[j]->get_shape()))
         {
             if(robots[j]->get_shape().m_center==m_target->get_shape().m_center)
-            {
+            {//si un robot R entre en collision avec sa cible
                 m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
                                 s_2d(cos(angle),sin(angle));
                 return true;
             }
             if(!(m_circle.m_center == robots[j]->get_shape().m_center))
-            {
+            {//si c'est une collision empêchant de passer
                 m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
                                 s_2d(cos(angle),sin(angle));
                 return false;
@@ -190,7 +192,7 @@ bool Robot_R::translate(std::vector<std::unique_ptr<Robot>> &robots,
         }
     }
     for(unsigned int j(0); j < particles_vect.size(); j++)
-    {
+    {//collisions avec les particules
         if(collision(m_circle,particles_vect[j]->get_shape()))
         {
             m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
@@ -210,6 +212,11 @@ void Robot_R::set(s_2d pos)
 void Robot_R::set_target(Robot_N* target)
 {
     m_target = target;
+}
+
+Robot_N* Robot_R::get_target()
+{
+    return m_target;
 }
 
 void Robot_R::draw()
@@ -337,7 +344,9 @@ void Robot_N::translate(std::vector<std::unique_ptr<Robot>> &robots)
     {
         if(collision(m_circle,robots[j]->get_shape()))
         {
-            if(!(m_circle.m_center == robots[j]->get_shape().m_center))
+            if(j==0)
+                m_in_collision = true;
+            else if(!(m_circle.m_center == robots[j]->get_shape().m_center))
                 m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
                                 s_2d(cos(m_angle),sin(m_angle));
         }
@@ -406,18 +415,18 @@ bool Robot_N::move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &rob
     if(alignment(point))
     {
         std::cout<<"aligné"<<std::endl;
-        //std::cout<<"aligné"<<std::endl;
         if(m_circle.m_center.close_to(point, vtran_max*delta_t))
-        {
             m_circle.m_center = point;
-        }
         else
-        {
-            std::cout<<"déplacement"<<std::endl;
             translate(robots);
-        }
     }
     return m_circle.m_center == point;
+}
+
+bool Robot_N::back_to_base(std::vector<std::unique_ptr<Robot>> &robots)
+{
+    move_to_point(robots[0]->get_shape().m_center, robots);
+    return collision(robots[0]->get_shape(), m_circle);
 }
 
 s_2d Robot_N::find_safe_point(bool outside)
