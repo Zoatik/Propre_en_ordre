@@ -105,6 +105,7 @@ class Robot_N : public Robot
         void set_inter_point(s_2d safe_point);
         void draw();
         int get_k_update_panne();
+        void set_k_update_panne(int value);
         double get_angle();
         bool get_panne();
         bool get_in_collision();

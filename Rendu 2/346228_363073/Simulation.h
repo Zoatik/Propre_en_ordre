@@ -36,6 +36,7 @@ class Simulation
         void clear();
         void remove_particle(Particle* ptr);
         void store_robot(Robot* ptr);
+        void destroy_robot(Robot* ptr);
         void assign_target(bool override = false);
         void assign_robotR_targets();
 

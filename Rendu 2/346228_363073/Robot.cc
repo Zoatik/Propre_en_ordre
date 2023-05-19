@@ -271,23 +271,23 @@ bool Robot_N::final_alignment(std::vector<std::unique_ptr<Robot>> &robots)
     double x = m_circle.m_center.m_x;
     double y = m_circle.m_center.m_y;
     if(x < targ_x + targ_size && x > targ_x - targ_size)
-        return move_to_point(s_2d(x,targ_y), robots);
+        return alignment(s_2d(x,targ_y));
     else if(y < targ_y + targ_size && y > targ_y - targ_size)
-        return move_to_point(s_2d(targ_x,y), robots);
+        return alignment(s_2d(targ_x,y));
     else
     {
         if(x < targ_x && y < targ_y)
-                return move_to_point(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
-                                    targ_y - targ_size), robots);
+                return alignment(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
+                                    targ_y - targ_size));
         else if(x < targ_x && y > targ_y)
-            return move_to_point(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
-                                targ_y + targ_size), robots);
+            return alignment(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
+                                targ_y + targ_size));
         else if(x > targ_x && y < targ_y)
-            return move_to_point(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
-                                targ_y - targ_size), robots);
+            return alignment(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
+                                targ_y - targ_size));
         else if(x > targ_x && y > targ_y)
-            return move_to_point(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
-                                targ_y + targ_size), robots);
+            return alignment(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
+                                targ_y + targ_size));
     }
 }
 
@@ -561,6 +561,11 @@ void Robot_N::draw()
 int Robot_N::get_k_update_panne()
 {
     return m_k_update_panne;
+}
+
+void Robot_N::set_k_update_panne(int value)
+{
+    m_k_update_panne = value;
 }
 
 double Robot_N::get_angle()

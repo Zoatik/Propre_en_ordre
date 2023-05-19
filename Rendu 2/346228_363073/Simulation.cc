@@ -61,32 +61,33 @@ void Simulation::update_movement()
         if(m_robots[i]->get_type() == "N")
         {
             Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
-            for(unsigned int j(0); j < m_particles_vect.size(); j++)
+            if(!robotN->get_panne())
             {
-                if(collision(robotN->get_shape(),m_particles_vect[j]->get_shape()))
+                for(unsigned int j(0); j < m_particles_vect.size(); j++)
                 {
-                    robotN->set_target(m_particles_vect[j].get());
-                    robotN->set_in_collision(true);
+                    if(collision(robotN->get_shape(),m_particles_vect[j]->get_shape()))
+                    {
+                        robotN->set_target(m_particles_vect[j].get());
+                        robotN->set_in_collision(true);
+                    }
                 }
-            }
-            assign_target(false);
-            if(robotN->get_target())
-            {
-                
-                if(robotN->move_to_target(m_robots))
+                assign_target();
+                if(robotN->get_target())
                 {
-                    remove_particle(robotN->get_target());
-                    robotN->delete_target();
-                    assign_target(true);
+                    if(robotN->move_to_target(m_robots))
+                    {
+                        remove_particle(robotN->get_target());
+                        robotN->delete_target();
+                        assign_target(true);
+                    } 
+                }else{
+                    if(robotN->back_to_base(m_robots))
+                        store_robot(robotN);
                 }
-                
-            }else
-            {
-                if(robotN->back_to_base(m_robots))
-                {
-                    std::cout<<"tente de rentrer à la base"<<std::endl;
-                    store_robot(robotN);
-                }
+            }else{
+                robotN->set_k_update_panne(robotN->get_k_update_panne()+1);
+                if(robotN->get_k_update_panne()>max_update)
+                    destroy_robot(robotN);
             }
         }
         else if(m_robots[i]->get_type() == "R")
@@ -97,6 +98,7 @@ void Simulation::update_movement()
                 if(robotR->get_target()!=nullptr)
                 {
                     robotR->get_target()->set_panne(false);
+                    get_robotS().set_nbNp(get_robotS().get_nbNp()-1);
                     robotR->set_target(nullptr);
                 }
                 assign_robotR_targets();
@@ -449,7 +451,6 @@ void Simulation::assign_robotR_targets()
 
 void Simulation::remove_particle(Particle* ptr)
 {
-
     for(unsigned int i(0); i<m_particles_vect.size(); i++)
     {
         if(ptr->get_shape().m_center == m_particles_vect[i]->get_shape().m_center)
@@ -462,14 +463,10 @@ void Simulation::remove_particle(Particle* ptr)
 
 void Simulation::store_robot(Robot* ptr)
 {
-   
     for(unsigned int i(0); i<m_robots.size(); i++)
     {
-std::cout<<"robot "<< i<< std::endl;
         if(ptr->get_shape().m_center == m_robots[i]->get_shape().m_center)
         {
-            std::cout<<"suppression"<<std::endl;
-            
             if(ptr->get_type()=="N")
             {
                 get_robotS().set_nbNr(get_robotS().get_nbNr()+1);
@@ -479,6 +476,20 @@ std::cout<<"robot "<< i<< std::endl;
                 get_robotS().set_nbRr(get_robotS().get_nbRr()+1);
                 get_robotS().set_nbRs(get_robotS().get_nbRs()-1);
             }
+            m_robots.erase(m_robots.begin()+i);
+        }
+    }
+}
+
+void Simulation::destroy_robot(Robot* ptr)
+{
+    for(unsigned int i(0); i<m_robots.size(); i++)
+    {
+        if(ptr->get_shape().m_center == m_robots[i]->get_shape().m_center)
+        {
+            get_robotS().set_nbNd(get_robotS().get_nbNd()+1);
+            get_robotS().set_nbNp(get_robotS().get_nbNp()-1);
+            get_robotS().set_nbNs(get_robotS().get_nbNs()-1);
             m_robots.erase(m_robots.begin()+i);
         }
     }
@@ -664,6 +675,11 @@ int Simulation::find_nearest_robot(square s_part)
             continue;
         }
         Robot_N robotN = dynamic_cast<Robot_N&>(*m_robots[i]);
+        if(robotN.get_panne())
+        {
+            k++;
+            continue;
+        }
         circle c_robotN = m_robots[i]->get_shape();
         s_2d point_part = s_part.m_center;
         s_2d seg = point_part - c_robotN.m_center;
@@ -728,8 +744,10 @@ void Simulation::set_robots_state(Particle const &part)
         {
             Robot_N& curr_robotN = dynamic_cast<Robot_N&>(*m_robots[i]);
             if(collision(curr_robotN.get_shape(), part.get_risk_zone()))
+            {
                 curr_robotN.set_panne(true);
-            
+                get_robotS().set_nbNp(get_robotS().get_nbNp()+1);
+            }
         }
     }
 }
