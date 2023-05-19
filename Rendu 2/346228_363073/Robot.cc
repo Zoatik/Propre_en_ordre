@@ -317,11 +317,18 @@ bool Robot_N::alignment(s_2d point)
     }
     if(abs(m_angle-point_orientation)>epsil_alignement)
     {
-        if(abs(m_angle-point_orientation)<a)
+        std::cout<<"angle trop grand"<<std::endl;
+        std::cout<<m_angle<<std::endl;
+        std::cout<<point_orientation<<std::endl;
+        std::cout<<a<<std::endl;
+        if(abs(m_angle-point_orientation)<abs(a))
         {
-            a = m_angle - point_orientation;  
+            m_angle = point_orientation;
+            std::cout<<m_angle<<std::endl;
+            return true;
         } 
         rotate(a);
+        
         return false;
     }
     else
