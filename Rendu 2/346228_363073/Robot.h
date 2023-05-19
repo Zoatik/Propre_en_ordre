@@ -141,18 +141,19 @@ class Robot_R : public Robot
         virtual std::string get_type();
         bool move_to_target(std::vector<std::unique_ptr<Robot>> &robots,
                             std::vector<std::unique_ptr<Particle>> &particles_vect);
-        bool back_to_base(std::vector<std::unique_ptr<Robot>> &robots);
+        bool back_to_base(std::vector<std::unique_ptr<Robot>> &robots,
+                            std::vector<std::unique_ptr<Particle>> &particles_vect);
         //methods
         bool translate(std::vector<std::unique_ptr<Robot>> &robots,
                         std::vector<std::unique_ptr<Particle>> &particles_vect);
         void set(s_2d pos);
-        void set_target(Robot_N* target);
-        Robot_N* get_target();
+        void set_target(Robot* target);
+        Robot* get_target();
         void draw();
 
     private:
         const std::string m_type = "R";
-        Robot_N* m_target = nullptr;
+        Robot* m_target = nullptr;
 };
 
 

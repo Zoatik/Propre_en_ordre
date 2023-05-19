@@ -161,8 +161,6 @@ std::string Robot_R::get_type()
 bool Robot_R::move_to_target(std::vector<std::unique_ptr<Robot>> &robots,
                             std::vector<std::unique_ptr<Particle>> &particles_vect)
 {
-    if(m_target == nullptr)
-        return true;
     return translate(robots, particles_vect);
 }
 
@@ -203,18 +201,26 @@ bool Robot_R::translate(std::vector<std::unique_ptr<Robot>> &robots,
     return false;
 }
 
+bool Robot_R::back_to_base(std::vector<std::unique_ptr<Robot>> &robots,
+                        std::vector<std::unique_ptr<Particle>> &particles_vect)
+{
+    
+    translate(robots, particles_vect);
+    return collision(robots[0]->get_shape(), m_circle);
+}
+
 void Robot_R::set(s_2d pos)
 {
     m_circle.m_center = pos;
     m_circle.m_radius = r_reparateur;
 }
 
-void Robot_R::set_target(Robot_N* target)
+void Robot_R::set_target(Robot* target)
 {
     m_target = target;
 }
 
-Robot_N* Robot_R::get_target()
+Robot* Robot_R::get_target()
 {
     return m_target;
 }
@@ -264,6 +270,7 @@ int Robot_N::get_c_n()
 
 bool Robot_N::final_alignment(std::vector<std::unique_ptr<Robot>> &robots)
 {
+    std::cout<<"final alignment"<<std::endl;
     s_2d inter_target;
     double targ_size = m_target->get_shape().m_size/2;
     double targ_x = m_target->get_shape().m_center.m_x;
@@ -277,16 +284,16 @@ bool Robot_N::final_alignment(std::vector<std::unique_ptr<Robot>> &robots)
     else
     {
         if(x < targ_x && y < targ_y)
-                return alignment(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
+                return alignment(s_2d(targ_x - targ_size,
                                     targ_y - targ_size));
         else if(x < targ_x && y > targ_y)
-            return alignment(s_2d(targ_x - targ_size-m_circle.m_radius-epsil_zero,
+            return alignment(s_2d(targ_x - targ_size,
                                 targ_y + targ_size));
         else if(x > targ_x && y < targ_y)
-            return alignment(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
+            return alignment(s_2d(targ_x + targ_size,
                                 targ_y - targ_size));
         else if(x > targ_x && y > targ_y)
-            return alignment(s_2d(targ_x + targ_size+m_circle.m_radius+epsil_zero,
+            return alignment(s_2d(targ_x + targ_size,
                                 targ_y + targ_size));
     }
 }
@@ -414,9 +421,13 @@ bool Robot_N::move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &rob
     }
     if(alignment(point))
     {
+
         std::cout<<"aligné"<<std::endl;
-        if(m_circle.m_center.close_to(point, vtran_max*delta_t))
+
+        if(m_circle.m_center.close_to(point, vtran_max*delta_t)){
             m_circle.m_center = point;
+            std::cout<<"close to point"<<std::endl;
+        }
         else
             translate(robots);
     }
@@ -436,53 +447,36 @@ s_2d Robot_N::find_safe_point(bool outside)
     double targ_x = m_target->get_shape().m_center.m_x;
     double targ_y = m_target->get_shape().m_center.m_y;
     double targ_risk_size = m_target->get_risk_zone().m_size/2;
-    if(!outside)
-        targ_risk_size = targ_size;
+    if(!outside){targ_risk_size = targ_size;}
     double x = m_circle.m_center.m_x;
     double y = m_circle.m_center.m_y;
-    if(x <= targ_x + targ_size && x >= targ_x - targ_size)
-        return s_2d(x,targ_y);
-    else if(y <= targ_y + targ_size && y >= targ_y - targ_size)
-        return s_2d(targ_x,y);
-    else
-    {
-        if(x <= targ_x && y <= targ_y)//bas gauche
-        {
-            if(abs(seg.m_x) < abs(seg.m_y))
-                return s_2d(targ_x - targ_size,
-                            targ_y - targ_risk_size-m_circle.m_radius-epsil_zero);
+    if(x <= targ_x + targ_size && x >= targ_x - targ_size) return s_2d(x,targ_y);
+    else if(y <= targ_y + targ_size && y >= targ_y - targ_size) return s_2d(targ_x,y);
+    else{
+        if(x <= targ_x && y <= targ_y){//bas gauche
+            if(abs(seg.m_x) < abs(seg.m_y)) return s_2d(targ_x - targ_size,
+                    targ_y - targ_risk_size-(m_circle.m_radius-epsil_zero)*outside);
             else
-                return s_2d(targ_x - targ_risk_size-m_circle.m_radius-epsil_zero,
-                                    targ_y - targ_size);
-        }
-        else if(x <= targ_x && y >= targ_y)//haut gauche
-        {
-            if(abs(seg.m_x) < abs(seg.m_y))
-                return s_2d(targ_x - targ_size,
-                                targ_y + targ_risk_size+m_circle.m_radius+epsil_zero);
+                return s_2d(targ_x - targ_risk_size-
+                    (m_circle.m_radius-epsil_zero)*outside,targ_y - targ_size);
+        }else if(x <= targ_x && y >= targ_y){//haut gauche
+            if(abs(seg.m_x) < abs(seg.m_y)) return s_2d(targ_x - targ_size,
+                    targ_y + targ_risk_size+(m_circle.m_radius+epsil_zero)*outside);
             else
-                return s_2d(targ_x - targ_risk_size-m_circle.m_radius-epsil_zero,
-                                targ_y + targ_size);
-        }
-        else if(x >= targ_x && y <= targ_y)//bas droite
-        {
-            if(abs(seg.m_x) < abs(seg.m_y))
-                return s_2d(targ_x + targ_size,
-                                targ_y-targ_risk_size-m_circle.m_radius-epsil_zero);
+                return s_2d(targ_x - targ_risk_size-
+                    (m_circle.m_radius-epsil_zero)*outside, targ_y + targ_size);
+        }else if(x >= targ_x && y <= targ_y){//bas droite
+            if(abs(seg.m_x) < abs(seg.m_y)) return s_2d(targ_x + targ_size,
+                        targ_y-targ_risk_size-(m_circle.m_radius-epsil_zero)*outside);
             else
-                return s_2d(targ_x + targ_risk_size+m_circle.m_radius+epsil_zero,
-                                targ_y - targ_size);
-        }
-        else//haut droite
-        {
-            if(abs(seg.m_x) < abs(seg.m_y))
-            {
-                return s_2d(targ_x + targ_size,
-                                targ_y+targ_risk_size+m_circle.m_radius+epsil_zero);
-            }
+                return s_2d(targ_x + targ_risk_size+
+                (m_circle.m_radius+epsil_zero)*outside, targ_y - targ_size);
+        }else{//haut droite
+            if(abs(seg.m_x) < abs(seg.m_y)) return s_2d(targ_x + targ_size,
+                        targ_y+targ_risk_size+(m_circle.m_radius+epsil_zero)*outside);
             else
-                return s_2d(targ_x + targ_risk_size+m_circle.m_radius+epsil_zero,
-                                targ_y + targ_size);
+                return s_2d(targ_x + targ_risk_size+(
+                    m_circle.m_radius+epsil_zero)*outside, targ_y + targ_size);
         }
     }
 }

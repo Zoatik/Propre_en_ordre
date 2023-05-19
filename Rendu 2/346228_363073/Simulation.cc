@@ -71,7 +71,6 @@ void Simulation::update_movement()
                         robotN->set_in_collision(true);
                     }
                 }
-                assign_target();
                 if(robotN->get_target())
                 {
                     if(robotN->move_to_target(m_robots))
@@ -80,10 +79,13 @@ void Simulation::update_movement()
                         robotN->delete_target();
                         assign_target(true);
                     } 
-                }else{
+                }
+                if(m_nbP == 0)
+                {
                     if(robotN->back_to_base(m_robots))
                         store_robot(robotN);
                 }
+                
             }else{
                 robotN->set_k_update_panne(robotN->get_k_update_panne()+1);
                 if(robotN->get_k_update_panne()>max_update)
@@ -95,13 +97,17 @@ void Simulation::update_movement()
             Robot_R* robotR = dynamic_cast<Robot_R*>(m_robots[i].get());
             if(robotR->move_to_target(m_robots,m_particles_vect))
             {
-                if(robotR->get_target()!=nullptr)
+                if(robotR->get_target()!=m_robots[0].get())
                 {
-                    robotR->get_target()->set_panne(false);
+                    Robot_N* robotN = dynamic_cast<Robot_N*>(robotR->get_target());
+                    robotN->set_panne(false);
                     get_robotS().set_nbNp(get_robotS().get_nbNp()-1);
-                    robotR->set_target(nullptr);
+                    robotR->set_target(m_robots[0].get());
+                    assign_robotR_targets();
+                }else{
+                    store_robot(robotR);
                 }
-                assign_robotR_targets();
+                
             }
         }
     }
@@ -278,6 +284,7 @@ bool Simulation::sep_file_infos(vector<string> lines)
         line_type++; //on passe au type suivant
     }
     assign_target();//on assigne les targets
+    assign_robotR_targets();
     cout<<message::success();
 
     return true;
@@ -418,7 +425,7 @@ void Simulation::assign_robotR_targets()
         if(m_robots[i]->get_type() == "R")
         {
             Robot_R* robotR = dynamic_cast<Robot_R*>(m_robots[i].get());
-            robotR->set_target(nullptr);
+            robotR->set_target(m_robots[0].get());
         }
     }
     for(unsigned int i(1); i<m_robots.size(); i++)
@@ -436,7 +443,7 @@ void Simulation::assign_robotR_targets()
                         Robot_R* robotR = dynamic_cast<Robot_R*>(m_robots[j].get());
                         if(distance(robotN->get_shape().m_center, 
                                     robotR->get_shape().m_center)<shortest_distance
-                            && robotR->get_target()==nullptr)
+                            && robotR->get_target()==m_robots[0].get())
                         {
                             shortest_distance = distance(robotN->get_shape().m_center,
                                                         robotR->get_shape().m_center);
