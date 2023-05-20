@@ -300,6 +300,7 @@ bool Robot_N::final_alignment(std::vector<std::unique_ptr<Robot>> &robots)
 
 bool Robot_N::alignment(s_2d point)
 {
+    std::cout<<"alignement en cours"<<std::endl;
     s_2d seg = point - m_circle.m_center;//segment entre point et robot
     double point_orientation = atan2(seg.m_y,seg.m_x);
     if(point_orientation < 0)
@@ -317,22 +318,21 @@ bool Robot_N::alignment(s_2d point)
     }
     if(abs(m_angle-point_orientation)>epsil_alignement)
     {
-        std::cout<<"angle trop grand"<<std::endl;
-        std::cout<<m_angle<<std::endl;
-        std::cout<<point_orientation<<std::endl;
-        std::cout<<a<<std::endl;
+        std::cout<<abs(m_angle-point_orientation)<<std::endl;
+        std::cout<<abs(a)<<std::endl;
         if(abs(m_angle-point_orientation)<abs(a))
         {
+            std::cout<<"angle suffisamment petit"<<std::endl;
             m_angle = point_orientation;
-            std::cout<<m_angle<<std::endl;
             return true;
         } 
         rotate(a);
-        
         return false;
     }
-    else
+    else{
+        std::cout<<"angle déjà petit"<<std::endl;
         return true;
+    }
 }
 
 bool Robot_N::destroy_target()
@@ -397,15 +397,11 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
     if(m_coord_type == 1)//2ème type mvt
     {
         if(!m_in_collision)
-        {   
-            //std::cout<<"safe point : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
+        {
             if(move_to_point(m_inter_point, robots))
             {
                 std::cout<<"arrivé au point intermédiaire"<<std::endl;
-                //std::cout<<"arrivé en : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
                 m_inter_point = find_safe_point(false);
-                //std::cout<<"nouvelle cible en : "<<m_inter_point.m_x<<" , "<<m_inter_point.m_y<<std::endl;
-                //std::cout<<m_in_collision<<std::endl;
             }
         }
         else
@@ -414,7 +410,26 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
             return final_alignment(robots);
         }
     }
-
+    if(m_coord_type == 2)
+    {
+        if(!m_in_collision)
+        { 
+            alignment(m_target->get_shape().m_center);
+            s_2d seg = m_target->get_shape().m_center - m_circle.m_center;
+            double point_orientation = atan2(seg.m_y,seg.m_x);
+            if(point_orientation < 0)
+                point_orientation = 2*M_PI+point_orientation;
+            if((abs(m_angle-point_orientation))<M_PI/3)
+                translate(robots);
+            else if((abs(m_angle-point_orientation))>M_PI)
+            {//cas où un angle vaut presque 0 et l'autre presque 2*PI
+                if((2*M_PI-abs(m_angle-point_orientation))<M_PI/3)
+                    translate(robots);
+            }
+        }
+        else
+            return final_alignment(robots);
+    }
     return false;
 }
 

@@ -30,9 +30,13 @@ Simulation::~Simulation()
 
 void Simulation::next_step()
 {
-    update();
-    get_robotS().update();
-    update_movement();
+    if(m_nbP + get_robotS().get_nbNs()+get_robotS().get_nbRs()!=0)
+    {
+        update();
+        get_robotS().update();
+        update_movement();
+        decide_deployment();
+    }
 }
 
 void Simulation::update()
@@ -51,6 +55,10 @@ void Simulation::update()
                 m_nbP += 3;
             }
         }
+    }
+    if(get_nb_N()>m_nbP)
+    {
+        assign_target(true);
     }
 }
 
@@ -71,6 +79,7 @@ void Simulation::update_movement()
                         robotN->set_in_collision(true);
                     }
                 }
+                assign_target();
                 if(robotN->get_target())
                 {
                     if(robotN->move_to_target(m_robots))
@@ -104,10 +113,10 @@ void Simulation::update_movement()
                     get_robotS().set_nbNp(get_robotS().get_nbNp()-1);
                     robotR->set_target(m_robots[0].get());
                     assign_robotR_targets();
+                    set_nbNp();
                 }else{
                     store_robot(robotR);
                 }
-                
             }
         }
     }
@@ -406,16 +415,6 @@ void Simulation::assign_target(bool override)
             robotN->set_inter_point(robotN->find_safe_point());
         }
     }
-    /*for(unsigned int i(0); i<m_robots.size(); i++)
-    {
-        if(m_robots[i]->get_type() == "N" && dynamic_cast<Robot_N&>(*m_robots[i]).get_target())
-        {
-            Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
-            robotN->set_inter_point(robotN->find_safe_point());
-            //cout<<"safe point : "<<robotN.find_safe_point().m_x<<" , "<<robotN.find_safe_point().m_y<<endl;
-        }
-    }*/
-
 }
 
 void Simulation::assign_robotR_targets()
@@ -499,6 +498,110 @@ void Simulation::destroy_robot(Robot* ptr)
             get_robotS().set_nbNs(get_robotS().get_nbNs()-1);
             m_robots.erase(m_robots.begin()+i);
         }
+    }
+}
+
+void Simulation::decide_deployment()
+{
+    if(m_nbP>2*get_nb_N())
+    {
+        if(get_robotS().get_nbNr()>0)
+        {
+            deploy_new_robot("N", find_deployment_spot("N"));
+            get_robotS().set_nbNr(get_robotS().get_nbNr()-1);
+            get_robotS().set_nbNs(get_robotS().get_nbNs()+1);
+        }
+
+    }
+    if(get_robotS().get_nbNp()>get_robotS().get_nbRs())
+    {
+        if(get_robotS().get_nbRr()>0)
+        {
+            deploy_new_robot("R", find_deployment_spot("R"));
+            get_robotS().set_nbRr(get_robotS().get_nbRr()-1);
+            get_robotS().set_nbRs(get_robotS().get_nbRs()+1);
+        }
+    }
+}
+
+s_2d Simulation::find_deployment_spot(std::string type)
+{
+    double Sx = get_robotS().get_shape().m_center.m_x;
+    double Sy = get_robotS().get_shape().m_center.m_y;
+    double radius;
+    if(type=="R")
+        radius = r_reparateur;  
+    else
+        radius = r_neutraliseur;
+    
+    bool collide = false;
+    double angle(0);
+    do{
+        angle += M_PI/8;
+        collide = false;
+        if(angle>2*M_PI) 
+            return s_2d(Sx,Sy);
+        for(unsigned int i(1); i<m_robots.size(); i++)
+        {
+            collide = collision(m_robots[i].get()->get_shape(), 
+                                circle(s_2d(Sx+cos(angle)*(r_spatial+radius+epsil_zero),
+                                            Sy+sin(angle)*(r_spatial+radius+epsil_zero)),
+                                        radius));
+            if(collide)
+                break;
+        }
+        if(!collide)
+        {
+            for(unsigned int i(0); i<m_particles_vect.size(); i++)
+            {
+                collide = collision(circle(s_2d(Sx+cos(angle)*(r_spatial+radius+epsil_zero),
+                                        Sy+sin(angle)*(r_spatial+radius+epsil_zero)), radius),
+                                    m_particles_vect[i].get()->get_shape());
+                if(collide)
+                    break;
+            }
+        }
+    }while(collide);
+    return s_2d(Sx+cos(angle)*(r_spatial+radius),
+                Sy+sin(angle)*(r_spatial+radius));
+}
+
+void Simulation::deploy_new_robot(std::string type, s_2d dest)
+{
+    if(type=="R")
+    {
+        s_2d delta = dest-get_robotS().get_shape().m_center;
+        double angle = atan2(delta.m_y,delta.m_x);
+        double x = get_robotS().get_shape().m_center.m_x
+                    +cos(angle)*(r_spatial+r_reparateur);
+        double y = get_robotS().get_shape().m_center.m_y
+                    +sin(angle)*(r_spatial+r_reparateur);
+        m_robots.push_back(make_unique<Robot_R>(s_2d(x, y)));
+        assign_robotR_targets();
+    }else if(type=="N"){
+        s_2d delta = dest-get_robotS().get_shape().m_center;
+        double angle = atan2(delta.m_y,delta.m_x);
+        double x = get_robotS().get_shape().m_center.m_x
+                    +cos(angle)*(r_spatial+r_neutraliseur);
+        double y = get_robotS().get_shape().m_center.m_y
+                    +sin(angle)*(r_spatial+r_neutraliseur);
+        bool type0(false);
+        bool type1(false);
+        bool type2(false);
+        for(unsigned int i(0); i<m_robots.size(); i++)
+        {
+            if(m_robots[i]->get_type()=="N")
+            {
+                Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
+                if(robotN->get_c_n()==0) type0 = true;
+                else if(robotN->get_c_n()==1) type1 = true;
+                else if(robotN->get_c_n()==2) type2 = true;
+            }
+        }
+        int type(!type0*0+!type1*1+!type2*2);
+        m_robots.push_back(make_unique<Robot_N>(s_2d(x, y), angle, type,
+                                       false, 0));
+        assign_target();
     }
 }
 
