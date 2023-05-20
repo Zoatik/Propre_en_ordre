@@ -585,20 +585,7 @@ void Simulation::deploy_new_robot(std::string type, s_2d dest)
                     +cos(angle)*(r_spatial+r_neutraliseur);
         double y = get_robotS().get_shape().m_center.m_y
                     +sin(angle)*(r_spatial+r_neutraliseur);
-        bool type0(false);
-        bool type1(false);
-        bool type2(false);
-        for(unsigned int i(0); i<m_robots.size(); i++)
-        {
-            if(m_robots[i]->get_type()=="N")
-            {
-                Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
-                if(robotN->get_c_n()==0) type0 = true;
-                else if(robotN->get_c_n()==1) type1 = true;
-                else if(robotN->get_c_n()==2) type2 = true;
-            }
-        }
-        int type(!type0*0+!type1*1+!type2*2);
+        int type = (get_robotS().get_nbNs()+get_robotS().get_nbNd())%3;
         m_robots.push_back(make_unique<Robot_N>(s_2d(x, y), angle, type,
                                        false, 0));
         assign_target();

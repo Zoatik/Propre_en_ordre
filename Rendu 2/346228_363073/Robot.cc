@@ -391,7 +391,7 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
             if(alignment(m_target->get_shape().m_center))
                 translate(robots);
         }
-        else
+        else if(collision(m_circle,m_target->get_shape()))
             return final_alignment(robots);
     }
     if(m_coord_type == 1)//2ème type mvt
@@ -404,7 +404,7 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
                 m_inter_point = find_safe_point(false);
             }
         }
-        else
+        else if(collision(m_circle,m_target->get_shape()))
         {
             std::cout<<"collision, final alignment"<<std::endl;
             return final_alignment(robots);
@@ -427,7 +427,7 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
                     translate(robots);
             }
         }
-        else
+        else if(collision(m_circle,m_target->get_shape()))
             return final_alignment(robots);
     }
     return false;
