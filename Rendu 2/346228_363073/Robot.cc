@@ -227,7 +227,8 @@ void Robot_R::set_target(Robot_N* target)
     m_target = target;
 }
 
-Robot_N* Robot_R::get_target()
+
+Robot_N *Robot_R::get_target()
 {
     return m_target;
 }

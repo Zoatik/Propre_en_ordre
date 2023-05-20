@@ -96,8 +96,7 @@ void Simulation::update_movement()
                 }
                 
             }else{
-                robotN->set_k_update_panne(robotN->get_k_update_panne()+1);
-                if(robotN->get_k_update_panne()>max_update)
+                if(get_robotS().get_nb_update() - robotN->get_k_update_panne() >= max_update)
                     destroy_robot(robotN);
             }
         }
@@ -443,7 +442,9 @@ void Simulation::assign_robotR_targets()
             Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
             if(robotN->get_panne())
             {   
-                double shortest_distance(10000);
+                int max_nb_update = robotN->get_k_update_panne() + max_update
+                                    - get_robotS().get_nb_update();                
+                double shortest_distance(vtran_max*delta_t*max_nb_update);
                 for(unsigned int j(1); j<m_robots.size(); j++)
                 {
                     if(m_robots[j]->get_type() == "R")
@@ -538,6 +539,7 @@ s_2d Simulation::find_deployment_spot(std::string type)
     double Sx = get_robotS().get_shape().m_center.m_x;
     double Sy = get_robotS().get_shape().m_center.m_y;
     double radius;
+    s_2d seg;
     if(type=="R")
         radius = r_reparateur;  
     else
@@ -852,6 +854,7 @@ void Simulation::set_robots_state(Particle const &part)
             if(collision(curr_robotN.get_shape(), part.get_risk_zone()))
             {
                 curr_robotN.set_panne(true);
+                curr_robotN.set_k_update_panne(get_robotS().get_nb_update());
                 get_robotS().set_nbNp(get_robotS().get_nbNp()+1);
             }
         }
