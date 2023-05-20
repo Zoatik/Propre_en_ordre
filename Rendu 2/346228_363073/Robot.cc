@@ -165,17 +165,24 @@ bool Robot_R::move_to_target(std::vector<std::unique_ptr<Robot>> &robots,
 }
 
 bool Robot_R::translate(std::vector<std::unique_ptr<Robot>> &robots,
-                        std::vector<std::unique_ptr<Particle>> &particles_vect)
+                        std::vector<std::unique_ptr<Particle>> &particles_vect,
+                        bool to_base)
 {
-    double angle = atan2(m_target->get_shape().m_center.m_y-m_circle.m_center.m_y, 
+    if(!to_base && !m_target)
+        return false;
+    double angle = atan2(robots[0]->get_shape().m_center.m_y-m_circle.m_center.m_y, 
+                    robots[0]->get_shape().m_center.m_x-m_circle.m_center.m_x);
+    if(!to_base)
+        angle = atan2(m_target->get_shape().m_center.m_y-m_circle.m_center.m_y, 
                     m_target->get_shape().m_center.m_x-m_circle.m_center.m_x);
+
     m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
                                 s_2d(cos(angle),sin(angle));
-    for(unsigned int j(0); j < robots.size(); j++)
+    for(unsigned int j(1); j < robots.size(); j++)
     {//collisions entre robots
         if(collision(m_circle,robots[j]->get_shape()))
         {
-            if(robots[j]->get_shape().m_center==m_target->get_shape().m_center)
+            if(m_target && robots[j]->get_shape().m_center==m_target->get_shape().m_center)
             {//si un robot R entre en collision avec sa cible
                 m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
                                 s_2d(cos(angle),sin(angle));
@@ -205,7 +212,7 @@ bool Robot_R::back_to_base(std::vector<std::unique_ptr<Robot>> &robots,
                         std::vector<std::unique_ptr<Particle>> &particles_vect)
 {
     
-    translate(robots, particles_vect);
+    translate(robots, particles_vect, true);
     return collision(robots[0]->get_shape(), m_circle);
 }
 
@@ -215,12 +222,12 @@ void Robot_R::set(s_2d pos)
     m_circle.m_radius = r_reparateur;
 }
 
-void Robot_R::set_target(Robot* target)
+void Robot_R::set_target(Robot_N* target)
 {
     m_target = target;
 }
 
-Robot* Robot_R::get_target()
+Robot_N* Robot_R::get_target()
 {
     return m_target;
 }
@@ -283,16 +290,16 @@ bool Robot_N::final_alignment(std::vector<std::unique_ptr<Robot>> &robots)
         return alignment(s_2d(targ_x,y));
     else
     {
-        if(x < targ_x && y < targ_y)
-                return alignment(s_2d(targ_x - targ_size,
-                                    targ_y - targ_size));
-        else if(x < targ_x && y > targ_y)
+        if(x <= targ_x && y <= targ_y)
+            return alignment(s_2d(targ_x - targ_size,
+                                targ_y - targ_size));
+        else if(x <= targ_x && y >= targ_y)
             return alignment(s_2d(targ_x - targ_size,
                                 targ_y + targ_size));
-        else if(x > targ_x && y < targ_y)
+        else if(x >= targ_x && y <= targ_y)
             return alignment(s_2d(targ_x + targ_size,
                                 targ_y - targ_size));
-        else if(x > targ_x && y > targ_y)
+        else
             return alignment(s_2d(targ_x + targ_size,
                                 targ_y + targ_size));
     }
@@ -354,13 +361,11 @@ void Robot_N::translate(std::vector<std::unique_ptr<Robot>> &robots)
 {
     m_circle.m_center = m_circle.m_center+(vtran_max*delta_t)*
                                 s_2d(cos(m_angle),sin(m_angle));
-    for(unsigned int j(0); j < robots.size(); j++)
+    for(unsigned int j(1); j < robots.size(); j++)
     {
         if(collision(m_circle,robots[j]->get_shape()))
         {
-            if(j==0)
-                m_in_collision = true;
-            else if(!(m_circle.m_center == robots[j]->get_shape().m_center))
+            if(!(m_circle.m_center == robots[j]->get_shape().m_center))
                 m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
                                 s_2d(cos(m_angle),sin(m_angle));
         }
@@ -379,11 +384,6 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
         std::cout<<"plus de cible"<<std::endl;
         return false;
     }
-    double targ_size = m_target->get_shape().m_size/2;
-    double targ_x = m_target->get_shape().m_center.m_x;
-    double targ_y = m_target->get_shape().m_center.m_y;
-    double x = m_circle.m_center.m_x;
-    double y = m_circle.m_center.m_y;
     if (m_coord_type == 0)//1er type mvt
     {
         if(!m_in_collision)

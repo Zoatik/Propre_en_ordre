@@ -145,15 +145,16 @@ class Robot_R : public Robot
                             std::vector<std::unique_ptr<Particle>> &particles_vect);
         //methods
         bool translate(std::vector<std::unique_ptr<Robot>> &robots,
-                        std::vector<std::unique_ptr<Particle>> &particles_vect);
+                        std::vector<std::unique_ptr<Particle>> &particles_vect,
+                        bool to_base = false);
         void set(s_2d pos);
-        void set_target(Robot* target);
-        Robot* get_target();
+        void set_target(Robot_N* target);
+        Robot_N* get_target();
         void draw();
 
     private:
         const std::string m_type = "R";
-        Robot* m_target = nullptr;
+        Robot_N* m_target = nullptr;
 };
 
 

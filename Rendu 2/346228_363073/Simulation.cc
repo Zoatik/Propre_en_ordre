@@ -56,10 +56,10 @@ void Simulation::update()
             }
         }
     }
-    if(get_nb_N()>m_nbP)
+    /*if(get_nb_N()>m_nbP)
     {
         assign_target(true);
-    }
+    }*/
 }
 
 void Simulation::update_movement()
@@ -103,21 +103,21 @@ void Simulation::update_movement()
         }
         else if(m_robots[i]->get_type() == "R")
         {
+            assign_robotR_targets();
             Robot_R* robotR = dynamic_cast<Robot_R*>(m_robots[i].get());
             if(robotR->move_to_target(m_robots,m_particles_vect))
             {
-                if(robotR->get_target()!=m_robots[0].get())
-                {
-                    Robot_N* robotN = dynamic_cast<Robot_N*>(robotR->get_target());
-                    robotN->set_panne(false);
-                    get_robotS().set_nbNp(get_robotS().get_nbNp()-1);
-                    robotR->set_target(m_robots[0].get());
-                    assign_robotR_targets();
-                    set_nbNp();
-                }else{
-                    store_robot(robotR);
-                }
+                Robot_N* robotN = dynamic_cast<Robot_N*>(robotR->get_target());
+                robotN->set_panne(false);
+                get_robotS().set_nbNp(get_robotS().get_nbNp()-1);
+                robotR->set_target(nullptr);
             }
+            else if(!robotR->get_target())
+            {
+                if(robotR->back_to_base(m_robots, m_particles_vect))
+                    store_robot(robotR);
+            }
+
         }
     }
 }
@@ -424,7 +424,7 @@ void Simulation::assign_robotR_targets()
         if(m_robots[i]->get_type() == "R")
         {
             Robot_R* robotR = dynamic_cast<Robot_R*>(m_robots[i].get());
-            robotR->set_target(m_robots[0].get());
+            robotR->set_target(nullptr);
         }
     }
     for(unsigned int i(1); i<m_robots.size(); i++)
@@ -442,7 +442,7 @@ void Simulation::assign_robotR_targets()
                         Robot_R* robotR = dynamic_cast<Robot_R*>(m_robots[j].get());
                         if(distance(robotN->get_shape().m_center, 
                                     robotR->get_shape().m_center)<shortest_distance
-                            && robotR->get_target()==m_robots[0].get())
+                            && robotR->get_target()==nullptr)
                         {
                             shortest_distance = distance(robotN->get_shape().m_center,
                                                         robotR->get_shape().m_center);
