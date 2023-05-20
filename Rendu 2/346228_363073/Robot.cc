@@ -459,7 +459,7 @@ bool Robot_N::move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &rob
 bool Robot_N::back_to_base(std::vector<std::unique_ptr<Robot>> &robots)
 {
     move_to_point(robots[0]->get_shape().m_center, robots);
-    return collision(robots[0]->get_shape(), m_circle);
+    return alignment(robots[0]->get_shape().m_center) && collision(robots[0]->get_shape(), m_circle);
 }
 
 s_2d Robot_N::find_safe_point(bool outside)

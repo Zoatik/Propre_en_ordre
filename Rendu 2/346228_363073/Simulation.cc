@@ -415,6 +415,15 @@ void Simulation::assign_target(bool override)
             robotN->set_inter_point(robotN->find_safe_point());
         }
     }
+    for(unsigned int i(1); i < m_robots.size(); i++)//si plus de robots que part
+    {
+        if(m_robots[i]->get_type() == "N")
+        {
+            Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
+            if(!robotN->get_target() && m_nbP)
+                robotN->set_target(m_particles_vect[0].get());//plus grosse part
+        }
+    }
 }
 
 void Simulation::assign_robotR_targets()
