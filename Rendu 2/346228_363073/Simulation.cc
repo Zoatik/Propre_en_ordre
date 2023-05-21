@@ -557,7 +557,6 @@ void Simulation::deploy_new_robot(std::string type, s_2d dest)
         Particle* part_targ = m_particles_vect[part_index].get();
         s_2d seg = part_targ->get_shape().m_center-get_robotS().get_shape().m_center;
         double angle = atan2(seg.m_y,seg.m_x);
-        cout<<"angle d'appartition : "<<angle<<endl;
         int type = (get_robotS().get_nbNs()+get_robotS().get_nbNd())%3;
         m_robots.push_back(make_unique<Robot_N>(dest, angle, type,
                                        false, 0));

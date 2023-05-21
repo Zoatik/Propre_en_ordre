@@ -274,7 +274,6 @@ int Robot_N::get_c_n()
 
 bool Robot_N::final_alignment(std::vector<std::unique_ptr<Robot>> &robots)
 {
-    std::cout<<"final alignment"<<std::endl;
     s_2d inter_target;
     double targ_size = m_target->get_shape().m_size/2;
     double targ_x = m_target->get_shape().m_center.m_x;
@@ -304,7 +303,6 @@ bool Robot_N::final_alignment(std::vector<std::unique_ptr<Robot>> &robots)
 
 bool Robot_N::alignment(s_2d point)
 {
-    std::cout<<"alignement en cours"<<std::endl;
     s_2d seg = point - m_circle.m_center;//segment entre point et robot
     double point_orientation = atan2(seg.m_y,seg.m_x);
     if(point_orientation < 0)
@@ -322,21 +320,16 @@ bool Robot_N::alignment(s_2d point)
     }
     if(abs(m_angle-point_orientation)>epsil_alignement)
     {
-        std::cout<<abs(m_angle-point_orientation)<<std::endl;
-        std::cout<<abs(a)<<std::endl;
         if(abs(m_angle-point_orientation)<abs(a))
         {
-            std::cout<<"angle suffisamment petit"<<std::endl;
             m_angle = point_orientation;
             return true;
         } 
         rotate(a);
         return false;
     }
-    else{
-        std::cout<<"angle déjà petit"<<std::endl;
-        return true;
-    }
+    else
+        return true; 
 }
 
 bool Robot_N::destroy_target()
@@ -381,10 +374,7 @@ std::string Robot_N::get_type()
 bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
 {
     if(m_target == nullptr || m_panne == true)
-    {
-        std::cout<<"plus de cible"<<std::endl;
         return false;
-    }
     if (m_coord_type == 0)//1er type mvt
     {
         if(collision(m_circle,m_target->get_shape()))
@@ -397,17 +387,9 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
     if(m_coord_type == 1)//2ème type mvt
     {
         if(collision(m_circle,m_target->get_shape()))
-        {
-            std::cout<<"collision, final alignment"<<std::endl;
             return final_alignment(robots);
-        }
         if(move_to_point(m_inter_point, robots))
-        {
-            std::cout<<"arrivé au point intermédiaire"<<std::endl;
             m_inter_point = find_safe_point(false);
-        }
-        
-        
     }
     if(m_coord_type == 2)
     {
@@ -433,7 +415,6 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
 
 bool Robot_N::move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &robots)
 {
-    std::cout<<point.m_x<<","<<point.m_y<<std::endl;
     m_in_collision = false;
     for(unsigned int j(1); j < robots.size(); j++)
     {
@@ -450,13 +431,8 @@ bool Robot_N::move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &rob
     
     if(alignment(point))
     {
-
-        std::cout<<"aligné"<<std::endl;
-
-        if(m_circle.m_center.close_to(point, vtran_max*delta_t)){
+        if(m_circle.m_center.close_to(point, vtran_max*delta_t))
             m_circle.m_center = point;
-            std::cout<<"close to point"<<std::endl;
-        }
         else
             translate(robots);
     }
@@ -558,10 +534,7 @@ void Robot_N::set_inter_point(s_2d safe_point)
 {
     m_inter_point = safe_point;
     if(collision(m_circle, m_target->get_risk_zone()))
-    {
-                std::cout<<"dans la zone à risque"<<std::endl;
-                m_inter_point = find_safe_point(false);//check pas déjà zone à risque
-    }
+        m_inter_point = find_safe_point(false);//check pas déjà zone à risque
 }
 
 void Robot_N::draw()
