@@ -81,13 +81,12 @@ class Simulation
                                            //(-1 si aucun robot)
         std::vector<int> get_untargeted_parts_index();
         void tri_size(std::vector<std::unique_ptr<Particle>>& part_vect);
-        void set_robots_state(Particle const &part);//mets en panne les robots si risk_zone
+        void set_robots_state(Particle const &part);//mets en panne si risk_zone
 
         //attributs
         int m_nbP;
         std::vector<std::unique_ptr<Robot>> m_robots;
         std::vector<std::unique_ptr<Particle>> m_particles_vect;  
-        //std::vector<Particle> m_untargeted_part;
         
         // attributs désintégration particules
         std::bernoulli_distribution m_bernoulli;

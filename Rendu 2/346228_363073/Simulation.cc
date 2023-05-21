@@ -56,10 +56,6 @@ void Simulation::update()
             }
         }
     }
-    /*if(get_nb_N()>m_nbP)
-    {
-        assign_target(true);
-    }*/
 }
 
 void Simulation::update_movement()
@@ -89,14 +85,15 @@ void Simulation::update_movement()
                         assign_target(true);
                     } 
                 }
-                if(m_nbP == 0)
+                if(m_nbP == 0 || !robotN->get_target())
                 {
                     if(robotN->back_to_base(m_robots))
                         store_robot(robotN);
                 }
                 
             }else{
-                if(get_robotS().get_nb_update() - robotN->get_k_update_panne() >= int(max_update))
+                if(get_robotS().get_nb_update() - robotN->get_k_update_panne() 
+                                                >= int(max_update))
                     destroy_robot(robotN);
             }
         }
@@ -318,7 +315,6 @@ bool Simulation::read_particles_prop(string spec, vector<string> lines,
 
         i++;
     }
-    //m_untargeted_part = m_particles_vect;//on initialise les particules pas target
     return true;
 }
 
@@ -399,14 +395,15 @@ void Simulation::assign_target(bool override)
     {
         for(unsigned int i(0); i < m_robots.size(); i++)
         {
-            if(m_robots[i]->get_type() == "N" && dynamic_cast<Robot_N&>(*m_robots[i]).get_target())
-                dynamic_cast<Robot_N&>(*m_robots[i]).delete_target();
+            Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
+            if(m_robots[i]->get_type() == "N" && robotN->get_target())
+                robotN->delete_target();
         }
     }
     vector<int> part_ind = get_untargeted_parts_index();
     for(unsigned int i(0); i < part_ind.size(); i++)
     {
-        int robot_index = find_nearest_robot(m_particles_vect[part_ind[i]]->get_shape());
+        int robot_index=find_nearest_robot(m_particles_vect[part_ind[i]]->get_shape());
         if(robot_index != -1)
         {
             Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[robot_index].get());
@@ -416,10 +413,10 @@ void Simulation::assign_target(bool override)
     }
     for(unsigned int i(1); i < m_robots.size(); i++)//si plus de robots que part
     {
-        if(m_robots[i]->get_type() == "N")
+        if(m_robots[i]->get_type() == "N" && m_nbP)
         {
             Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
-            if(!robotN->get_target() && m_nbP)
+            if(!robotN->get_target())
                 robotN->set_target(m_particles_vect[0].get());//plus grosse part
         }
     }
@@ -556,8 +553,9 @@ void Simulation::deploy_new_robot(std::string type, s_2d dest)
         m_robots.push_back(make_unique<Robot_R>(dest));
         assign_robotR_targets();
     }else if(type=="N"){
-        Particle* part_to_target = m_particles_vect[get_untargeted_parts_index()[0]].get();
-        s_2d seg = part_to_target->get_shape().m_center-get_robotS().get_shape().m_center;
+        int part_index = get_untargeted_parts_index()[0];
+        Particle* part_targ = m_particles_vect[part_index].get();
+        s_2d seg = part_targ->get_shape().m_center-get_robotS().get_shape().m_center;
         double angle = atan2(seg.m_y,seg.m_x);
         cout<<"angle d'appartition : "<<angle<<endl;
         int type = (get_robotS().get_nbNs()+get_robotS().get_nbNd())%3;
@@ -568,7 +566,6 @@ void Simulation::deploy_new_robot(std::string type, s_2d dest)
 }
 
 ///méthodes privées de génération
- 
 bool Simulation::check_particles(Particle part)
 {
     if(part.get_shape().m_size<d_particule_min)
@@ -850,7 +847,8 @@ void Simulation::set_nbNp()
     int count(0);
     for(int i(0);i<get_nb_N()+get_nb_R()+1;i++)
     {
-        if(m_robots[i]->get_type() == "N" and dynamic_cast<Robot_N&>(*m_robots[i]).get_panne() == true)
+        if(m_robots[i]->get_type() == "N" && 
+                    dynamic_cast<Robot_N&>(*m_robots[i]).get_panne() == true)
             count+=1;
     }
     get_robotS().set_nbNp(count);

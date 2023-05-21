@@ -180,20 +180,16 @@ bool Robot_R::translate(std::vector<std::unique_ptr<Robot>> &robots,
                                 s_2d(cos(angle),sin(angle));
     for(unsigned int j(1); j < robots.size(); j++)
     {//collisions entre robots
+        if(m_circle.m_center == robots[j]->get_shape().m_center)
+            continue;
         if(collision(m_circle,robots[j]->get_shape()))
         {
-            if(m_target && robots[j]->get_shape().m_center==m_target->get_shape().m_center)
-            {//si un robot R entre en collision avec sa cible
-                m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
+            m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
                                 s_2d(cos(angle),sin(angle));
+            if(m_target && //si un robot R entre en collision avec sa cible
+                robots[j]->get_shape().m_center == m_target->get_shape().m_center)
                 return true;
-            }
-            if(!(m_circle.m_center == robots[j]->get_shape().m_center))
-            {//si c'est une collision empêchant de passer
-                m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
-                                s_2d(cos(angle),sin(angle));
-                return false;
-            }
+            return false;
         }
     }
     for(unsigned int j(0); j < particles_vect.size(); j++)
@@ -364,13 +360,17 @@ void Robot_N::translate(std::vector<std::unique_ptr<Robot>> &robots)
                                 s_2d(cos(m_angle),sin(m_angle));
     for(unsigned int j(1); j < robots.size(); j++)
     {
+        if(m_circle.m_center == robots[j]->get_shape().m_center)
+            continue;
         if(collision(m_circle,robots[j]->get_shape()))
-        {
-            if(!(m_circle.m_center == robots[j]->get_shape().m_center))
-                m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
+        {  
+            m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
                                 s_2d(cos(m_angle),sin(m_angle));
+            m_in_collision = true;
+            return;
         }
     }
+    m_in_collision = false;
 }
 
 std::string Robot_N::get_type()
@@ -387,49 +387,46 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
     }
     if (m_coord_type == 0)//1er type mvt
     {
-        if(!m_in_collision)
-        {
-            if(alignment(m_target->get_shape().m_center))
-                translate(robots);
-        }
-        else if(collision(m_circle,m_target->get_shape()))
+        if(collision(m_circle,m_target->get_shape()))
             return final_alignment(robots);
+        if(alignment(m_target->get_shape().m_center))
+            translate(robots);
+        
+        
     }
     if(m_coord_type == 1)//2ème type mvt
     {
-        if(!m_in_collision)
-        {
-            if(move_to_point(m_inter_point, robots))
-            {
-                std::cout<<"arrivé au point intermédiaire"<<std::endl;
-                m_inter_point = find_safe_point(false);
-            }
-        }
-        else if(collision(m_circle,m_target->get_shape()))
+        if(collision(m_circle,m_target->get_shape()))
         {
             std::cout<<"collision, final alignment"<<std::endl;
             return final_alignment(robots);
         }
+        if(move_to_point(m_inter_point, robots))
+        {
+            std::cout<<"arrivé au point intermédiaire"<<std::endl;
+            m_inter_point = find_safe_point(false);
+        }
+        
+        
     }
     if(m_coord_type == 2)
     {
-        if(!m_in_collision)
-        { 
-            alignment(m_target->get_shape().m_center);
-            s_2d seg = m_target->get_shape().m_center - m_circle.m_center;
-            double point_orientation = atan2(seg.m_y,seg.m_x);
-            if(point_orientation < 0)
-                point_orientation = 2*M_PI+point_orientation;
-            if((abs(m_angle-point_orientation))<M_PI/3)
-                translate(robots);
-            else if((abs(m_angle-point_orientation))>M_PI)
-            {//cas où un angle vaut presque 0 et l'autre presque 2*PI
-                if((2*M_PI-abs(m_angle-point_orientation))<M_PI/3)
-                    translate(robots);
-            }
-        }
-        else if(collision(m_circle,m_target->get_shape()))
+        if(collision(m_circle,m_target->get_shape()))
             return final_alignment(robots);
+
+        alignment(m_target->get_shape().m_center);
+        s_2d seg = m_target->get_shape().m_center - m_circle.m_center;
+        double point_orientation = atan2(seg.m_y,seg.m_x);
+        if(point_orientation < 0)
+            point_orientation = 2*M_PI+point_orientation;
+        if((abs(m_angle-point_orientation))<M_PI/3)
+            translate(robots);
+        else if((abs(m_angle-point_orientation))>M_PI)
+        {//cas où un angle vaut presque 0 et l'autre presque 2*PI
+            if((2*M_PI-abs(m_angle-point_orientation))<M_PI/3)
+                translate(robots);
+        }
+        
     }
     return false;
 }
@@ -437,11 +434,20 @@ bool Robot_N::move_to_target(std::vector<std::unique_ptr<Robot>> &robots)
 bool Robot_N::move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &robots)
 {
     std::cout<<point.m_x<<","<<point.m_y<<std::endl;
-    if(m_in_collision)
+    m_in_collision = false;
+    for(unsigned int j(1); j < robots.size(); j++)
     {
-        std::cout<<"collision en mouvement"<<std::endl;
-        return true;
+        if(m_circle.m_center == robots[j]->get_shape().m_center)
+            continue;
+        if(collision(m_circle,robots[j]->get_shape()))
+        {  
+            m_circle.m_center = m_circle.m_center-(vtran_max*delta_t)*
+                                s_2d(cos(m_angle),sin(m_angle));
+            m_in_collision = true;
+            break;
+        }
     }
+    
     if(alignment(point))
     {
 
@@ -460,7 +466,10 @@ bool Robot_N::move_to_point(s_2d point, std::vector<std::unique_ptr<Robot>> &rob
 bool Robot_N::back_to_base(std::vector<std::unique_ptr<Robot>> &robots)
 {
     move_to_point(robots[0]->get_shape().m_center, robots);
-    return alignment(robots[0]->get_shape().m_center) && collision(robots[0]->get_shape(), m_circle);
+    double radius_S = dynamic_cast<Robot_S&>(*robots[0]).get_shape().m_radius;
+    double back_radius = radius_S - r_neutraliseur;
+    circle coll(robots[0]->get_shape().m_center,back_radius);
+    return alignment(robots[0]->get_shape().m_center) && collision(coll, m_circle);
 }
 
 s_2d Robot_N::find_safe_point(bool outside)
