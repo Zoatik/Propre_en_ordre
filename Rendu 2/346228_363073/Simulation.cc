@@ -67,6 +67,7 @@ void Simulation::update_movement()
             Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
             if(!robotN->get_panne())
             {
+                //assign_target(true);
                 for(unsigned int j(0); j < m_particles_vect.size(); j++)
                 {
                     if(collision(robotN->get_shape(),m_particles_vect[j]->get_shape()))
@@ -75,7 +76,7 @@ void Simulation::update_movement()
                         robotN->set_in_collision(true);
                     }
                 }
-                assign_target();
+                
                 if(robotN->get_target())
                 {
                     if(robotN->move_to_target(m_robots))
@@ -393,11 +394,14 @@ void Simulation::assign_target(bool override)
 {
     if(override)
     {
-        for(unsigned int i(0); i < m_robots.size(); i++)
+        for(unsigned int i(1); i < m_robots.size(); i++)
         {
-            Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
-            if(m_robots[i]->get_type() == "N" && robotN->get_target())
+            if(m_robots[i]->get_type() == "N")
+            {
+                Robot_N* robotN = dynamic_cast<Robot_N*>(m_robots[i].get());
                 robotN->delete_target();
+                cout<<"ON OVERRIDE"<<endl;
+            }
         }
     }
     vector<int> part_ind = get_untargeted_parts_index();
@@ -560,7 +564,7 @@ void Simulation::deploy_new_robot(std::string type, s_2d dest)
         int type = (get_robotS().get_nbNs()+get_robotS().get_nbNd())%3;
         m_robots.push_back(make_unique<Robot_N>(dest, angle, type,
                                        false, 0));
-        assign_target();
+        assign_target(true);
     }
 }
 
