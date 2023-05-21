@@ -38,7 +38,7 @@ class Simulation
         void store_robot(Robot* ptr);
         void destroy_robot(Robot* ptr);
         void decide_deployment();
-        s_2d find_deployment_spot(std::string type);
+        bool can_deploy(std::string type);
         void deploy_new_robot(std::string type, s_2d dest);
         void assign_target(bool override = false);
         void assign_robotR_targets();

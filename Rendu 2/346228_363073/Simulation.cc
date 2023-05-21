@@ -96,7 +96,7 @@ void Simulation::update_movement()
                 }
                 
             }else{
-                if(get_robotS().get_nb_update() - robotN->get_k_update_panne() >= max_update)
+                if(get_robotS().get_nb_update() - robotN->get_k_update_panne() >= int(max_update))
                     destroy_robot(robotN);
             }
         }
@@ -513,91 +513,55 @@ void Simulation::destroy_robot(Robot* ptr)
 
 void Simulation::decide_deployment()
 {
+    s_2d pos_to_deploy(m_robots[0]->get_shape().m_center);
+    if(get_robotS().get_nbNp()>get_robotS().get_nbRs())
+    {
+        if(get_robotS().get_nbRr()>0 && can_deploy("R"))
+        {
+            deploy_new_robot("R", pos_to_deploy);
+            get_robotS().set_nbRr(get_robotS().get_nbRr()-1);
+            get_robotS().set_nbRs(get_robotS().get_nbRs()+1);
+        }
+    }
     if(m_nbP>2*get_nb_N())
     {
-        if(get_robotS().get_nbNr()>0)
+        if(get_robotS().get_nbNr()>0 && can_deploy("N"))
         {
-            deploy_new_robot("N", find_deployment_spot("N"));
+            deploy_new_robot("N", pos_to_deploy);
             get_robotS().set_nbNr(get_robotS().get_nbNr()-1);
             get_robotS().set_nbNs(get_robotS().get_nbNs()+1);
         }
 
     }
-    if(get_robotS().get_nbNp()>get_robotS().get_nbRs())
-    {
-        if(get_robotS().get_nbRr()>0)
-        {
-            deploy_new_robot("R", find_deployment_spot("R"));
-            get_robotS().set_nbRr(get_robotS().get_nbRr()-1);
-            get_robotS().set_nbRs(get_robotS().get_nbRs()+1);
-        }
-    }
 }
-
-s_2d Simulation::find_deployment_spot(std::string type)
+bool Simulation::can_deploy(std::string type)
 {
-    double Sx = get_robotS().get_shape().m_center.m_x;
-    double Sy = get_robotS().get_shape().m_center.m_y;
-    double radius;
-    s_2d seg;
+    circle shape;
     if(type=="R")
-        radius = r_reparateur;  
+        shape = circle(m_robots[0]->get_shape().m_center, r_reparateur);
     else
-        radius = r_neutraliseur;
-    
-    bool collide = false;
-    double angle(0);
-    do{
-        angle += M_PI/8;
-        collide = false;
-        if(angle>2*M_PI) 
-            return s_2d(Sx,Sy);
-        for(unsigned int i(1); i<m_robots.size(); i++)
-        {
-            collide = collision(m_robots[i].get()->get_shape(), 
-                                circle(s_2d(Sx+cos(angle)*(r_spatial+radius+epsil_zero),
-                                            Sy+sin(angle)*(r_spatial+radius+epsil_zero)),
-                                        radius));
-            if(collide)
-                break;
-        }
-        if(!collide)
-        {
-            for(unsigned int i(0); i<m_particles_vect.size(); i++)
-            {
-                collide = collision(circle(s_2d(Sx+cos(angle)*(r_spatial+radius+epsil_zero),
-                                        Sy+sin(angle)*(r_spatial+radius+epsil_zero)), radius),
-                                    m_particles_vect[i].get()->get_shape());
-                if(collide)
-                    break;
-            }
-        }
-    }while(collide);
-    return s_2d(Sx+cos(angle)*(r_spatial+radius),
-                Sy+sin(angle)*(r_spatial+radius));
+        shape = circle(m_robots[0]->get_shape().m_center, r_neutraliseur);
+    for(unsigned int i(1); i < m_robots.size(); i++)
+    {
+        if(collision(shape, m_robots[i]->get_shape()))
+            return false;
+    }
+    return true;
 }
 
 void Simulation::deploy_new_robot(std::string type, s_2d dest)
 {
     if(type=="R")
     {
-        s_2d delta = dest-get_robotS().get_shape().m_center;
-        double angle = atan2(delta.m_y,delta.m_x);
-        double x = get_robotS().get_shape().m_center.m_x
-                    +cos(angle)*(r_spatial+r_reparateur);
-        double y = get_robotS().get_shape().m_center.m_y
-                    +sin(angle)*(r_spatial+r_reparateur);
-        m_robots.push_back(make_unique<Robot_R>(s_2d(x, y)));
+        m_robots.push_back(make_unique<Robot_R>(dest));
         assign_robotR_targets();
     }else if(type=="N"){
-        s_2d delta = dest-get_robotS().get_shape().m_center;
-        double angle = atan2(delta.m_y,delta.m_x);
-        double x = get_robotS().get_shape().m_center.m_x
-                    +cos(angle)*(r_spatial+r_neutraliseur);
-        double y = get_robotS().get_shape().m_center.m_y
-                    +sin(angle)*(r_spatial+r_neutraliseur);
+        Particle* part_to_target = m_particles_vect[get_untargeted_parts_index()[0]].get();
+        s_2d seg = part_to_target->get_shape().m_center-get_robotS().get_shape().m_center;
+        double angle = atan2(seg.m_y,seg.m_x);
+        cout<<"angle d'appartition : "<<angle<<endl;
         int type = (get_robotS().get_nbNs()+get_robotS().get_nbNd())%3;
-        m_robots.push_back(make_unique<Robot_N>(s_2d(x, y), angle, type,
+        m_robots.push_back(make_unique<Robot_N>(dest, angle, type,
                                        false, 0));
         assign_target();
     }
